@@ -2,7 +2,9 @@
 
 ## Description
 
-Hyprdots-ctl is a command-line interface for [Hyprdots ricing](https://github.com/prasanthrangan/hyprdots). This repository contains scripts that are currently in the unstable phase but could potentially be useful. We aim to add patches for Hyprdots and update the script to address common configuration issues. Please be aware that using these scripts may alter your configurations.
+Hyprdots-ctl is a command-line interface for [Hyprdots ricing](https://github.com/prasanthrangan/hyprdots). This repository contains scripts that are currently in the unstable phase but could potentially be useful. The aim is to add patches for Hyprdots and update the script to address common configuration issues and request. Please be aware that using these scripts may alter your configurations. 
+
+As Hyprdots is stable, this makes it not
 
 ## Warning
 
