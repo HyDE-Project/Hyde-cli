@@ -1,0 +1,3 @@
+[submodule "aur/hyprdots-ctl"]
+	path = aur/hyprdots-ctl
+	url = ssh://aur@aur.archlinux.org/hyprdots-ctl.git
