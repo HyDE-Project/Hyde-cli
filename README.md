@@ -12,10 +12,16 @@ These scripts may alter or mess up your configurations. Please use them at your 
 
 ## Installation
 
-soon
-
 ### ARCH
+```
 paru -Sy hyprdots-ctl
+```
+### MAKE
+```
+git clone https://github.com/kRHYME7/Hyprdots-ctl
+cd  ./Hyprdots-ctl
+sudo make
+```
 
 ## Usage
 
