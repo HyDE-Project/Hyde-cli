@@ -4,7 +4,10 @@ libdir := $(prefix)/lib/hyprdots-ctl
 etcdir := /etc/hyprdots-ctl
 BACKUPDIR := $(shell mktemp -d)
 
-all: directories backup  install
+all: download directories backup  install
+
+download:
+	wget https://raw.githubusercontent.com/prasanthrangan/hyprdots/a40b2aa3a3fc5fe9e6bf9395e517326f21d3f0ee/Scripts/Hyprdots
 
 update:
 	git fetch
