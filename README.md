@@ -26,8 +26,9 @@ sudo make
 ## Usage
 
 run: 
+``` Hyprdots man``` For the supported commands.
 
-``` hyprdots-ctl man```
+``` hyprdots-ctl man``` For Extra Commands.
 
 ## Contributing
 
@@ -39,5 +40,5 @@ If you encounter any issues, please submit them...
 
 ## Roadmap
 
-This will just be an active helper to some issues or some feature request for Hyprdots
+This will just be an active helper to some issues or some feature requests for Hyprdots
 
