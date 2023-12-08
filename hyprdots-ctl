@@ -17,7 +17,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
   ./install.sh
 }
 
-hyprdots_ctl_version=v0.1.0.17
+hyprdots_ctl_version=v0.1.0.21
 
 
 echo "hyprdots-ctl: $hyprdots_ctl_version"
