@@ -17,9 +17,10 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
   ./install.sh
 }
 
-hyprdots-ctl-version=""
+hyprdots_ctl_version=v0.1.0.17
 
-echo "Hyprdots: $(git describe --tags --always)" #? Fetches the latest git tag
+
+echo "hyprdots-ctl: $hyprdots_ctl_version"
 Function="${1}"
 
 #??? Check for updates every 12 Hrs; Running Hyprdots update resets this.
