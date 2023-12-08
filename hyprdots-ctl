@@ -17,6 +17,8 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
   ./install.sh
 }
 
+hyprdots-ctl-version=""
+
 echo "Hyprdots: $(git describe --tags --always)" #? Fetches the latest git tag
 Function="${1}"
 
