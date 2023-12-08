@@ -14,6 +14,9 @@ These scripts may alter or mess up your configurations. Please use them at your 
 
 soon
 
+### ARCH
+paru -Sy hyprdots-ctl
+
 ## Usage
 
 run: 
