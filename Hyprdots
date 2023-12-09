@@ -17,7 +17,7 @@ export PATH=$PATH:$HOME/GitHub/Hyprdots-ctl/Scripts/ #! test
   ./install.sh
 }
 
-hyprdots_ctl_version=v0.1.0.21
+hyprdots_ctl_version=v0.1.0.30
 
 echo "Hyprdots: $hyprdots_ctl_version"
 Function="${1}"
