@@ -123,6 +123,12 @@ restore() { #? Restore Hyprdots Configurations
         defaults) #? Restore to Default Configurations of Hyprdots
             ./install.sh -r
         ;;
+        backup) #? Restore to a Backup Configurations
+            selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | fzf --prompt='Restoring a backup will not create a backup of the current configuration. Execute "Hyprdots backup all" to save the current dots: ' | cut -d ' ' -f4) && echo "$selected_backup" 
+            if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
+            ./backup_config.sh "$BkpDir/$selected_backup" ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+         echo    ./restore_cfg.sh "BAK" "$BkpDir/$selected_backup";
+            ;;
         *)  echo "$(Parameters "${Function}" )" ;;
   esac
 }
@@ -136,7 +142,7 @@ echo -e "\e[33mBacking up configuration and wallpapers(swww), which may use sign
         ./restore_cfg.sh "BAK" "" ; bak=$(ls -td -- $BkpDir/* | head -n 1 )
           echo -e "\e[33mWrite a Short Description for the Backup:\e[0m"
         read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
-     mv "$bak" "$bak--$note"
+        mv "$bak" "$bak--$note"
             ;;
         custom)
         echo "SOON:This is a custom"
