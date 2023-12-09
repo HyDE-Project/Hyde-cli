@@ -8,6 +8,8 @@ all: check directories backup  install
 
 check:
 	@which git >/dev/null || (echo "Error: git is not installed" && exit 1)
+	@which fzf >/dev/null || (echo "Error: fzf is not installed" && exit 1)
+
 
 download:
 	curl -o Hyprdots https://raw.githubusercontent.com/prasanthrangan/hyprdots/a40b2aa3a3fc5fe9e6bf9395e517326f21d3f0ee/Scripts/Hyprdots
@@ -32,7 +34,7 @@ backup:
 	mkdir -p $(BACKUPDIR)/scripts
 	mkdir -p $(BACKUPDIR)/confs
 	if [ -f $(DESTDIR)$(bindir)/Hyprdots ]; then \
-	cp $(DESTDIR)$(bindir)/hyprdots-ctl $(DESTDIR)$(bindir)/Hyprdots $(BACKUPDIR)/bin; \
+	cp $(DESTDIR)$(bindir)/Hyprdots $(BACKUPDIR)/bin; \
 	fi
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true

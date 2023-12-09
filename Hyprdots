@@ -9,7 +9,7 @@ export PATH=$PATH:$HOME/GitHub/Hyprdots-ctl/Scripts/ #! test
   ScriptDir="$CloneDir/Scripts"
   BkpDir="$ConfDir/cfg_backups"
   cd $ScriptDir
-} 2> /dev/null || { 
+} || { 
   read -n 1 -s -r -p "[ENTER:yes ANY:no] Hyprdots not detected! This will run the installation. " key
   [[ -z "$key" ]] || exit 0 
   git clone --depth 1 https://github.com/prasanthrangan/hyprdots ~/Hyprdots
@@ -32,7 +32,7 @@ touch "/tmp/hyprdots_update_check" )
 #??? Handle Syntax errors
 help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
 if [ -z "$1" ]; then exit 1 
-elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: hyprdots-ctl [Function] [Arguments] [Parameter]\n$help" ; exit 1
+elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: Hyprdots [Function] [Arguments] [Parameter]\n$help" ; exit 1
 fi
 
 Parameters() { #TODO: Add conditionals here like 'case'
@@ -44,7 +44,7 @@ fi
 
 SelectOption() { #TODO Can be improved soon using other package.
     echo ""
-    IFS=$'\n' read -d '' -ra options < <(echo "$1")
+    IFS=$'\n' read -d '' -ra options < <(echo "$1" | grep -v "^$")
     select selected in "${options[@]}" ; do echo "You selected: $selected" ; break ; done
     #echo "$selected"
 }
@@ -82,7 +82,7 @@ fi
 
 man() { #? Show Manual 
 echo "CloneDirectory: $CloneDir"
-  echo -e "Usage: hyprdots-ctl [Function] [Arguments] [Parameters]"
+  echo -e "Usage: Hyprdots [Function] [Arguments] [Parameters]"
   echo ""
   grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
     Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
@@ -128,18 +128,28 @@ restore() { #? Restore Hyprdots Configurations
 }
 
 backup() { #? Handles backup functions.
+            trap PreserveCloneDir EXIT
     case $1 in 
-        now) #? Backups the current configuration.
+        all) #? Backups the current configuration.
+echo -e "\e[33mBacking up configuration and wallpapers(swww), which may use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" ; read
          awk -F'|' -v OFS='|' '{ $1="N"; $2="Y"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
-        ./restore_cfg.sh "BAK" "";
-        # bak=$(ls -t $BkpDir | head -n 1)
-        # current_date=$(date +%b_%d_%Y_%a_%Hh%Mm%Ss)
-        # mv "$BkpDir/$bak" "$BkpDir/$current_date.Bak"
+        ./restore_cfg.sh "BAK" ""; bak=$(ls -a -r $BkpDir | head -n 1)
+          echo -e "\e[33mWrite a Short Description for the Backup:\e[0m"
+        read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
+         mv "$BkpDir/$bak" "$BkpDir/"$bak--$note""
+        ;;
+        custom)
+        echo "SOON:This is a custom"
         ;;
         restore) #? Restore to a Backup Configurations
-            echo "Restoring to a Backup Configurations"
-
+            awk -F'|' -v OFS='|' '{ $1="Y"; $2="N"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt='Restoring a backup will not create a backup of the current configuration. Execute "Hyprdots backup all" to save the current dots: ' | cut -d ' ' -f4) && echo "$selected_backup" 
+            if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
+             ./restore_cfg.sh "BAK" "$BkpDir/$selected_backup";
             ;;
+        clean) #? Clear some Storage by Deleting old backups. 
+            echo "SOON:Removing old backups"
+        ;;
         *)  echo "$(Parameters "${Function}" )" ;;
     esac
 }
