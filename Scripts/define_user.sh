@@ -1,7 +1,11 @@
 #!/bin/bash
-
+  source ~/.config/hypr/scripts/globalcontrol.sh
 # Source the user's settings, overwriting any defaults
-ctlFile="./hyprdots.conf"
+ctlFile="$ConfDir/hypr/hyprdots.conf"
+if [[ ! -f $ctlFile ]]; then
+#touch $ctlFile
+  cp ./hyprdots.conf $(dirname "$ctlFile")
+fi
 
 evaluate() {
    section=$1

@@ -1,8 +1,13 @@
 #!/bin/bash
+
+#export PATH=$PATH:/usr/lib/hyprdots-ctl/
+export PATH=$PATH:$HOME/GitHub/Hyprdots-ctl/Scripts/ #! test
+
 { 
   source ~/.config/hypr/scripts/globalcontrol.sh
   ScrDir="$ConfDir/hypr/scripts"
   ScriptDir="$CloneDir/Scripts"
+  BkpDir="$ConfDir/cfg_backups"
   cd $ScriptDir
 } 2> /dev/null || { 
   read -n 1 -s -r -p "[ENTER:yes ANY:no] Hyprdots not detected! This will run the installation. " key
@@ -12,7 +17,9 @@
   ./install.sh
 }
 
-echo "Hyprdots: $(git describe --tags --always)" #? Fetches the latest git tag
+hyprdots_ctl_version=v0.1.0.21
+
+echo "Hyprdots: $hyprdots_ctl_version"
 Function="${1}"
 
 #??? Check for updates every 12 Hrs; Running Hyprdots update resets this.
@@ -25,7 +32,7 @@ touch "/tmp/hyprdots_update_check" )
 #??? Handle Syntax errors
 help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
 if [ -z "$1" ]; then exit 1 
-elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: Hyprdots [Function] [Parameter]\n$help" ; exit 1
+elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: hyprdots-ctl [Function] [Arguments] [Parameter]\n$help" ; exit 1
 fi
 
 Parameters() { #TODO: Add conditionals here like 'case'
@@ -75,7 +82,7 @@ fi
 
 man() { #? Show Manual 
 echo "CloneDirectory: $CloneDir"
-  echo "Usage: Hyprdots [Function] [Parameters]"
+  echo -e "Usage: hyprdots-ctl [Function] [Arguments] [Parameters]"
   echo ""
   grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
     Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
@@ -113,13 +120,28 @@ install() { #? Installs Hyprdots
 
 restore() { #? Restore Hyprdots Configurations
   case $1 in 
-        defaults) #? Restore to Default Configurations
+        defaults) #? Restore to Default Configurations of Hyprdots
             ./install.sh -r
         ;;
-        *)
-         echo "$(Parameters "${Function}" )"
-        ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
   esac
+}
+
+backup() { #? Handles backup functions.
+    case $1 in 
+        now) #? Backups the current configuration.
+         awk -F'|' -v OFS='|' '{ $1="N"; $2="Y"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+        ./restore_cfg.sh "BAK" "";
+        # bak=$(ls -t $BkpDir | head -n 1)
+        # current_date=$(date +%b_%d_%Y_%a_%Hh%Mm%Ss)
+        # mv "$BkpDir/$bak" "$BkpDir/$current_date.Bak"
+        ;;
+        restore) #? Restore to a Backup Configurations
+            echo "Restoring to a Backup Configurations"
+
+            ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
+    esac
 }
 
 theme() { #? Theme Related Actions 
@@ -142,9 +164,8 @@ case $1 in
            shift
             ./themepatcher.sh "$@"
         ;;
-        *)
-         echo "$(Parameters "${Function}" )"
-        ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
+
 esac
 }
 
@@ -164,9 +185,8 @@ wallpaper() { #? Wallpaper related Actions
         select) #? Wallpaper Selector
             $ScrDir/swwwallselect.sh
         ;;
-        *)
-         echo "$(Parameters "${Function}" )"
-        ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
+
 esac
 }
 
@@ -177,9 +197,8 @@ sddm() { #? Sddm Things
         set) #? Set active Wallpaper to Sddm Lockscreen
             $ScrDir/sddmwall.sh
         ;;
-        *)
-         echo "$(Parameters "${Function}" )"
-        ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
+
 esac
 }
 
@@ -188,9 +207,8 @@ wallbash() { #? Wallbash
         toggle) #? Toggle Wall bash On/Off
             $ScrDir/wallbashtoggle.sh
         ;;
-        *)
-         echo "$(Parameters "${Function}" )"
-        ;;
+        *)  echo "$(Parameters "${Function}" )" ;;
+
 esac
 }
 
