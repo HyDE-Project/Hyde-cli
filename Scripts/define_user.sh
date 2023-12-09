@@ -1,9 +1,19 @@
 #!/bin/bash
 
 # Source the user's settings, overwriting any defaults
-source ./hyprdots.conf
+ctlFile="./hyprdots.conf"
 
-fn_Code() {  Code
+evaluate() {
+   section=$1
+   while read -r line; do 
+    #  echo $line
+    eval "$line"
+   done < <(grep -Pzo "(?s)\[$section\][^\[]*" $ctlFile | grep -Eva '^\['"$section"'\]|^$')
+}
+
+fn_Code() {  
+evaluate "Code"
+  file="$HOME/.config/Code/User/settings.json"
   declare -A vars=(
     ["workbench.colorTheme"]=${workbench_colorTheme:-"Catppuccin Mocha"}
     ["window.menuBarVisibility"]=${window_menuBarVisibility:-"toggle"}
@@ -23,7 +33,6 @@ fn_Code() {  Code
     ["telemetry.telemetryLevel"]=${telemetry_telemetryLevel:-"off"}
   )
 
-  settings_file="$HOME/.config/Code/User/settings.json"
   for var in "${!vars[@]}"; do
     # Use jq to update the settings file
     jq --arg key "$var" --arg value "${vars[$var]}" '
@@ -35,14 +44,22 @@ fn_Code() {  Code
         .[$key] = ($value | test("true"))
       else
         .
-      end' "$settings_file" > temp.json && mv temp.json "$settings_file"
+      end' "$file" > temp.json && mv temp.json "$file"
   done
 }
 
+fn_kdeglobals() { evaluate "kdeglobals"
+file="$HOME/.config/kdeglobals"
+declare -A vars=(
+    ["TerminalApplication"]=${TerminalApplication:-"kitty"}
+)
+  for var in "${!vars[@]}"; do
+    sed -i "s|^$var=.*|$var=${vars[$var]}|" "$file"
+  done
+}
 
-fn_kitty() {
-  kitty
-  file=~/.config/kitty/kitty.conf
+fn_kitty() { evaluate "kitty" 
+ file=~/.config/kitty/kitty.conf
   declare -A vars=(
     ["font_family"]="${font_family:-CaskaydiaCove Nerd Font Mono}"
     ["bold_font"]="${bold_font:-auto}"
@@ -59,7 +76,6 @@ fn_kitty() {
 }
 
 
-
-
-# fn_Code
-# fn_kitty
+fn_Code
+fn_kdeglobals
+fn_kitty
