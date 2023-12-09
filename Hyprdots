@@ -133,11 +133,11 @@ backup() { #? Handles backup functions.
         all) #? Backups the current configuration.
 echo -e "\e[33mBacking up configuration and wallpapers(swww), which may use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" ; read
          awk -F'|' -v OFS='|' '{ $1="N"; $2="Y"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
-        ./restore_cfg.sh "BAK" ""; bak=$(ls -a -r $BkpDir | head -n 1)
+        ./restore_cfg.sh "BAK" "" ; bak=$(ls -td -- $BkpDir/* | head -n 1 )
           echo -e "\e[33mWrite a Short Description for the Backup:\e[0m"
         read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
-         mv "$BkpDir/$bak" "$BkpDir/"$bak--$note""
-        ;;
+     mv "$bak" "$bak--$note"
+            ;;
         custom)
         echo "SOON:This is a custom"
         ;;
