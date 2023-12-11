@@ -1,0 +1,62 @@
+#!/bin/bash
+
+export PATH=$PATH:/usr/lib/hyprdots-ctl/
+source ~/.config/hypr/scripts/globalcontrol.sh
+ScrDir="$ConfDir/hypr/scripts"
+ScriptDir="$CloneDir/Scripts"
+BkpDir="$ConfDir/cfg_backups"
+cacheDir="$HOME/.cache/hyprdots"
+cacheCtl="$HOME/.cache/hyprdots-ctl"
+
+make_dir=(
+  "$ScrDir"
+  "$ScriptDir"
+  "$BkpDir"
+  "$cacheDir"
+  "$cacheCtl"
+)
+  for dir in "${make_dir[@]}"; do
+    if [ ! -d "$dir" ]; then
+      mkdir -p "$dir"
+      echo "Hyprdots-ctl created a directory: $dir"
+    fi
+  done
+
+if [ "$(ls -A "$BkpDir")" ]; then
+  last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
+fi
+
+
+print_prompt() {
+  while (( "$#" )); do
+    case "$1" in
+      -r) echo -ne "\e[31m$2\e[0m" ;;  # Red
+      -g) echo -ne "\e[32m$2\e[0m" ;;  # Green
+      -y) echo -ne "\e[33m$2\e[0m" ;;  # Yellow
+      -b) echo -ne "\e[34m$2\e[0m" ;;  # Blue
+      -m) echo -ne "\e[35m$2\e[0m" ;;  # Magenta
+      -c) echo -ne "\e[36m$2\e[0m" ;;  # Cyan
+      -w) echo -ne "\e[37m$2\e[0m" ;;  # White
+      -n) echo -ne "\e[96m$2\e[0m" ;;  # Neon
+      *) echo "Invalid option: $1" ;;
+    esac
+    shift 2
+  done
+  echo ""
+}
+
+ask_confirm() {
+  local key=$1
+  while true; do
+    if [ -z "$key" ]; then
+    read -n 1 -s -r -p "[ENTER: continue ANY: exit]" key ; [[ -z "$key" ]] && break || exit 0
+    else
+      read -p "Please type '$(print_prompt -m "$key")' to continue: " answer 
+      if [[ "$answer" == "$key" ]]; then
+        break
+      else
+        print_prompt -r "Invalid input, please try again."
+      fi
+    fi
+  done
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+
+  read -n 1 -s -r -p "[ENTER:yes ANY:no] Hyprdots not detected! This will run the installation. " key
+  [[ -z "$key" ]] || exit 0 
+  git clone --depth 1 https://github.com/prasanthrangan/hyprdots ~/Hyprdots
+  cd ~/Hyprdots/Scripts
+  ./install.sh
