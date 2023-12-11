@@ -12,15 +12,15 @@ git fetch > /dev/null 2>&1 && \
 touch "/tmp/hyprdots_update_check"
 
 #??? Handle Syntax errors
-help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
+help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
 if [ -z "$1" ]; then exit 1 
 elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: Hyprdots [Function] [Arguments] [Parameter]\n$help" ; exit 1
 fi
 
 Parameters() { #TODO: Add conditionals here like 'case'
 Function="${Function// /}"
-if awk "/^$Function\(\) \{/,/}/" $0 | grep > /dev/null  'case'; then
-  man_params=$(awk "/^$Function\(\) \{/,/esac/" $0 | grep -E '^\s+\w+\)' | awk 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); printf "                          %-15s %s\n","["$1"]", $4 }')
+if awk "/^$Function\(\) \{/,/}/" "$0" | grep > /dev/null  'case'; then
+  man_params=$(awk "/^$Function\(\) \{/,/esac/" "$0" | grep -E '^\s+\w+\)' | awk 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); printf "                          %-15s %s\n","["$1"]", $4 }')
 echo "$man_params"
 fi
 } 
@@ -37,7 +37,7 @@ ConfigCtl() {
     EDITOR="${EDITOR:-code}"  #* Use VS Code as the default editor
     echo -e "[Editor]: $EDITOR (\"export EDITOR=pref_editor\") \n[Modifying]: $FILE \nPress Any Key if done editing"
     #kitty -o allow_remote_control=yes -o listen_on=unix:/tmp/mykitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
-    kitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
+    kitty "$(which $EDITOR)" "$FILE" > /dev/null 2>&1 &
     LAST_MD5SUM=$(md5sum "$FILE")
     while true; do CURRENT_MD5SUM=$(md5sum "$FILE")
         if [ "$CURRENT_MD5SUM" != "$LAST_MD5SUM" ]; then eval "$ACTION"
@@ -47,8 +47,8 @@ ConfigCtl() {
 }
 
 PreserveCloneDir() { #* Use: Not to mess up the current CloneDir If installing backup.
-if [ -f $HOME/.config/hypr/scripts/globalcontrol.sh ] ; then
-    sed -i "/^CloneDir=/c\CloneDir=\"$CloneDir\"" $HOME/.config/hypr/scripts/globalcontrol.sh
+if [ -f "$HOME"/.config/hypr/scripts/globalcontrol.sh ] ; then
+    sed -i "/^CloneDir=/c\CloneDir=\"$CloneDir\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
 fi
 }
 
@@ -79,3 +79,4 @@ check_file_change() {
     return 0  # Return a zero exit status
   fi
 }
+

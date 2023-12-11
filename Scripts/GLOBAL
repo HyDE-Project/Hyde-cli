@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
-source ~/.config/hypr/scripts/globalcontrol.sh
+source $HOME/.config/hypr/scripts/globalcontrol.sh
 ScrDir="$ConfDir/hypr/scripts"
 ScriptDir="$CloneDir/Scripts"
 BkpDir="$ConfDir/cfg_backups"

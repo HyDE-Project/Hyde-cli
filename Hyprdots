@@ -2,9 +2,8 @@
 hyprdots_ctl_version=v0.1.0.35
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
-#export PATH=$PATH:$HOME/GitHub/Hyprdots-ctl/Scripts/ #! testing
 
-{ . GLOBAL ; cd $ScriptDir ; } || { Hyprdots_Install ;  } ; . FUNCTIONS
+{ . GLOBAL ; . FUNCTIONS ; cd $ScriptDir ; } || { Hyprdots_Install ;  } ; 
 
 #! +----------------------------------------------------------------|
 #? Add functions below this section.
@@ -55,7 +54,7 @@ install() { #? Installs Hyprdots
             ./install.sh ./custom_apps.lst
             ;;
             *)
-            echo "$(Parameters "${Function}" )"
+            Parameters "$Function" 
             ;;
     esac
 }
@@ -63,11 +62,11 @@ install() { #? Installs Hyprdots
 restore() { #? Restore Hyprdots Configurations
   case $1 in 
         defaults) #? Restore to Default Configurations of Hyprdots
-            ./install.sh -r
-        bak=$(ls -td -- $BkpDir/* | head -n 1 )
-      if [[ "$last_bak" != $bak ]]; then
-        mv "$bak" "$bak-_before_Hyprdots_restore_defaults"
-      fi
+        ./install.sh -r
+        bak=$(ls -td -- "$BkpDir"/* | head -n 1 )
+        if [[ "$last_bak" != $bak ]]; then
+         mv "$bak" "$bak-_before_Hyprdots_restore_defaults"
+        fi
         ;;
         # custom)
         # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
@@ -80,9 +79,9 @@ restore() { #? Restore Hyprdots Configurations
         # ;;
         BackUp) #? Restores Dots to a previous state.
             trap PreserveCloneDir EXIT
-            backup_manager $1
+            backup_manager "$1"
             ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
   esac
 }
 
@@ -104,7 +103,7 @@ backup() { #? Handles Your Back ups.
         clean) #? Clear some Storage by Deleting old backups. 
             backup_manager "$1"
         ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
     esac
 }
 
@@ -113,55 +112,53 @@ theme() { #? Theme Related Actions
 case $1 in 
         set) #? Set Theme
         sel_Theme=$(cat $ThemeCtl | awk -F'|' '{print $2}' | fzf )
-        $ScrDir/themeswitch.sh -s "$sel_Theme"
+        "$ScrDir"/themeswitch.sh -s "$sel_Theme"
         ;;
         next) #? Next Theme
-            $ScrDir/themeswitch.sh -n
+            "$ScrDir"/themeswitch.sh -n
         ;; 
         prev) #? Previous Theme
-            $ScrDir/themeswitch.sh -p
+            "$ScrDir"/themeswitch.sh -p
         ;;
         select) #? Theme Selector
-            $ScrDir/themeselect.sh
+            "$ScrDir"/themeselect.sh
         ;;
         patch) #? Patch A Theme from different repository.
            shift
             ./themepatcher.sh "$@"
         ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
 
 esac
 }
 
 wallpaper() { #? Wallpaper related Actions
   case $1 in 
-        set) #? Set /Path/to/Wallpaper as Wallpaper
+        set) #? Set /Path/to/Wallpapers as new Wallpaper Directory
             shift
-            if [ -z "$@" ]; then echo "Missing: /Path/to/Wallpaper" ; exit 1 ; fi
-            $ScrDir/swwwallpaper.sh -s "$@"
+            if [ -z "$2" ]; then echo "Missing: /Path/to/Wallpaper" ; exit 1 ; fi
+            "$ScrDir"/swwwallpaper.sh -s "$2"
         ;;
         next) #? Next Wallppaer
-            $ScrDir/swwwallpaper.sh -n 
+            "$ScrDir"/swwwallpaper.sh -n 
         ;;
         prev) #? Previous Wallpaper
-            $ScrDir/swwwallpaper.sh -p
+            "$ScrDir"/swwwallpaper.sh -p
         ;;
         select) #? Wallpaper Selector
-            $ScrDir/swwwallselect.sh
+            "$ScrDir"/swwwallselect.sh
         ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
 
 esac
 }
 
 sddm() { #? Sddm Things
-  # Function for managing SDDM settings
-  echo "Setting SDDM with Parameters: $@"
   case $1 in 
         set) #? Set active Wallpaper to Sddm Lockscreen
-            $ScrDir/sddmwall.sh
+            "$ScrDir"/sddmwall.sh
         ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
 
 esac
 }
@@ -169,9 +166,9 @@ esac
 wallbash() { #? Wallbash
   case $1 in 
         toggle) #? Toggle Wall bash On/Off
-            $ScrDir/wallbashtoggle.sh
+            "$ScrDir"/wallbashtoggle.sh
         ;;
-        *)  echo "$(Parameters "${Function}" )" ;;
+        *)  Parameters "$Function"  ;;
 
 esac
 }
@@ -179,11 +176,11 @@ esac
 waybar() { #? Waybar related Things
     case $1 in
         control) #? Edit waybar Control File.
-            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; $ScrDir/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
+            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; "$ScrDir"/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
             ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
             ;;
         *)
-            echo "$(Parameters "${Function}" )"
+            Parameters "$Function" 
             ;;
     esac
 }
@@ -202,7 +199,7 @@ case $1 in
         fi
          ;;
         *)
-        echo "$(Parameters "${Function}" )"
+        Parameters "$Function" 
          ;;
     esac
 }
@@ -224,7 +221,7 @@ cache() { #? Cache
         fi
         ;;
         *)
-        echo "$(Parameters "${Function}" )"
+        Parameters "$Function" 
          ;;
     esac
 }

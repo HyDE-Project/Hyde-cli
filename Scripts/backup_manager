@@ -12,10 +12,10 @@ list() {
   fi
 }
 
-check_content() {
+check_content() { #* Check the content of a Directory and make a restore list
 # Define the backup directory
-backup_target="$1"
-> ./BAKrestore_cfg.lst
+restore_directory="$1"
+: > ./BAKrestore_cfg.lst
 # Read the file line by line
 while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
 
@@ -23,20 +23,18 @@ while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
     dir="${array[2]}"
     files="${array[3]}"
     pkg="${array[4]}" 
-    cur="${dir/\$\{HOME\}/}"
+    curr="${dir/\$\{HOME\}/}"
 
   # Split the files into an array
   IFS=' ' read -r -a files_array <<< "$files"
   # Iterate over each file or directory in the 4th column
   for file in "${files_array[@]}"; do
 
-
-
-if [ "$backup_target" = "CUSTOM" ]; then
+if [ "$restore_directory" = "CUSTOM" ]; then
   echo "N|Y|$dir|$file|$pkg" >> "./BAKrestore_cfg.lst"
 else
- if [ -e "$backup_target$cur/$file" ]; then
-     echo -e "$cur/$file"
+ if [ -e "$restore_directory$curr/$file" ]; then
+     echo -e "$curr/$file"
      echo "Y|Y|$dir|$file|$pkg" >> "./BAKrestore_cfg.lst"
  fi
 fi
@@ -55,32 +53,32 @@ all() {
          awk -F'|' -v OFS='|' '{ $1="N"; $2="Y"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
         ./restore_cfg.sh "BAK" ""
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
-      if [[ "$last_bak" != $bak ]]; then
+      if [[ "$last_bak" != "$bak" ]]; then
         echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
         read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
         mv "$bak" "$bak--$note"
       fi
 }
 
-custom() {
-  list
-#       check_content "CUSTOM"
-# cat ./BAKrestore_cfg.lst | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
-selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
-#echo "$selected_line"
-awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ./BAKrestore_cfg.lst
-cat ./BAKrestore_cfg.lst
+# custom() {
+#   list
+# #       check_content "CUSTOM"
+# # cat ./BAKrestore_cfg.lst | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
+# selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
+# #echo "$selected_line"
+# awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ./BAKrestore_cfg.lst
+# cat ./BAKrestore_cfg.lst
 
-        exit 0
-        trap 'rm -f ./BAKrestore_cfg.lst' EXIT
-        ./restore_cfg.sh "BAK" "" 
-      bak=$(ls -td -- $BkpDir/* | head -n 1 )
-      if [[ "$last_bak" != $bak ]]; then
-        echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
-        read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
-        mv "$bak" "$bak--$note"
-      fi
-}
+#         exit 0
+#         trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+#         ./restore_cfg.sh "BAK" "" 
+#       bak=$(ls -td -- $BkpDir/* | head -n 1 )
+#       if [[ "$last_bak" != $bak ]]; then
+#         echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
+#         read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
+#         mv "$bak" "$bak--$note"
+#       fi
+# }
 
 revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyprdots backup all' to save the current Dots"
