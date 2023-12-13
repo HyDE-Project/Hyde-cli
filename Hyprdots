@@ -230,8 +230,24 @@ cache() { #? Cache
     esac
 }
 
+Helper() { #! Some of Scripts you might want to use.
 
+    case $1 in 
+      chaotic) #? Reload Caches if you have new wallpapers.
+            ./create_cache.sh
+         ;;
+      rebuild) #? Force rebuild cache
+            read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
+         ;;
+        add) #? Cache custom /path/to/wallpaper/* ( Broken)
+                    echo "Please provide a /path/to/wallpaper/*." 
+        ;;
+        *)
+        Parameters "$Function" 
+         ;;
+    esac
 
+}
 
 
 

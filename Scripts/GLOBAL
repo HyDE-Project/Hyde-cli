@@ -2,12 +2,11 @@
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-if ! source $HOME/.config/hypr/scripts/globalcontrol.sh || [[ -z "${CloneDir// }" ]]; then
+if ! source $HOME/.config/hypr/scripts/globalcontrol.sh 2> /dev/null || [[ -z "${CloneDir// }" ]]; then
   echo "Error: Failed to source globalcontrol.sh or Cannot find Hyprdots Directory"
   Install_Hyprdots
   exit 1
 fi
-
 
 ScrDir="$ConfDir/hypr/scripts"
 ScriptDir="$CloneDir/Scripts"

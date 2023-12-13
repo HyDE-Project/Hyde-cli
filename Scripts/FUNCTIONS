@@ -4,17 +4,26 @@
 
 Function="${1}"
 
-[ ! -f "/tmp/hyprdots_update_check" ] || [[ $(find "/tmp/hyprdots_update_check" -mmin +720) ]] && \
-( echo "Checking For Updates (This is run Every 12 hours or after you run Hyprdots update)" && \
-ping -q -c 1 -W 1 8.8.8.8 >/dev/null && \
-git fetch > /dev/null 2>&1 && \
-( [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ] && echo -e "Updates available! \nRUN: \033[0;34mHyprdots update\033[0m"  || echo -e "\033[0;32mHyprdots Up to date\033[0m" ) || echo "Please Check you Internet Connectivity" )
-touch "/tmp/hyprdots_update_check"
+check_Ping() {
+  if ! ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+    box_me "Error: No internet connection."
+    exit 1
+  fi
+}
 
-#??? Handle Syntax errors
-help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
-if [ -z "$1" ]; then exit 1 
-elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: Hyprdots [Function] [Arguments] [Parameter]\n$help" ; exit 1
+if [ ! -f "/tmp/hyprdots_update_check" ] || [[ $(find "/tmp/hyprdots_update_check" -mmin +720) ]]; then
+    echo "Checking For Updates (This prompts every 12 hours or after you run Hyprdots update)"
+    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then
+        git fetch > /dev/null 2>&1
+        if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+            echo -e "Updates available! \nRUN: \033[0;34mHyprdots update\033[0m"
+        else
+            echo -e "\033[0;32mHyprdots Up to date\033[0m"
+        fi
+    else
+        echo "Please Check your Internet Connectivity"
+    fi
+    touch "/tmp/hyprdots_update_check"
 fi
 
 Parameters() { #TODO: Add conditionals here like 'case'
