@@ -3,7 +3,10 @@ hyprdots_ctl_version=v0.1.0.38
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-{ . GLOBAL ; . FUNCTIONS ; cd $ScriptDir ; } || { Hyprdots_Install ;  } ; 
+. GLOBAL 
+. FUNCTIONS 
+cd $ScriptDir
+
 
 #! +----------------------------------------------------------------|
 #? Add functions below this section.
@@ -25,12 +28,13 @@ man() { #? Show Manual
       printf "  %-20s %s\n" "[$Function]" "*$desc"
       Parameters "$Function"
     done 
-  ) ; clear
-echo "$manPage"
+  ) 
+  box_me "Manual Page"
+  echo "$manPage"
 }
 
 version() { #? Hyprdots Version
-    echo "Hyprdots: $hyprdots_ctl_version"
+    box_me "Hyprdots: $hyprdots_ctl_version"
 }
 
 update() { #? Pull Updates From Hyprdots Repository 

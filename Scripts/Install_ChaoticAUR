@@ -167,7 +167,7 @@ done
 case "$1" in
 --install)
   if check_Integrity > /dev/null; then
-    echo "Chaotic AUR already installed. Would you like a reinstallation? [Y/n]"
+    echo "Chaotic AUR already installed. Would you like a reinstallation? [y/N]"
     read ans
     if [ "$ans" != "Y" ] && [ "$ans" != "y" ]; then echo "Operation Cancelled."
       exit 0

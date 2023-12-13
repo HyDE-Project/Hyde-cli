@@ -1,7 +1,14 @@
 #!/bin/bash
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
-source $HOME/.config/hypr/scripts/globalcontrol.sh
+
+if ! source $HOME/.config/hypr/scripts/globalcontrol.sh || [[ -z "${CloneDir// }" ]]; then
+  echo "Error: Failed to source globalcontrol.sh or Cannot find Hyprdots Directory"
+  Install_Hyprdots
+  exit 1
+fi
+
+
 ScrDir="$ConfDir/hypr/scripts"
 ScriptDir="$CloneDir/Scripts"
 BkpDir="$ConfDir/cfg_backups"
@@ -48,9 +55,9 @@ print_prompt() {
 box_me() {
   local s="Hyprdots: $*"
   tput setaf 3
-  echo "═${s//?/═}"
+  echo " ═${s//?/═}"
   echo "║$s ║"
-  echo "═${s//?/═}"
+  echo " ═${s//?/═}"
   tput sgr0
 }
 
