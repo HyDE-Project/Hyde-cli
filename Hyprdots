@@ -1,7 +1,14 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.1.0.43
+hyprdots_ctl_version=v0.1.0.45
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
+
+if [ "$1" == "--clone" ]; then
+    newClone=$2
+    echo "Setting new clone directory!"
+    sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+    exit 0
+fi
 
 . GLOBAL 
 . FUNCTIONS 
