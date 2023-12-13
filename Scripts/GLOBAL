@@ -45,6 +45,15 @@ print_prompt() {
   echo ""
 }
 
+box_me() {
+  local s="Hyprdots: $*"
+  tput setaf 3
+  echo "═${s//?/═}"
+  echo "║$s ║"
+  echo "═${s//?/═}"
+  tput sgr0
+}
+
 ask_confirm() {
   local key=$1
   while true; do
