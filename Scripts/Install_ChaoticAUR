@@ -2,7 +2,14 @@
 
 #! REQURED ROOT
 execName="$0 $*"
-rootOpts=("--install" "--purge" "--revert") #? List Of Flags that needs to be in sudo
+rootOpts=("--install" "--purge" "--revert" "--fresh") #? List Of Flags that needs to be in sudo
+vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+
+distro_ID() { #? I'll reuse in the future.
+  local input=$(echo "$1" | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+  local target=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+  [[ "$input" == *"$target"* ]]
+}
 
 box_me() {
   local s="Hyprdots: $*"
@@ -157,19 +164,57 @@ exit 0
 }
 
 
-for option in "${rootOpts[@]}"; do if [ "$1" == "$option" ]; then 
-check_Ping 
-check_Root
+
+
+fresh() {
+clear 
+if distro_ID "Arch Linux"; then
+echo "Detected: Arch Linux"
+cat << CHAOS
+
+$(tput setaf 2)Would you like to add Chaotic AUR to your mirror list?$(tput sgr0)
+Chaotic AUR provides prebuilt and precompiled packages, 
+which can make installing packages from Arch faster.
+
+$vertL
+$(tput setaf 6)About Chaotic AUR:$(tput sgr0)
+Most packages available in this repo are automatically built from their respective AUR source package. However there are a few exceptions, check github.com/chaotic-aur/packages to find out which ones.
+The primary building cluster is a node in UFSCars datacenter which is hosted in São Carlos, São Paulo, Brazil.
+
+Feel free to create issues to suggest enhancements, flag database corruptions and all other requests: Issues
+Please report build bugs to the AUR package maintainers.
+
+Disclaimer:
+This repo is generated on-demand from packages we use on our personal computers. If there are any package license infringements please notify us through email. The package will then be removed and blacklisted.
+
+For more information, visit: https://aur.chaotic.cx/
+$vertL
+
+Hyprdots-ctl is not affiliated with the Chaotic AUR.
+
+CHAOS
+
+while true; do
+  read -p "Type 'Sure' to continue: " add_chaotic
+  if [ "$add_chaotic" == "Sure" ]; then break 
+  else echo -e "$(tput setaf 1)Invalid input, please try again.$(tput sgr0)"
+  fi
+done
+fi
+}
+
+for option in "${rootOpts[@]}"; do if [ "$1" == "$option" ]; then  check_Ping ; check_Root
 break
 fi
 done
 
 case "$1" in
 --install)
+  if [ "$2" == "fresh" ]; then fresh ; fi
   if check_Integrity > /dev/null; then
     echo "Chaotic AUR already installed. Would you like a reinstallation? [y/N]"
     read ans
-    if [ "$ans" != "Y" ] && [ "$ans" != "y" ]; then echo "Operation Cancelled."
+    if [ "$ans" != "Y" ] && [ "$ans" != "y" ]; then echo "Chaotic AUR: Operation Cancelled."
       exit 0
     fi
   fi
@@ -184,6 +229,6 @@ case "$1" in
     ;;
   *)
     echo "Invalid option: $1"
-    echo "Usage: $0 --install|--purge|--revert"
+    echo "Usage: $0 --install [fresh] |--purge|--revert"
     ;;
 esac

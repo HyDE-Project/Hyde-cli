@@ -1,29 +1,58 @@
 #!/bin/bash
 
+#? One Time Set up on Terminal. 
+
+vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+
+echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
 
 
-read -n 1 -s -r -p "[ENTER:yes ANY:no] Hyprdots not detected! This will run the installation. " key
-  [[ -z "$key" ]] || exit 0 
+if [ -d "$HOME/Hyprdots" ] && cd "$HOME/Hyprdots"; then
+    echo -e "\n\nDirectory $HOME/Hyprdots already exists. Using existing directory.\n"
+    echo -e "Hyprdots-ctl will make $HOME/Hyprdots your Clone Directory By restoring the links."
+    read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+    echo ""
+git reset --hard HEAD > /dev/null 2>&1 && git clean -fd > /dev/null 2>&1 && git pull > /dev/null 2>&1 || true
+    cd $HOME/Hyprdots/Scripts || exit 0
+    ./restore_lnk.sh
 
-cat << CHAOS
+else clear
+cat << GREET
 
+$vertL
 
-Would you like to add Chaotic AUR to your mirror list? 
-Chaotic AUR provides prebuilt and precompiled packages, 
-which can make installing packages from Arch faster."
+$(tput setaf 2)Hello $USER! This is an automated installation for Hyprdots.$(tput sgr0)
 
-Type "Sure" to add achaotic AUR to your mirror list. 
-[ENTER] to skip the installation.
+Hyprdots-ctl is an active helper for Hyprdots. During this installation, the script will:
+1. Check if Hyprdots is already installed.
+2. If not, it will clone the Hyprdots repository from GitHub. https://github.com/prasanthrangan/hyprdots
+3. Optionally, if you are on ARCH you can add Chaotic AUR to your mirror list for faster package installation.
+4. Finally, it will clone the Hyprdots repository and run the installation script.
 
-CHAOS
+From here on 'Dots' 'Dot Files' means Configurations.
 
-read add_chaotic
-if [ "$add_chaotic" != "n" ] && [ "$add_chaotic" != "N" ]; then
-sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install
+$(tput setaf 3)Hyprdots-ctl is a CLI for Hyprdots.This aims to add patches 
+for Hyprdots and address common Dots issues.
+Also this is a USER specific helper, includes a control file for a user to preserve the USER preferences.
+Please note that using these scripts may alter your Dot files.$(tput sgr0)
+
+$(tput setaf 6)And wait, there's more!!! Checkout 'Hyprdots man' to see how you can manage your Hyprdots setup.$(tput sgr0)
+
+HAVE A GOOD DAY!
+
+Visit: https://github.com/kRHYME7/Hyprdots-ctl for more information.
+$vertL
+GREET
+
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+
+ sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
+
+rm -fr "$HOME/Hyprdots" || true
+git clone --depth 1 https://github.com/prasanthrangan/hyprdots $HOME/Hyprdots
+cd $HOME/Hyprdots/Scripts || exit 0
+echo ./install.sh
 fi
-  
 
 
-  git clone --depth 1 https://github.com/prasanthrangan/hyprdots $HOME/Hyprdots
-  cd $HOME/Hyprdots/Scripts
-  ./install.sh
