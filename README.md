@@ -30,8 +30,12 @@ run:
 ## Man Pages 
 
 ```
-Hyprdots: v0.1.0.30
-Hyprdots Clone Directory: /home/khing/Storage/My_Documents/GitHub/KhingDom
+ Hyprdots man
+ ══════════════════════
+║Hyprdots: Manual Page ║
+ ══════════════════════
+Hyprdots: v0.1.0.45
+Hyprdots Clone Directory: /home/khing/GitHub/KhingDom/
 Usage: Hyprdots [Function] [Arguments]/[Parameters]
 
   [man]                * Show Manual
@@ -39,7 +43,7 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
   [update]             * Pull Updates From Hyprdots Repository
   [install]            * Installs Hyprdots
                           [fresh]          Fresh installation of Hyprdots
-                          [custom]         Like fresh but installs chosen Apps
+                          [custom]         Custom installation of Apps
   [restore]            * Restore Hyprdots Configurations
                           [defaults]       Restore to Default Configurations of Hyprdots
                           [BackUp]         Restores Dots to a previous state.
@@ -55,7 +59,7 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [select]         Theme Selector
                           [patch]          Patch A Theme from different repository.
   [wallpaper]          * Wallpaper related Actions
-                          [set]            Set /Path/to/Wallpaper as Wallpaper
+                          [set]            Set /Path/to/Wallpapers as new Wallpaper Directory
                           [next]           Next Wallppaer
                           [prev]           Previous Wallpaper
                           [select]         Wallpaper Selector
@@ -71,7 +75,6 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [reload]         Reload Caches if you have new wallpapers.
                           [rebuild]        Force rebuild cache
                           [add]            Cache custom /path/to/wallpaper/*
-
 ```
 
 ## Contributing
