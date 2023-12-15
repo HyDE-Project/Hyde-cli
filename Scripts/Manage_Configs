@@ -2,7 +2,7 @@
 
 . GLOBAL
 
-list() {
+list_Backup() {
   if [ -d "$BkpDir" ] && [ "$(ls -A "$BkpDir")" ]; then
     print_prompt -m "List of Backups:"
     bak_list=$(ls -l -r $BkpDir | tac | awk '{print $6,$7,$8,$9}')
@@ -12,9 +12,23 @@ list() {
   fi
 }
 
-check_content() { #* Check the content of a Directory and make a restore list
+mark_List() {
+box_me "Please review the list...1st col Restore; 2nd col Backup"
+
+no_Bak="$(echo -e "\n$(awk -F'|' '{for(i=3; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' ./BAKrestore_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK files to IGNORE on Backup! | CTRL A : mark all  | CTRL D : unmark all |' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$no_Bak" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$2 = "N"; print; next} {print}}' ./BAKrestore_cfg.lst > ./temp.lst && mv ./temp.lst ./BAKrestore_cfg.lst
+
+no_Res="$(echo -e "\n$(awk -F'|' '{for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' ./BAKrestore_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK files to IGNORE on Restore! | CTRL A : mark all  | CTRL D : unmark all |' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$no_Res" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "N"; print; next} {print}}' ./BAKrestore_cfg.lst > ./temp.lst && mv ./temp.lst ./BAKrestore_cfg.lst
+barLine
+cat ./BAKrestore_cfg.lst
+barLine
+}
+
+restore_Lister() { #* Check the content of a Directory and make a restore list
 # Define the backup directory
 restore_directory="$1"
+echo "$restore_directory"
 : > ./BAKrestore_cfg.lst
 # Read the file line by line
 while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
@@ -34,12 +48,14 @@ if [ "$restore_directory" = "CUSTOM" ]; then
   echo "N|Y|$dir|$file|$pkg" >> "./BAKrestore_cfg.lst"
 else
  if [ -e "$restore_directory$curr/$file" ]; then
-     echo -e "$curr/$file"
+    #  echo -e "$curr/$file"
      echo "Y|Y|$dir|$file|$pkg" >> "./BAKrestore_cfg.lst"
  fi
 fi
   done
 done < "./restore_cfg.lst"
+echo "Done: $restore_directory"
+
 }
 
 
@@ -47,7 +63,7 @@ done < "./restore_cfg.lst"
 
 
 all() {
-  list
+  list_Backup
   echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" 
   ask_confirm
          awk -F'|' -v OFS='|' '{ $1="N"; $2="Y"; print }' ./restore_cfg.lst > ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
@@ -61,8 +77,8 @@ all() {
 }
 
 # custom() {
-#   list
-# #       check_content "CUSTOM"
+#   list_Backup
+# #       restore_Lister "CUSTOM"
 # # cat ./BAKrestore_cfg.lst | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
 # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
 # #echo "$selected_line"
@@ -95,14 +111,15 @@ ask_confirm
 }
 
 BackUp() {
-  list
+  list_Backup
 print_prompt -r "WARNING! " -y "Not all Dots may have been backed up, so use with caution!" ; ask_confirm "Okay"
        selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf --prompt='Restoring from a Backup Directory.' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | cut -d ' ' -f4)  
 if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then     
       echo "Restoring from: $BkpDir/$selected_backup"     
       echo "Please Review files to be re-populated to your Dots" 
-        check_content "$BkpDir/$selected_backup" ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
-        ask_confirm
+        restore_Lister "$BkpDir/$selected_backup" ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+        mark_List
+        ask_confirm "Sure"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
     ./restore_cfg.sh "BAK" "$BkpDir/$selected_backup"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
@@ -117,7 +134,7 @@ fi
 
 
 clean() {
-  list
+  list_Backup
 selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf -m --marker='X' --prompt 'Select files to be Removed!' )
 if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
   print_prompt -r "To Be Removed:" -n "\n$selected_backup"
@@ -132,6 +149,27 @@ fi
 
 }
 
+Clone() {
+if [ ! -d "$1" ]; then echo "Not a directory" ; exit 1 ; fi
+custClone="$1"
+if [ ! -f "$custClone/Configs/.config/hypr/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
+  echo "Broken Hyprdots Clone!"
+  exit 1
+fi
+echo "Generating a Restore List"
+cd $custClone/Scripts || exit
+ls -la
+restore_Lister "$custClone/Configs" ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+mark_List
+ask_confirm "Sure"
+./restore_fnt.sh
+./restore_cfg.sh
+}
 
 
-$@
+
+
+
+
+
+"$@"

@@ -2,17 +2,19 @@
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-if ! source $HOME/.config/hypr/scripts/globalcontrol.sh 2> /dev/null || [[ -z "${CloneDir// }" ]]; then
-  echo "Error: Failed to source globalcontrol.sh or Cannot find Hyprdots Directory"
-  Install_Hyprdots
-  exit 1
-fi
+handle_error() { echo "Error: $1" ; Install_Hyprdots ; exit 1 ; }
+
+! source $HOME/.config/hypr/scripts/globalcontrol.sh 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
+[[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Directory"
+[ ! -f "$CloneDir/Scripts/global_fn.sh" ] && handle_error "$ConfDir/Scripts/global_fn.sh does not exist"
 
 ScrDir="$ConfDir/hypr/scripts"
 ScriptDir="$CloneDir/Scripts"
 BkpDir="$ConfDir/cfg_backups"
 cacheDir="$HOME/.cache/hyprdots"
 cacheCtl="$HOME/.cache/hyprdots-ctl"
+
+barLine() { printf '=%.0s' $(seq 1 "$(tput cols)") ; }
 
 make_dir=(
   "$ScrDir"
@@ -31,6 +33,13 @@ make_dir=(
 if [ "$(ls -A "$BkpDir")" ]; then
   last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
 fi
+
+rename_backup() {
+bak=$(ls -td -- "$BkpDir"/* | head -n 1 )
+if [[ "$last_bak" != $bak ]]; then
+mv "$bak" "$bak-$1"
+fi
+}
 
 
 print_prompt() {

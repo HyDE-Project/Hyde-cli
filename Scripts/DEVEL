@@ -1,0 +1,58 @@
+#! /bin/bash
+
+if [ "$1" != "--devel" ]; then
+return 0
+fi
+echo -e "\033[35mYou are on Development mode, I assume you know what you are doing.\033[0m"
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+
+
+
+case $2 in 
+
+set-clone)
+newClone=$3
+if [ -d "$newClone" ]; then
+    echo "Setting new clone directory!"
+    sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+else
+    echo "Directory does not exist, running fzf..." ; read -t 3
+    cd $HOME
+    newClone=$(navigate_fzf)
+    sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+fi
+exit 0
+;;
+
+
+
+esac
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit 0

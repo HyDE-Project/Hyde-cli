@@ -3,13 +3,7 @@ hyprdots_ctl_version=v0.1.0.48
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-if [ "$1" == "--clone" ]; then
-    newClone=$2
-    echo "Setting new clone directory!"
-    sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
-    exit 0
-fi
-
+. DEVEL
 . GLOBAL 
 . FUNCTIONS 
 cd $ScriptDir
@@ -70,14 +64,18 @@ install() { #? Installs Hyprdots
     esac
 }
 
-restore() { #? Restore Hyprdots Configurations
+restore() { #? Restore Hyprdots
   case $1 in 
-        defaults) #? Restore to Default Configurations of Hyprdots
-        ./install.sh -r
-        bak=$(ls -td -- "$BkpDir"/* | head -n 1 )
-        if [[ "$last_bak" != $bak ]]; then
-         mv "$bak" "$bak-_before_Hyprdots_restore_defaults"
-        fi
+        defaults) #? Restore to Default Dots of Hyprdots
+        box_me "Restoring to a default Dots from $CloneDir"
+        cp ./restore_cfg.lst ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+        . Manage_Configs
+        restore_Lister "$CloneDir/Configs" ;  trap 'rm -f ./BAKrestore_cfg.lst' EXIT
+        mark_List
+        ask_confirm "Sure"
+        ./restore_fnt.sh "BAK"
+        ./restore_cfg.sh
+        rename_backup "_before_Hyprdots_restore_defaults"
         ;;
         # custom)
         # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
@@ -88,9 +86,12 @@ restore() { #? Restore Hyprdots Configurations
         # read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
         # mv "$bak" "$bak--$note"
         # ;;
+        Clone) #? Restores Dots from a Clone Repository
+        Manage_Configs "$1" "$2"
+        ;;
         BackUp) #? Restores Dots to a previous state.
             trap PreserveCloneDir EXIT
-            backup_manager "$1"
+            Manage_Configs "$1"
             ;;
         *)  Parameters "$Function"  ;;
   esac
@@ -100,19 +101,21 @@ backup() { #? Handles Your Back ups.
             trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
-            backup_manager "$1"
+            Manage_Configs "$1"
             ;;
         # custom)
-        #     backup_manager "$1"
+        #     Manage_Configs "$1"
         # ;;
         revert) #? Revert to a Previous Backup run by 'Hyprdots backup all'.
-            backup_manager "$1"
+        barLine
+            Manage_Configs "$1"
+        barLine
             ;;
         list) #? List the backup
-        backup_manager "$1"
+        Manage_Configs "list_Backup"
         ;;
         clean) #? Clear some Storage by Deleting old backups. 
-            backup_manager "$1"
+            Manage_Configs "$1"
         ;;
         *)  Parameters "$Function"  ;;
     esac

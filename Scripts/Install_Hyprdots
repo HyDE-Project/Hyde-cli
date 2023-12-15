@@ -2,25 +2,30 @@
 
 #? One Time Set up on Terminal. 
 
-vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
 
-echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
-read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+CloneDir="$HOME/Hyprdots/Scripts"
 
 
-if [ -d "$HOME/Hyprdots" ] && cd "$HOME/Hyprdots"; then
-    echo -e "\n\nDirectory $HOME/Hyprdots already exists. Using existing directory.\n"
-    echo -e "Hyprdots-ctl will make $HOME/Hyprdots your Clone Directory By restoring the links."
+barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+
+# echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
+# read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+
+
+
+if [ -d "$CloneDir" ] && cd "$CloneDir"; then
+    echo -e "\n\nDirectory $CloneDir already exists. Using existing directory.\n"
+    echo -e "Hyprdots-ctl will make $CloneDir your Clone Directory By restoring the links."
     read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
     echo ""
 git reset --hard HEAD > /dev/null 2>&1 && git clean -fd > /dev/null 2>&1 && git pull > /dev/null 2>&1 || true
-    cd $HOME/Hyprdots/Scripts || exit 0
+    cd $CloneDir/Scripts || exit 0
     ./restore_lnk.sh
 
 else clear
 cat << GREET
 
-$vertL
+$barLine
 
 $(tput setaf 2)Hello $USER! This is an automated installation for Hyprdots.$(tput sgr0)
 
@@ -42,16 +47,16 @@ $(tput setaf 6)And wait, there's more!!! Checkout 'Hyprdots man' to see how you 
 HAVE A GOOD DAY!
 
 Visit: https://github.com/kRHYME7/Hyprdots-ctl for more information.
-$vertL
+$barLine
 GREET
 
 read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
 
  sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
 
-rm -fr "$HOME/Hyprdots" || true
-git clone --depth 1 https://github.com/prasanthrangan/hyprdots $HOME/Hyprdots
-cd $HOME/Hyprdots/Scripts || exit 0
+rm -fr "$CloneDir" || true
+git clone --depth 1 https://github.com/prasanthrangan/hyprdots $CloneDir
+cd $CloneDir/Scripts || exit 0
 echo ./install.sh
 fi
 
