@@ -16,10 +16,19 @@ These scripts may alter or mess up your configurations. Please use them at your 
 paru -Sy hyprdots-ctl
 ```
 ### MAKE
+To install:
 ```
 git clone https://github.com/kRHYME7/Hyprdots-ctl
 cd  ./Hyprdots-ctl
 sudo make
+```
+To uninstall:
+```
+sudo make uninstall
+```
+To Update: 
+```
+sudo make update clean install
 ```
 
 ## Usage
