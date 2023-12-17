@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.1.0.60
+hyprdots_ctl_version=v0.1.0.61
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -14,7 +14,7 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 #? Be careful with spaces in your Function definitions.
 #? Example Function:
 #* |Function example() { #? Example Function.
-#* | case $1 in
+#* | case $Function in
 #* |      # Cases go here...
 #* |   esac
 #* |}
@@ -46,7 +46,7 @@ rm -f "/tmp/hyprdots_update_check"
 
 install() { #? Installs Hyprdots
 
-    case $1 in
+    case $Function in
         fresh) #? Fresh installation of Hyprdots
             ./install.sh
             ;;
@@ -65,7 +65,7 @@ install() { #? Installs Hyprdots
 }
 
 restore() { #? Restore Hyprdots
-  case $1 in 
+  case $Function in 
         defaults) #? Restore to Default Dots of Hyprdots
         box_me "Restoring to a default Dots from $CloneDir"
         cp ./restore_cfg.lst ./BAKrestore_cfg.lst ; trap 'rm -f ./BAKrestore_cfg.lst' EXIT
@@ -99,7 +99,7 @@ restore() { #? Restore Hyprdots
 
 backup() { #? Handles Your Back ups.
             trap PreserveCloneDir EXIT
-    case $1 in 
+    case $Function in 
         all) #? Backs up the current configuration.
             Manage_Configs "$1"
             ;;
@@ -123,7 +123,7 @@ backup() { #? Handles Your Back ups.
 
 theme() { #? Theme Related Actions 
   # Function for managing themes
-case $1 in 
+case $Function in 
         set) #? Set Theme
         sel_Theme=$(cat $ThemeCtl | awk -F'|' '{print $2}' | fzf )
         "$ScrDir"/themeswitch.sh -s "$sel_Theme"
@@ -147,7 +147,7 @@ esac
 }
 
 wallpaper() { #? Wallpaper related Actions
-  case $1 in 
+  case $Function in 
         set) #? Set /Path/to/Wallpapers as new Wallpaper Directory
             shift
             if [ -z "$2" ]; then echo "Missing: /Path/to/Wallpaper" ; exit 1 ; fi
@@ -168,7 +168,7 @@ esac
 }
 
 sddm() { #? Sddm Things
-  case $1 in 
+  case $Function in 
         set) #? Set active Wallpaper to Sddm Lockscreen
             "$ScrDir"/sddmwall.sh
         ;;
@@ -178,7 +178,7 @@ esac
 }
 
 wallbash() { #? Wallbash
-  case $1 in 
+  case $Function in 
         toggle) #? Toggle Wall bash On/Off
             "$ScrDir"/wallbashtoggle.sh
         ;;
@@ -188,7 +188,7 @@ esac
 }
 
 waybar() { #? Waybar related Things
-    case $1 in
+    case $Function in
         control) #? Edit waybar Control File.
             ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; "$ScrDir"/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
             ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
@@ -200,7 +200,7 @@ waybar() { #? Waybar related Things
 }
 
 code() { #? Modify Vscode Extensions
-case $1 in 
+case $Function in 
          select) #? Selector for default Theme presets
         if [[ ! -z "$(cat $HOME/.config/hypr/theme.ctl | grep "^1|" | cut -d'|' -f3)" ]]; then
         dir=$(cat $ThemeCtl | grep "^1|" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
@@ -219,7 +219,7 @@ case $1 in
 }
 
 cache() { #? Cache 
-    case $1 in 
+    case $Function in 
       reload) #? Reload Caches if you have new wallpapers.
             ./create_cache.sh
          ;;
@@ -242,7 +242,7 @@ cache() { #? Cache
 
 Helper() { #! Some of Scripts you might want to use.
 
-    case $1 in 
+    case $Function in 
       chaotic) #? Reload Caches if you have new wallpapers.
             ./create_cache.sh
          ;;
