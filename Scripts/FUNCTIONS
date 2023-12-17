@@ -11,9 +11,9 @@ check_Ping() {
   fi
 }
 
-if [ ! -f "/tmp/hyprdots_update_check" ] || [[ $(find "/tmp/hyprdots_update_check" -mmin +720) ]]; then
- #   echo "Checking For Updates (This prompts every 12 hours or after you run Hyprdots update)"
-    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then
+if [ ! -f "/tmp/hyprdots_update_check" ] || [[ $(find "/tmp/hyprdots_update_check" -mmin +4320) ]]; then
+    echo "Checking For Updates (This prompts every 3 Days or after you run Hyprdots update)"
+    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then 
         git fetch > /dev/null 2>&1
         if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
             echo -e "Updates available! \nRUN: \033[0;34mHyprdots update\033[0m"
