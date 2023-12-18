@@ -202,15 +202,21 @@ waybar() { #? Waybar related Things
 code() { #? Modify Vscode Extensions
 case $1 in 
          select) #? Selector for default Theme presets
-        if [[ ! -z "$(cat $HOME/.config/hypr/theme.ctl | grep "^1|" | cut -d'|' -f3)" ]]; then
-        dir=$(cat $ThemeCtl | grep "^1|" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
+
+select_theme() {
+            dir=$(cat $ThemeCtl | grep "^1|" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
         code_SubExt=$(cat $HOME/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
-        sed -i "/^1|/s|~[^|]*|~${code_SubExt}|" $ThemeCtl
+        sed -i "/^1|/s|~[^|]*|~${code_SubExt}|" "$ThemeCtl"
             if [ "$(grep -c "workbench.colorTheme" $ConfDir/Code/User/settings.json)" -eq 1 ] ; then sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," $ConfDir/Code/User/settings.json
             else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," $ConfDir/Code/User/settings.json
             fi
-        else echo "No Linked Code Extension found."
-        fi
+}
+if [[ ! -z "$(cat $HOME/.config/hypr/theme.ctl | grep "^1|" | cut -d'|' -f3)" ]]; then select_theme
+else echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
+    ask_confirm ; sel_ext=$(/usr/bin/code --list-extensions | fzf)   
+    sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
+    select_theme
+fi
          ;;
         *)
         Parameters "$Function" 
