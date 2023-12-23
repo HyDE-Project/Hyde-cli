@@ -13,6 +13,7 @@ ScriptDir="$CloneDir/Scripts"
 BkpDir="$ConfDir/cfg_backups"
 cacheDir="$HOME/.cache/hyprdots"
 cacheCtl="$HOME/.cache/hyprdots-ctl"
+etcDir="/etc/hyprdots-ctl"
 
 barLine() { printf '=%.0s' $(seq 1 "$(tput cols)") ; }
 
@@ -22,6 +23,7 @@ make_dir=(
   "$BkpDir"
   "$cacheDir"
   "$cacheCtl"
+  "$etcDir"
 )
   for dir in "${make_dir[@]}"; do
     if [ ! -d "$dir" ]; then

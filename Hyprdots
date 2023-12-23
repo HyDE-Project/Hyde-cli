@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.1.0.70
+hyprdots_ctl_version=v0.1.0.71
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -43,10 +43,6 @@ echo "CloneDirectory: $CloneDir"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
-
-binds() { #? Show Keybind Hints using rofi
-Keybinds_Hint
-}
 
 install() { #? Installs Hyprdots
 
@@ -281,11 +277,25 @@ power() { #? Power Options
         game) #? Toggle Game mode
             Power_Manager  "$@"
         ;;
-        *)
-        Parameters "$Function" 
+        *)Parameters "$Function" 
          ;;
     esac
 
+}
+
+show() { #? Some Awsome GUI you might want to use.
+    
+    case $1 in 
+        binds) #? Show Keybindings Hints(Click to execute)
+            Keybinds_Hint
+        ;;
+        emoji) #? Show Emojis
+            Emoji_Selector
+        ;;
+        *)Parameters "$Function" 
+         ;;
+
+    esac
 }
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-
+pkill -x rofi && exit
 
 ScrDir=$(dirname $(realpath $0))
 source $HOME/.config/hypr/scripts/globalcontrol.sh

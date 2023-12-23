@@ -2,7 +2,7 @@
 configuration {
     modi:                        "drun";
     show-icons:                  false;
-    font:                        "JetBrainsMono Nerd Font 9";
+    font:                        "JetBrainsMono Nerd Font 10";
 }
 
 @theme "~/.config/rofi/themes/theme.rasi"
@@ -10,8 +10,8 @@ configuration {
 
 // Main //
 window {
-    height:                      80%;
-    width:                       45%;
+    height:                      55%;
+    width:                       50%;
     transparency:                "real";
     fullscreen:                  false;
     enabled:                     true;
@@ -77,7 +77,7 @@ element {
     enabled:                     true;
     spacing:                     0px;
     padding:                     12px;
-    border-radius:               10px;
+    border-radius:               100px;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
