@@ -64,7 +64,9 @@ for arg in "$@"; do
             append "decoration:blur:enabled = 0" "DISABLE Blur"
             ;;
             -o|--opacity) #? Disable Tranparency
-            sed -i '/^\s*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
+                if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
+                    sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
+                fi
             ;;
             *) echo "Unknown flag: $arg"; print_help; exit 1;;
         esac
