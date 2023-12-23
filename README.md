@@ -106,6 +106,7 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
 ## Contributing
 
 If you would like to contribute to the project, thanks.
+ALSO! I don't know what is the use of the STARS ⭐ but Please leave one when you visit this repo. 
 
 ## Support
 
