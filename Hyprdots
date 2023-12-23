@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.1.0.69
+hyprdots_ctl_version=v0.1.0.70
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -43,6 +43,10 @@ echo "CloneDirectory: $CloneDir"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
+
+binds() { #? Show Keybind Hints using rofi
+Keybinds_Hint
+}
 
 install() { #? Installs Hyprdots
 

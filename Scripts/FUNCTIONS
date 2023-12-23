@@ -28,7 +28,7 @@ check_Ping() {
 
 #??? Handle Syntax errors
 help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { printf "  %-20s %s\n", $1, $5 }')
-if [ -z "$1" ]; then  box_me "$hyprdots_ctl_version" ;exit 1 
+if [ -z "$1" ]; then  box_me "$hyprdots_ctl_version" ; echo "$help" ;exit 1 
 elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "\nUsage: Hyprdots [Function] [Arguments] [Parameter]\n$help" ; exit 1
 fi
 
