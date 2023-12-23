@@ -53,7 +53,7 @@ Run: `Hyprdots man`
 ### Man Pages
 
 ```
-Usage: Hyprdots [Function] [Arguments]/[Parameters]
+Usage: Hyprdots [Function] [Options]
 
   [man]                * Show Manual
   [version]            * Hyprdots Version
@@ -69,7 +69,7 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [all]            Backs up the current configuration.
                           [revert]         Revert to a Previous Backup run by 'Hyprdots backup all'.
                           [list]           List the backup
-                          [clean]          Clear some Storage by Deleting old backups.
+                          [clean]          Clear some Storage by Deleting old backups. 
   [theme]              * Theme Related Actions
                           [set]            Set Theme
                           [next]           Next Theme
@@ -83,7 +83,7 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [select]         Wallpaper Selector
   [sddm]               * Sddm Things
                           [set]            Set active Wallpaper to Sddm Lockscreen
-  [wallbash]           * Wallbash
+  [wallbash]           * Toggle to use wallpaper color as theme color.
                           [toggle]         Toggle Wall bash On/Off
   [waybar]             * Waybar related Things
                           [control]        Edit waybar Control File.
@@ -92,7 +92,12 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
   [cache]              * Cache
                           [reload]         Reload Caches if you have new wallpapers.
                           [rebuild]        Force rebuild cache
-                          [add]            Cache custom /path/to/wallpaper/*
+                          [add]            Cache custom /path/to/wallpaper/* 
+  [power]              * Power Options
+                          [reset]          Reset Changes.
+                          [save]           Save Power by disabling features
+                          [game]           Toggle Game mode
+
 ```
 
 ## Contributing
