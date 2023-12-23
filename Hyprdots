@@ -35,7 +35,7 @@ man() { #? Show Manual
 }
 
 version() { #? Hyprdots Version
-    box_me "Hyprdots: $hyprdots_ctl_version"
+    box_me "$hyprdots_ctl_version"
 }
 
 update() { #? Pull Updates From Hyprdots Repository 
@@ -177,7 +177,7 @@ sddm() { #? Sddm Things
 esac
 }
 
-wallbash() { #? Wallbash
+wallbash() { #? Toggle to use wallpaper color as theme color.
   case $1 in 
         toggle) #? Toggle Wall bash On/Off
             "$ScrDir"/wallbashtoggle.sh
@@ -264,6 +264,26 @@ Helper() { #! Some of Scripts you might want to use.
     esac
 
 }
+
+power() { #? Power Options
+
+    case $1 in 
+        reset) #? Reset Changes.
+            Power_Manager "$@"
+        ;;     
+        save) #? Save Power by disabling features
+            Power_Manager "$@"
+         ;;
+        game) #? Toggle Game mode
+            Power_Manager  "$@"
+        ;;
+        *)
+        Parameters "$Function" 
+         ;;
+    esac
+
+}
+
 
 
 
