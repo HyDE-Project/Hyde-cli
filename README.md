@@ -50,10 +50,10 @@ sudo make update clean install
 
 Run: `Hyprdots man`
 
-### Man Pages
+### Manual
 
 ```
-Usage: Hyprdots [Function] [Options]
+Usage: Hyprdots [Function] [Arguments]/[Parameters]
 
   [man]                * Show Manual
   [version]            * Hyprdots Version
@@ -97,6 +97,9 @@ Usage: Hyprdots [Function] [Options]
                           [reset]          Reset Changes.
                           [save]           Save Power by disabling features
                           [game]           Toggle Game mode
+  [show]               * Some Awsome GUI you might want to use.
+                          [binds]          Show Keybindings Hints
+                          [emoji]          Show Emojis
 
 ```
 
