@@ -117,12 +117,11 @@ def executables_mapping: {  #? Derived from .args to parse scripts to have a Rea
 "killall waybar || waybar" : "Toggle Waybar",
 "hyprctl dispatch pin" : "Pin Active Window",
 
-
 "~/.config/hypr/scripts/wallbashtoggle.sh" : "Wallbash Toggle",
 "~/.config/hypr/scripts/logoutlaunch.sh 1" : "Logout Launcher",
 "~/.config/hypr/scripts/screenshot.sh p" : "Print all screens",
 "~/.config/hypr/scripts/screenshot.sh s" : "Snip current screen",
-"~/.config/hypr/scripts/screenshot.sh sf" : "Snip current screen",
+"~/.config/hypr/scripts/screenshot.sh sf" : "Freeze & Snip current screen",
 "~/.config/hypr/scripts/screenshot.sh m" : "Print focused monitor",
 "~/.config/hypr/scripts/brightnesscontrol.sh d" : "Brightness - ",
 "~/.config/hypr/scripts/dontkillsteam.sh" : "Kill Active Window",

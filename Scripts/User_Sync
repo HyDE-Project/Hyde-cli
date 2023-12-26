@@ -1,19 +1,69 @@
 #!/bin/bash
-  source ~/.config/hypr/scripts/globalcontrol.sh
+
+export PATH=$PATH:/usr/lib/hyprdots-ctl/
+. GLOBAL
+
 # Source the user's settings, overwriting any defaults
 ctlFile="$ConfDir/hypr/hyprdots.conf"
+runSync="fn_$1"
 if [[ ! -f $ctlFile ]]; then
 #touch $ctlFile
-  cp ./hyprdots.conf $(dirname "$ctlFile")
+cp "$etcDir/hyprdots.conf" "$(dirname "$ctlFile")"
 fi
 
 evaluate() {
-   section=$1
-   while read -r line; do 
-    #  echo $line
-    eval "$line"
-   done < <(grep -Pzo "(?s)\[$section\][^\[]*" $ctlFile | grep -Eva '^\['"$section"'\]|^$')
+   section=${1}
+   eval=${2}
+   condition=${3}
+   while read -r line; do
+      # If the line starts with '#', skip it
+     if [[ $line == \#* ]] || [[ -z $line ]]; then continue ; fi
+ eval "$condition"
+ eval  $eval $line
+   done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$' | awk '/:#/ {exit} 1')
 }
+
+append() {
+   section=$1
+   targetFile=$2
+   while read -r line; do 
+shopt -s extglob
+pureLine=${line##+([[:space:]#])}
+
+if ! grep -Fq "$pureLine" "$targetFile";then
+echo "$line" >> "$targetFile"
+fi
+
+   done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$' | awk -v RS=':#' -v FS='\n' -v OFS='\n' 'NR % 2 == 0')
+}
+
+fn_hyprland() {
+  :
+}
+
+fn_theme_patch() {
+condition="
+if echo \"\$(awk -F '|' '{print \$2}' ~/.config/hypr/theme.ctl)\" | grep -Fxq \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\" ; then
+   echo \"[EXIST] \$(echo \$line | cut -d' ' -f1 | tr -d '\"')\"
+   continue
+fi
+"
+evaluate "theme-patch" "Hyprdots theme patch" "$condition"
+}
+
+fn_waybar_ctl() {
+  section="waybar_ctl"
+  targetFile=$HOME/.config/waybar/config.ctl
+   sed -i '/^[[:space:]]*$/d' "$targetFile" && echo "" >> "$targetFile"
+   while read -r line; do 
+if ! grep -Fq "$line" "$targetFile";then
+echo  "0|$line" >> "$targetFile"
+fi
+  #  done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$')
+   done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$' | awk -v RS=':' -v FS='\n' -v OFS='\n' 'NR % 2 == 0')
+   sed -i '/^[[:space:]]*$/d' "$targetFile"
+}
+
 
 fn_Code() {  
 evaluate "Code"
@@ -77,9 +127,15 @@ fn_kitty() { evaluate "kitty"
   for var in "${!vars[@]}"; do
     sed -i "s|^$var .*|$var ${vars[$var]}|" "$file"
   done
+
+append "kitty" "$file"
+
 }
 
 
-fn_Code
-fn_kdeglobals
-fn_kitty
+# fn_waybar_ctl
+# fn_Code
+# fn_kdeglobals
+# fn_kitty
+
+$runSync

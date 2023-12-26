@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.1.0.71
+hyprdots_ctl_version=v0.1.0.76
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -121,6 +121,38 @@ backup() { #? Handles Your Back ups.
     esac
 }
 
+sync() { #? Apply your Prefered Configuration defined at ~/.config/hypr/hyprdots.conf
+if [ $# -eq 0 ]; then
+echo "Usage: Hyprdots sync [options]"
+Parameters "$Function"
+exit 0
+        fi
+    for arg in "$@"; do
+        case $arg in
+            waybar_ctl) #? Restore User waybar control file
+                User_Sync "$arg"
+                ;;
+            theme_patch) #? Restore Patched custom themes
+                User_Sync "$arg"                
+                ;;
+            Code) #? Restore $USER Vscode config file
+                User_Sync "$arg"
+                ;;
+            kitty) #? Restore $USER kitty.conf file
+                User_Sync "$arg"
+                ;;
+            kdeglobals)
+                User_Sync "$arg"
+                ;;
+            *)  
+            echo "Unknown [option]: $arg "
+            echo "Usage: Hyprdots sync [options]"
+                Parameters "$Function"
+                ;;
+        esac
+    done
+}
+
 theme() { #? Theme Related Actions 
   # Function for managing themes
 case $1 in 
@@ -199,14 +231,14 @@ waybar() { #? Waybar related Things
     esac
 }
 
-code() { #? Modify Vscode Extensions
+code() { #? Modify Vscode Extensionscode
 case $1 in 
          select) #? Selector for default Theme presets
 
 select_theme() {
             dir=$(cat $ThemeCtl | grep "^1|" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
         code_SubExt=$(cat $HOME/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
-        sed -i "/^1|/s|~[^|]*|~${code_SubExt}|" "$ThemeCtl"
+        awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" > temp && mv temp "$ThemeCtl"
             if [ "$(grep -c "workbench.colorTheme" $ConfDir/Code/User/settings.json)" -eq 1 ] ; then sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," $ConfDir/Code/User/settings.json
             else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," $ConfDir/Code/User/settings.json
             fi
@@ -215,7 +247,7 @@ if [[ ! -z "$(cat $HOME/.config/hypr/theme.ctl | grep "^1|" | cut -d'|' -f3)" ]]
 else echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
     ask_confirm ; sel_ext=$(/usr/bin/code --list-extensions | fzf)   
     sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
-    select_theme
+     select_theme
 fi
          ;;
         *)
