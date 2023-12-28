@@ -44,7 +44,7 @@ fn_hyprland() {
 fn_theme_patch() {
 condition="
 if echo \"\$(awk -F '|' '{print \$2}' ~/.config/hypr/theme.ctl)\" | grep -Fxq \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\" ; then
-   echo \"[EXIST] \$(echo \$line | cut -d' ' -f1 | tr -d '\"')\"
+   print_prompt -y \"[EXIST]\"; echo \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\"
    continue
 fi
 "
