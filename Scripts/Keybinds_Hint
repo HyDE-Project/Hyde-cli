@@ -160,9 +160,6 @@ def arg_mapping: { #? Do not Change this used for Demo only...
 
   };
 
-
-
-
   def get_keys: #? Funtions to Convert modmask into Keys
     if . == 0 then
       ""
@@ -251,7 +248,6 @@ metaData="$(echo "$jsonData"  |  jq -r '"\(.category) =! \(.modmask) =! \(.key) 
 
 display="$(echo "$metaData" | GROUP | DISPLAY )"
 
-
 # output=$(echo -e "${header}\n${line}\n${primMenu}\n${line}\n${display}")
 output=$(echo -e "${header}\n${line}\n${display}")
 
@@ -274,8 +270,7 @@ run_sel="$(echo "$run" | awk -F '=!' '{gsub(/^ *| *$/, "", $5); if ($5 ~ /[[:spa
 #   echo "$run_sel"
 #    echo "$run_flg"
 
-
-RUN() {  if [[ "$(eval "hyprctl dispatch $run_sel")" == *"Not enough arguments"* ]]; then exec $0 ;fi ; }
+RUN() { case "$(eval "hyprctl dispatch $run_sel")" in *"Not enough arguments"*) exec $0 ;; esac }
 
 #? If 
 if [ -n "$run_sel" ] && [ "$(echo "$run_sel" | wc -l)" -eq 1 ]; then
