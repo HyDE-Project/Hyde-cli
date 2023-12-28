@@ -26,10 +26,10 @@ icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'/
 icon_override="configuration {icon-theme: \"${icon_override}\";}"
 
 keyVars="$(grep -h '^ *\$' $keyConf | awk -F ' = ' '{gsub(/^ *\$| *$/, "", $1); gsub(/^ *| *$/, "", $2); print $1 "='\''"$2"'\''"}')"
-eval "$keyVars"
-
+# echo "$keyVars"
 substitute_vars() {
   local s="$1"
+  local IFS=$'\n'
   for var in $keyVars; do
     varName="${var%%=*}"
     varValue="${var#*=}"
@@ -37,15 +37,27 @@ substitute_vars() {
     varValue="${varValue%\'}"
     s="${s//\$$varName/$varValue}"
   done
+  IFS=$' \t\n'
   echo "$s"
 }
+#? Other accurate but risky option
+#  eval "$keyVars"
+# substitute_vars() {
+#   local s="$1"
+#   local IFS=$'\n'
+#   for var in $keyVars; do
+#     varName="${var%%=*}"
+#     s="${s//\$$varName/${!varName}}"
+#   done
+#   IFS=$' \t\n'
+#   echo "$s"
+# }
+
 
 scrPath='~/.config/hypr/scripts'
-comments=$(awk -v scrPath="$scrPath" -F ',' '!/^#/ && /bind*/ && $3 ~ /exec/ && NF && $4 !~ /^ *$/ {gsub(/\$scrPath/, scrPath, $4); print $4}' $keyConf |
- 
- awk -F'#' '{gsub(/^ */, "", $1); gsub(/ *$/, "", $1); split($2, a, " "); a[1] = toupper(substr(a[1], 1, 1)) substr(a[1], 2); $2 = a[1]; for(i=2; i<=length(a); i++) $2 = $2" "a[i]; gsub(/^ */, "", $2); gsub(/ *$/, "", $2); if (length($1) > 0) print "\""$1"\" : \""(length($2) > 0 ? $2 : $1)"\","}'
- )
-comments=$(substitute_vars "$comments")
+comments=$(awk -v scrPath="$scrPath" -F ',' '!/^#/ && /bind*/ && $3 ~ /exec/ && NF && $4 !~ /^ *$/ {gsub(/\$scrPath/, scrPath, $4); print $4}' $keyConf)
+comments=$(substitute_vars "$comments" | awk -F'#' '{gsub(/^ */, "", $1); gsub(/ *$/, "", $1); split($2, a, " "); a[1] = toupper(substr(a[1], 1, 1)) substr(a[1], 2); $2 = a[1]; for(i=2; i<=length(a); i++) $2 = $2" "a[i]; gsub(/^ */, "", $2); gsub(/ *$/, "", $2); if (length($1) > 0) print "\""$1"\" : \""(length($2) > 0 ? $2 : $1)"\","}'|
+awk '!seen[$0]++')
 # echo "$comments"
 
 cat << EOF > $tmpMap
@@ -261,6 +273,7 @@ run_flg="$(echo "$run" | awk -F '=!' '{print $8}')"
 run_sel="$(echo "$run" | awk -F '=!' '{gsub(/^ *| *$/, "", $5); if ($5 ~ /[[:space:]]/ && $5 !~ /^[0-9]+$/ && substr($5, 1, 1) != "-") print $4, "\""$5"\""; else print $4, $5}')"
 #   echo "$run_sel"
 #    echo "$run_flg"
+
 
 RUN() {  if [[ "$(eval "hyprctl dispatch $run_sel")" == *"Not enough arguments"* ]]; then exec $0 ;fi ; }
 
