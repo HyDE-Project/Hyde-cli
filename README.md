@@ -27,7 +27,7 @@ makepkg -si
 
 ### Make
 
-Install required dependencies with `sudo pacman -Sy git fzf tree`.
+Install required dependencies: `git make fzf tree`.
 
 To install: 
 ```
