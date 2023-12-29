@@ -7,8 +7,7 @@ keyConf="$keyConfDir/hyprland.conf $keyConfDir/keybindings.conf $keyConfDir/user
 tmpMapDir="/tmp"
 tmpMap="$tmpMapDir/hyprdots-keybinds.jq"
 
-ScrDir=$(dirname $(realpath $0))
-source $HOME/.config/hypr/scripts/globalcontrol.sh
+. $HOME/.config/hypr/scripts/globalcontrol.sh
 roDir="/etc/hyprdots-ctl"
 roconf="$roDir/Keybinds_Hint.rasi"
 
@@ -62,8 +61,8 @@ awk '!seen[$0]++')
 
 cat << EOF > $tmpMap
 # hyprdots-keybinds.jq
-def executables_mapping: {  #? Derived from .args to parse scripts to have a Readable name
-#?Auto Generated Comment Conversion
+def executables_mapping: {  #? Derived from .args to parse scripts to be Readable
+#? Auto Generated Comment Conversion
 $comments
 #? Defaults
 " empty " :  "Empty",
@@ -78,12 +77,10 @@ $comments
 "r" : "Right",
 "u" : "Up",
 };
-
 EOF
 
-
 #? Script to re Modify hyprctl json output
-#! This is Our Translator for some binds 
+#! This is Our Translator for some binds  #Khing!
 jsonData="$(hyprctl binds -j | jq -L "$tmpMapDir" -c '
 include "hyprdots-keybinds";
 
@@ -97,7 +94,7 @@ include "hyprdots-keybinds";
     "1": "SHIFT",
     "0": " ",
   };
-  def key_mapping: { #?Define mappings for .keys to become symbols
+  def key_mapping: { #?Define mappings for .keys to be readable symbols
     "mouse_up" : "󱕑",
     "mouse_down" : "󱕐",
     "mouse:272" : "󰍽",
@@ -137,12 +134,12 @@ include "hyprdots-keybinds";
     
 
   };
-def arg_mapping: { #? Do not Change this used for Demo only...
+def arg_mapping: { #! Do not Change this used for Demo only... As this will change .args! will be fatal
     "arg1": "mapped_arg1",
     "arg2": "mapped_arg2",
   };
 
-    def description_mapping: {  #? Derived from dispatcher and Gives Description for Dispatchers 
+    def description_mapping: {  #? Derived from dispatcher and Gives Description for Dispatchers; Basically translates dispatcher.
     "movefocus": "Move Focus",
     "resizeactive": "Resize Active Floting Window",
     "exit" : "End Hyprland Session",
@@ -160,7 +157,7 @@ def arg_mapping: { #? Do not Change this used for Demo only...
 
   };
 
-  def get_keys: #? Funtions to Convert modmask into Keys
+  def get_keys: #? Funtions to Convert modmask into Keys, There should be a beter math for this but Im lazy
     if . == 0 then
       ""
     elif . >= 64 then
@@ -182,7 +179,6 @@ def arg_mapping: { #? Do not Change this used for Demo only...
     end;
   .[] | 
   
-  
 .dispatcher as $dispatcher | .description = $dispatcher |  
 .dispatcher as $dispatcher | .category = $dispatcher |
 .arg as $arg | .executables = $arg |
@@ -201,18 +197,17 @@ if .keybind and .keybind != " " and .keybind != "" then .keybind |= (split(" ") 
 
 
   .arg |= (arg_mapping[.] // .) |
-#! .executables |= gsub("~/.config/hypr/scripts/"; "") |
- #!    .executables |= gsub(".sh"; "") |
+#! .executables |= gsub("~/.config/hypr/scripts/"; "") | #? Usefull soon
+ #!    .executables |= gsub(".sh"; "") | #? Usefull soon
 
   .executables |= (executables_mapping[.] // .) | 
   .description |= (description_mapping[.] // .)    
  
-          
 ' #? <---- There is a '   do not delete this'
-
 )"
 
-GROUP() {
+#? Now we have the metadata we can Group it accordingly
+GROUP() { 
   awk -F '=!' '
   {
     category = $1
@@ -235,14 +230,15 @@ GROUP() {
   }'
 }
 
-# DISPLAY() { awk -F '=!' '{if ($0 ~ /=/) printf "%-25s %-30s\n", $5, ">   " $6; else print $0}' ;}
+#? Here we we format the output into a desirable format we want.
 DISPLAY() { awk -F '=!' '{if ($0 ~ /=/ && $6 != "") printf "%-25s    >  %-30s\n", $5, $6; else if ($0 ~ /=/) printf "%-25s\n", $5; else print $0}' ;}
 
+#? Extra design use for distiction
 header="$(printf "%-35s %-1s %-20s\n" "󰌌 Keybinds" "󱧣" "Description")"
 line="$(printf '%.0s━' $(seq 1 68) "")"
 
-#echo "$jsonData"
 
+#echo "$jsonData"
 metaData="$(echo "$jsonData"  |  jq -r '"\(.category) =! \(.modmask) =! \(.key) =! \(.dispatcher) =! \(.arg) =! \(.keybind) =! \(.description) \(.executables) =! \(.flags)"' | tr -s ' ' | sort -k 1 )" #! this Part Gives extra laoding time as I don't have efforts to make all spaces on each class only 1
 #  echo "$metaData"
 
@@ -251,6 +247,7 @@ display="$(echo "$metaData" | GROUP | DISPLAY )"
 # output=$(echo -e "${header}\n${line}\n${primMenu}\n${line}\n${display}")
 output=$(echo -e "${header}\n${line}\n${display}")
 
+#? will display on the terminal if rofi is not found
 if ! command -v rofi &> /dev/null
 then
     echo "$output"
@@ -258,6 +255,7 @@ then
     exit 0
 fi
 
+#? Actions to do when selected
 selected=$(echo  "$output" | rofi -dmenu -p -i -theme-str "${fnt_override}" -theme-str "${r_override}" -theme-str "${icon_override}" -config "${roconf}" | sed 's/.*\s*//')
 if [ -z "$selected" ]; then exit 0; fi
 
@@ -267,12 +265,12 @@ run="$(echo "$metaData" | grep "$sel_1" | grep "$sel_2" )"
 
 run_flg="$(echo "$run" | awk -F '=!' '{print $8}')"
 run_sel="$(echo "$run" | awk -F '=!' '{gsub(/^ *| *$/, "", $5); if ($5 ~ /[[:space:]]/ && $5 !~ /^[0-9]+$/ && substr($5, 1, 1) != "-") print $4, "\""$5"\""; else print $4, $5}')"
-#   echo "$run_sel"
-#    echo "$run_flg"
+#   echo "$run_sel" ; echo "$run_flg"
 
+#? 
 RUN() { case "$(eval "hyprctl dispatch $run_sel")" in *"Not enough arguments"*) exec $0 ;; esac }
 
-#? If 
+#? If flag is repeat then repeat rofi if not then just execute once
 if [ -n "$run_sel" ] && [ "$(echo "$run_sel" | wc -l)" -eq 1 ]; then
     eval "$run_flg"
     if [ "$repeat" = true ]; then
