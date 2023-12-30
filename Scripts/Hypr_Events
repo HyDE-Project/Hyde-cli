@@ -108,8 +108,10 @@ event_monitorremoved() {
 
 event_monitoradded() {
   : # MONITORNAME
-"$HOME"/.config/hypr/scripts/swwwallpaper.sh
-    Hyprdots show monitors
+  sleep 1
+swww img "$(awk -v home=$HOME -F'|' '$1 == 1 {gsub("~", home, $4); print $4}' "$HOME"/.config/hypr/theme.ctl)"
+
+#    Hyprdots show monitors
 
 }
 

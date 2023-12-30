@@ -3,6 +3,7 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
+pid=$$
 monitorsConf="$ConfDir/hypr/monitors.conf"
 nwgConf="$ConfDir/hypr/hyprdots-ctl/nwg-displays.conf"
 touch "$nwgConf"
@@ -30,7 +31,8 @@ move_lines_to_bottom() {
 
 sM="source = $nwgConf #! Hyprdots-ctl: Current monitor setting is here"
 wS="source = $WSConf #! Hyprdots-ctl: Saves workspace assignment per monitor"
-move_lines_to_bottom "$sM" "$wS" "$monitorsConf"
+trap 'move_lines_to_bottom "$sM" "$wS" "$monitorsConf"' EXIT
+
 
 
 if ! grep -F "float" ~/.config/hypr/windowrules.conf | grep -F "nwg-displays" > /dev/null; then
@@ -41,7 +43,6 @@ fi
 
 # Create a file with the PID in the filename
 touch /tmp/hyprdots-monitors-$pid
-
 # If any /tmp/hyprdots-monitors* files exist, kill the processes with those PIDs
 for file in /tmp/hyprdots-monitors*; do
   # Extract the PID from the filename
@@ -57,6 +58,9 @@ done
 
 currMon=$(hyprctl monitors all -j | jq -r '.[] | .description ' | sed 's/ (.*//')
 
-# sleep 0.5
+
+
+
+
 nwg-displays -n 20 -m "$nwgConf"
 
