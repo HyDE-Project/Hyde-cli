@@ -153,6 +153,7 @@ exit 0
     done
 }
 
+
 theme() { #? Theme Related Actions 
   # Function for managing themes
 case $1 in 
@@ -297,6 +298,9 @@ Helper() { #! Some of Scripts you might want to use.
 
 }
 
+
+
+
 power() { #? Power Options
 
     case $1 in 
@@ -318,6 +322,9 @@ power() { #? Power Options
 show() { #? Some Awsome GUI you might want to use.
     
     case $1 in 
+        monitors) #? Manages Monitors using nwg-displays
+            Monitor_Manager
+        ;;
         binds) #? Show Keybindings Hints(Click to execute)
             Keybinds_Hint
         ;;
@@ -328,6 +335,19 @@ show() { #? Some Awsome GUI you might want to use.
          ;;
 
     esac
+}
+
+run() { #? TUI Ececuatbles that might be helpful
+
+    case $1 in 
+        events) #? Watches soackets for hyprland events
+            Hypr_Events
+        ;;
+        *)Parameters "$Function" 
+         ;;
+
+    esac
+
 }
 
 

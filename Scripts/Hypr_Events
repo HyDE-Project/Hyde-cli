@@ -1,0 +1,219 @@
+#!/bin/sh
+
+cat << EVENTS
+event_workspace() {
+  : # WORKSPACENAME
+}
+
+event_focusedmon() {
+  : # MONNAME WORKSPACENAME
+}
+
+event_activewindow() {
+  : # WINDOWCLASS WINDOWTITLE
+
+}
+event_activewindowv2() {
+  : # WINDOWCLASS WINDOWTITLE
+}
+event_windowtitle() {
+  : # WINDOWCLASS WINDOWTITLE
+}
+
+event_fullscreen() {
+  : # ENTER (0 if leaving fullscreen, 1 if entering)
+}
+
+event_monitorremoved() {
+  : # MONITORNAME
+
+}
+
+event_monitoradded() {
+  : # MONITORNAME
+    Hyprdots monitors
+
+}
+
+event_createworkspace() {
+  : # WORKSPACENAME
+}
+
+event_destroyworkspace() {
+  : # WORKSPACENAME
+}
+
+event_moveworkspace() {
+  : # WORKSPACENAME MONNAME
+}
+
+event_activelayout() {
+  : # KEYBOARDNAME LAYOUTNAME
+}
+
+event_openwindow() {
+  : # WINDOWADDRESS WORKSPACENAME WINDOWCLASS WINDOWTITLE
+}
+
+event_closewindow() {
+  : # WINDOWADDRESS
+}
+
+event_movewindow() {
+  : # WINDOWADDRESS WORKSPACENAME
+}
+
+event_openlayer() {
+  : # NAMESPACE
+}
+
+event_closelayer() {
+  : # NAMESPACE
+}
+
+event_submap() {
+  : # SUBMAPNAME
+}
+EVENTS
+
+#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing
+
+event_workspace() {
+  : # WORKSPACENAME
+}
+
+event_focusedmon() {
+  : # MONNAME WORKSPACENAME
+}
+
+event_activewindow() {
+  : # WINDOWCLASS WINDOWTITLE
+
+}
+event_activewindowv2() {
+  : # WINDOWCLASS WINDOWTITLE
+}
+event_windowtitle() {
+  : # WINDOWCLASS WINDOWTITLE
+}
+
+event_fullscreen() {
+  : # ENTER (0 if leaving fullscreen, 1 if entering)
+}
+
+event_monitorremoved() {
+  : # MONITORNAME
+
+}
+
+event_monitoradded() {
+  : # MONITORNAME
+"$HOME"/.config/hypr/scripts/swwwallpaper.sh
+    Hyprdots show monitors
+
+}
+
+event_createworkspace() {
+  : # WORKSPACENAME
+}
+
+event_destroyworkspace() {
+  : # WORKSPACENAME
+}
+
+event_moveworkspace() {
+  : # WORKSPACENAME MONNAME
+}
+
+event_activelayout() {
+  : # KEYBOARDNAME LAYOUTNAME
+}
+
+event_openwindow() {
+  : # WINDOWADDRESS WORKSPACENAME WINDOWCLASS WINDOWTITLE
+}
+
+event_closewindow() {
+  : # WINDOWADDRESS
+}
+
+event_movewindow() {
+  : # WINDOWADDRESS WORKSPACENAME
+}
+
+event_openlayer() {
+  : # NAMESPACE
+}
+
+event_closelayer() {
+  : # NAMESPACE
+}
+
+event_submap() {
+  : # SUBMAPNAME
+}
+
+event_changefloatingmode() {
+    : #WINDOWCLASS # WINDOWTITLE
+}
+
+
+load_events() {
+  IFS=$PFS
+  for f in $event_files; do
+    if . "$f"; then
+      printf >&2 'loaded event file: %s\n' "$f"
+    else
+      printf >&2 'failed sourcing event file: %s\n' "$f"
+      exit 2
+    fi
+  done
+}
+handle () { # this Executes it
+while true; do
+  if read -r event_data; then
+    event="${event_data%%>>*}"
+    edata="${event_data#"$event">>}"
+
+    IFS=','
+    # shellcheck disable=SC2086 # splitting is intended
+    set -- $edata
+    IFS=$PFS
+
+    if [ -n "$verbose" ]; then
+      printf >&2 '[%s] 1:%s 2:%s 3:%s 4:%s\n' "$event" "$1" "$2" "$3" "$4"
+    fi
+
+      case "$event" in
+    "workspace") WORKSPACENAME="$1" event_workspace ;;
+    "focusedmon") MONNAME="$1" WORKSPACENAME="$2" event_focusedmon ;;
+    "activewindow") WINDOWCLASS="$1" WINDOWTITLE="$2" event_activewindow ;;
+    "activewindowv2") WINDOWCLASS="$1" WINDOWTITLE="$2" event_activewindowv2 ;;
+    "windowtitle") WINDOWCLASS="$1" WINDOWTITLE="$2" event_windowtitle ;;
+    "fullscreen") ENTER="$1" event_fullscreen ;;
+    "monitorremoved") MONITORNAME="$1" event_monitorremoved ;;
+    "monitoradded") MONITORNAME="$1" event_monitoradded ;;
+    "createworkspace") WORKSPACENAME="$1" event_createworkspace ;;
+    "destroyworkspace") WORKSPACENAME="$1" event_destroyworkspace ;;
+    "moveworkspace") WORKSPACENAME="$1" MONNAME="$2" event_moveworkspace ;;
+    "activelayout") KEYBOARDNAME="$1" LAYOUTNAME="$2" event_activelayout ;;
+    "openwindow") WINDOWADDRESS="$1" WORKSPACENAME="$2" WINDOWCLASS="$3" WINDOWTITLE="$4" event_openwindow ;;
+    "closewindow") WINDOWADDRESS="$1" event_closewindow ;;
+    "movewindow") WINDOWADDRESS="$1" WORKSPACENAME="$2" event_movewindow ;;
+    "openlayer") NAMESPACE="$1" event_openlayer ;;
+    "closelayer") NAMESPACE="$1" event_closelayer ;;
+    "submap") SUBMAPNAME="$1" event_submap ;;
+    "changefloatingmode") WINDOWCLASS="$1" WINDOWTITLE="$2" event_changefloatingmode  ;;
+    *) printf >&2 'Unknown event: %s\n' "$event" && notify-send -t 10000 -u "CRITICAL" 'Unknown event:' "Append $event to your hyprevents" ;;
+    esac
+  fi
+done
+}
+
+PFS=$IFS
+verbose= #   pass '-v' as first argument to shellevents to print all events to stderr
+case "$1" in -v) verbose=1 && shift ;; esac
+event_files="$*"
+load_events
+trap 'load_events; continue' USR1
+socat -U - UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done

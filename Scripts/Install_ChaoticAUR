@@ -229,6 +229,9 @@ case "$1" in
     ;;
   *)
     echo "Invalid option: $1"
-    echo "Usage: $0 --install [fresh] |--purge|--revert"
+    echo "Usage: $0 [options]
+    --install [fresh] 
+    --purge
+    --revert"
     ;;
 esac

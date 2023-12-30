@@ -1,0 +1,35 @@
+#! /bin/bash
+
+# Get the PID of the current process
+pid=$$
+# Add the windowrule to the hyprland.conf file
+echo 'windowrule=float,^(nwg-displays)$ #? Hyprdots-ctl Auto Generated windowrules' >> ~/.config/hypr/hyprland.conf 
+
+# Define a function to remove the windowrule
+remove_windowrule() {
+  sed -i '/windowrule=float,^(nwg-displays)$ #? Hyprdots-ctl Auto Generated windowrules/d' ~/.config/hypr/hyprland.conf
+}
+
+# Set a trap to call the remove_windowrule function when the script exits
+trap remove_windowrule EXIT
+# Create a file with the PID in the filename
+touch /tmp/hyprdots-monitors-$pid
+
+# If any /tmp/hyprdots-monitors* files exist, kill the processes with those PIDs
+for file in /tmp/hyprdots-monitors*; do
+  # Extract the PID from the filename
+  pid_to_kill=$(basename $file | cut -d '-' -f 3)
+  
+  # If this is not the current process and the process exists, kill it and its subprocesses
+  if [ "$pid_to_kill" != "$pid" ] && kill -0 $pid_to_kill 2>/dev/null; then
+    pkill -9 -P $pid_to_kill
+    kill -9 $pid_to_kill
+    exit 0
+  fi
+done
+
+currMon=$(hyprctl monitors all -j | jq -r '.[] | .description ' | sed 's/ (.*//')
+
+
+nwg-displays 
+
