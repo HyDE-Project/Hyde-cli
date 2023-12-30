@@ -36,9 +36,9 @@ GREET
 read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
 
 #? Attempt to install using Chaotic AUR
-# sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
+ sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
 
 rm -fr "$CloneDir" || true
 git clone --depth 1 https://github.com/prasanthrangan/hyprdots ~/Hyprdots
 cd $CloneDir/Scripts || exit 0
-echo ./install.sh
+./install.sh

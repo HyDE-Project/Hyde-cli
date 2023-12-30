@@ -1,17 +1,44 @@
 #! /bin/bash
 
-# Get the PID of the current process
-pid=$$
-# Add the windowrule to the hyprland.conf file
-echo 'windowrule=float,^(nwg-displays)$ #? Hyprdots-ctl Auto Generated windowrules' >> ~/.config/hypr/hyprland.conf 
+export PATH=$PATH:/usr/lib/hyprdots-ctl/
+. GLOBAL
 
-# Define a function to remove the windowrule
-remove_windowrule() {
-  sed -i '/windowrule=float,^(nwg-displays)$ #? Hyprdots-ctl Auto Generated windowrules/d' ~/.config/hypr/hyprland.conf
+monitorsConf="$ConfDir/hypr/monitors.conf"
+nwgConf="$ConfDir/hypr/hyprdots-ctl/nwg-displays.conf"
+touch "$nwgConf"
+WSConf="$ConfDir/hypr/workspaces.conf"
+touch "$WSConf"
+
+move_lines_to_bottom() {
+    local lines=("$@")
+    local file="${lines[-1]}"
+    unset 'lines[${#lines[@]}-1]'
+
+    for line in "${lines[@]}"; do
+        # Remove the line if it exists
+        sed -i "\|$line|d" "$file"
+    done
+
+    # Append a newline to the file if it does not end with one
+    [[ $(tail -c1 "$file" | wc -l) -eq 0 ]] && echo "" >> "$file"
+
+    # Append the lines to the end of the file
+    for line in "${lines[@]}"; do
+        echo "$line" >> "$file"
+    done
 }
 
-# Set a trap to call the remove_windowrule function when the script exits
-trap remove_windowrule EXIT
+sM="source = $nwgConf #! Hyprdots-ctl: Current monitor setting is here"
+wS="source = $WSConf #! Hyprdots-ctl: Saves workspace assignment per monitor"
+move_lines_to_bottom "$sM" "$wS" "$monitorsConf"
+
+
+if ! grep -F "float" ~/.config/hypr/windowrules.conf | grep -F "nwg-displays" > /dev/null; then
+    # If the line does not exist in the file, append it
+    wR='windowrulev2=float,class:^(nwg-displays)$ #! Hyprdots-ctl: Auto Generated windowrules'
+    echo "$wR" >> ~/.config/hypr/windowrules.conf
+fi
+
 # Create a file with the PID in the filename
 touch /tmp/hyprdots-monitors-$pid
 
@@ -30,6 +57,6 @@ done
 
 currMon=$(hyprctl monitors all -j | jq -r '.[] | .description ' | sed 's/ (.*//')
 
-
-nwg-displays 
+# sleep 0.5
+nwg-displays -n 20 -m "$nwgConf"
 

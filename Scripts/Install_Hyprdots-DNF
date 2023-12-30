@@ -1,0 +1,67 @@
+#! /bin/bash
+
+CloneDir=${1:-$HOME/Hyprdots}
+
+barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+clear
+cat << GREET
+Cutting-Edge User!
+$barLine
+
+$(tput setaf 2)Hello $USER! This is an automated installation for Hyprdots.$(tput sgr0)
+
+Hyprdots-ctl is an active helper for Hyprdots. During this installation, the script will:
+1. Check if Hyprdots is already installed.
+2. If not, it will clone the Hyprdots repository from GitHub. https://github.com/prasanthrangan/hyprdots
+3. Finally, it will clone the Hyprdots repository and run the installation script.
+
+From here on 'Dots' 'Dot Files' means Configurations.
+
+$(tput setaf 3)Hyprdots-ctl is a CLI for Hyprdots.This aims to add patches 
+for Hyprdots and address common Dots issues.
+Also this is a USER specific helper, includes a control file for a user to preserve the USER preferences.
+Please note that using these scripts may alter your Dot files.$(tput sgr0)
+
+$(tput setaf 6)And wait, there's more!!! Checkout 'Hyprdots man' to see how you can manage your Hyprdots setup.$(tput sgr0)
+
+HAVE A GOOD DAY!
+
+Visit: https://github.com/kRHYME7/Hyprdots-ctl for more information.
+$barLine
+GREET
+
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+
+# rm -fr "$CloneDir" || true
+# git clone --depth 1 https://github.com/prasanthrangan/hyprdots "$CloneDir"
+cd "$CloneDir"/Scripts || exit 0
+check_packages() {
+  # Clear the install_pkg.lst file before we start
+  : > ./install_pkg.lst
+
+  # Variable to store the names of the unavailable packages
+  unavailable_packages=""
+
+  # Merge the two lists, remove lines that start with #, and remove blank lines
+  merged_list=$(cat ./custom_hypr.lst ./custom_apps.lst | grep -v '^#' | grep -v '^$')
+
+  while IFS= read -r package; do
+    if dnf list --installed "$package" > /dev/null 2>&1; then
+      echo "$package is already installed on the system"
+    elif dnf list --available "$package" > /dev/null 2>&1; then
+      echo "$package is not installed, queuing for installation"
+      echo "$package" >> ./install_pkg.lst
+    else
+      unavailable_packages+="$package \n"
+    fi
+  done <<< "$merged_list"
+
+  # Print the names of the unavailable packages
+  if [ -n "$unavailable_packages" ]; then
+    echo -e "\n The following packages are not available: \n$unavailable_packages"
+  fi
+}
+check_packages
+
+echo "This Packages will be installed"
+cat ./install_pkg.lst

@@ -1,80 +1,80 @@
 #!/bin/sh
 
-cat << EVENTS
-event_workspace() {
-  : # WORKSPACENAME
-}
+# cat << EVENTS
+# event_workspace() {
+#   : # WORKSPACENAME
+# }
 
-event_focusedmon() {
-  : # MONNAME WORKSPACENAME
-}
+# event_focusedmon() {
+#   : # MONNAME WORKSPACENAME
+# }
 
-event_activewindow() {
-  : # WINDOWCLASS WINDOWTITLE
+# event_activewindow() {
+#   : # WINDOWCLASS WINDOWTITLE
 
-}
-event_activewindowv2() {
-  : # WINDOWCLASS WINDOWTITLE
-}
-event_windowtitle() {
-  : # WINDOWCLASS WINDOWTITLE
-}
+# }
+# event_activewindowv2() {
+#   : # WINDOWCLASS WINDOWTITLE
+# }
+# event_windowtitle() {
+#   : # WINDOWCLASS WINDOWTITLE
+# }
 
-event_fullscreen() {
-  : # ENTER (0 if leaving fullscreen, 1 if entering)
-}
+# event_fullscreen() {
+#   : # ENTER (0 if leaving fullscreen, 1 if entering)
+# }
 
-event_monitorremoved() {
-  : # MONITORNAME
+# event_monitorremoved() {
+#   : # MONITORNAME
 
-}
+# }
 
-event_monitoradded() {
-  : # MONITORNAME
-    Hyprdots monitors
+# event_monitoradded() {
+#   : # MONITORNAME
+#     Hyprdots monitors
 
-}
+# }
 
-event_createworkspace() {
-  : # WORKSPACENAME
-}
+# event_createworkspace() {
+#   : # WORKSPACENAME
+# }
 
-event_destroyworkspace() {
-  : # WORKSPACENAME
-}
+# event_destroyworkspace() {
+#   : # WORKSPACENAME
+# }
 
-event_moveworkspace() {
-  : # WORKSPACENAME MONNAME
-}
+# event_moveworkspace() {
+#   : # WORKSPACENAME MONNAME
+# }
 
-event_activelayout() {
-  : # KEYBOARDNAME LAYOUTNAME
-}
+# event_activelayout() {
+#   : # KEYBOARDNAME LAYOUTNAME
+# }
 
-event_openwindow() {
-  : # WINDOWADDRESS WORKSPACENAME WINDOWCLASS WINDOWTITLE
-}
+# event_openwindow() {
+#   : # WINDOWADDRESS WORKSPACENAME WINDOWCLASS WINDOWTITLE
+# }
 
-event_closewindow() {
-  : # WINDOWADDRESS
-}
+# event_closewindow() {
+#   : # WINDOWADDRESS
+# }
 
-event_movewindow() {
-  : # WINDOWADDRESS WORKSPACENAME
-}
+# event_movewindow() {
+#   : # WINDOWADDRESS WORKSPACENAME
+# }
 
-event_openlayer() {
-  : # NAMESPACE
-}
+# event_openlayer() {
+#   : # NAMESPACE
+# }
 
-event_closelayer() {
-  : # NAMESPACE
-}
+# event_closelayer() {
+#   : # NAMESPACE
+# }
 
-event_submap() {
-  : # SUBMAPNAME
-}
-EVENTS
+# event_submap() {
+#   : # SUBMAPNAME
+# }
+# EVENTS
 
 #!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing#!khing#?khing#*khing
 
