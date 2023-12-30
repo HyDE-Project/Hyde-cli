@@ -42,26 +42,67 @@ check_packages() {
   # Variable to store the names of the unavailable packages
   unavailable_packages=""
 
-  # Merge the two lists, remove lines that start with #, and remove blank lines
-  merged_list=$(cat ./custom_hypr.lst ./custom_apps.lst | grep -v '^#' | grep -v '^$')
+#!/bin/bash
 
-  while IFS= read -r package; do
-    if dnf list --installed "$package" > /dev/null 2>&1; then
-      echo "$package is already installed on the system"
-    elif dnf list --available "$package" > /dev/null 2>&1; then
-      echo "$package is not installed, queuing for installation"
-      echo "$package" >> ./install_pkg.lst
-    else
-      unavailable_packages+="$package \n"
-    fi
-  done <<< "$merged_list"
+# List of packages
+dnf_lst='
+pipewire
+NetworkManager
+network-manager-applet
+bluez
+bluez-utils
+blueman
+qt5-qtwayland
+dunst
+waybar
+parallel
+jq
+ImageMagick
+qt5-qtimageformats
+kde-cli-tools
+brightnessctl
+pavucontrol
+pamixer
+nwg-look
+Kvantum
+qt5ct
+firefox
+kitty
+neofetch
+code
+vim
+ark
+zsh
+oh-my-zsh
+zsh-theme-powerlevel10k
+'
 
-  # Print the names of the unavailable packages
-  if [ -n "$unavailable_packages" ]; then
-    echo -e "\n The following packages are not available: \n$unavailable_packages"
-  fi
+# Function to check and install packages
+check_and_install() {
+ while IFS= read -r package; do
+   if dnf list --installed "$package"; then
+     echo "$package is already installed on the system"
+   elif dnf list --available "$package" ; then
+     echo "$package is not installed, queuing for installation"
+     echo "$package" >> ./install_pkg.lst
+   else
+     unavailable_packages+="$package \n"
+   fi
+ done <<< "$dnf_lst"
+
+ # Print the names of the unavailable packages
+ if [ -n "$unavailable_packages" ]; then
+   echo -e "\n The following packages are not available: \n$unavailable_packages"
+ fi
 }
-check_packages
 
-echo "This Packages will be installed"
-cat ./install_pkg.lst
+# Call the function
+check_and_install
+
+# Install the packages
+if [ -f ./install_pkg.lst ]; then
+ echo "Installing packages..."
+ sudo dnf install $(cat ./install_pkg.lst)
+else
+ echo "No packages to install."
+fi
