@@ -42,8 +42,6 @@ check_packages() {
   # Variable to store the names of the unavailable packages
   unavailable_packages=""
 
-#!/bin/bash
-
 # List of packages
 dnf_lst='
 pipewire

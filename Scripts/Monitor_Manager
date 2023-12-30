@@ -3,6 +3,8 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
+check "nwg-displays"
+
 pid=$$
 monitorsConf="$ConfDir/hypr/monitors.conf"
 nwgConf="$ConfDir/hypr/hyprdots-ctl/nwg-displays.conf"
