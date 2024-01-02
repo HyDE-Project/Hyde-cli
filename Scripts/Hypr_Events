@@ -206,7 +206,9 @@ while true; do
     "closelayer") NAMESPACE="$1" event_closelayer ;;
     "submap") SUBMAPNAME="$1" event_submap ;;
     "changefloatingmode") WINDOWCLASS="$1" WINDOWTITLE="$2" event_changefloatingmode  ;;
-    *) printf >&2 'Unknown event: %s\n' "$event" && notify-send -t 10000 -u "CRITICAL" 'Unknown event:' "Append $event to your hyprevents" ;;
+    "urgent")  : ;; #I don't know this yet
+    *) printf >&2 'Unknown event: %s\n' "$event" ;
+     #notify-send -t 10000 -u "CRITICAL" 'Unknown event:' "Append $event to your hyprevents" ;;
     esac
   fi
 done
