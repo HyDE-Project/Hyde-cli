@@ -8,9 +8,8 @@ all: check directories backup  install
 
 check:
 	@which git >/dev/null || (echo "Error: git is not installed" && exit 1)
-	@which fzf >/dev/null || (echo "Error: fzf is not installed" && exit 1)
-	@which tree >/dev/null || (echo "Error: tree is not installed" && exit 1)
-
+#	@which fzf >/dev/null || (echo "Error: fzf is not installed" && exit 1)
+#	@which tree >/dev/null || (echo "Error: tree is not installed" && exit 1)
 
 
 download:
