@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.2.0.13.24010301
+hyprdots_ctl_version=v0.2.0.14.24010814
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -319,7 +319,7 @@ power() { #? Power Options
 
 }
 
-show() { #? Some Awsome GUI you might want to use.
+show() { #? Some Hypr GUI you might want to use.
     
     case $1 in 
         monitors) #? Manages Monitors using nwg-displays
@@ -331,6 +331,13 @@ show() { #? Some Awsome GUI you might want to use.
         emoji) #? Show Emojis
             Emoji_Selector
         ;;
+        pasteboard) #? Show pasteboard
+            shift
+            Launch_Pasteboard "$@"
+        ;;
+        # panel) #? Notifications Panel
+        #     Launch_Swaync
+        # ;;
         *)Parameters "$Function" 
          ;;
 
@@ -340,7 +347,7 @@ show() { #? Some Awsome GUI you might want to use.
 run() { #? TUI Ececuatbles that might be helpful
 
     case $1 in 
-        events) #? Watches soackets for hyprland events
+        events) #? Watches hyprland events a
             Hypr_Events
         ;;
         *)Parameters "$Function" 

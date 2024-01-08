@@ -1,0 +1,15 @@
+#!/bin/bash
+
+killall dunst &  
+nohup swaync  &>/dev/null & 
+swaync-client -t -rs
+while true; do
+ result=$(hyprctl layers -j | grep 'swaync-control-center')
+ if [[ -z $result ]]; then
+ killall swaync &
+ nohup dunst &>/dev/null & 
+ break
+ else
+ sleep 1
+ fi
+done

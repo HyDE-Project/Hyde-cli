@@ -6,6 +6,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
 . GLOBAL
 
+etcDir="/home/khing/GitHub/Hyprdots-ctl/Configs"
 emojiData="$etcDir/emoji.db"
 roFile="$etcDir/emoji.rasi"
 
@@ -22,6 +23,6 @@ fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}
 icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
 icon_override="configuration {icon-theme: \"${icon_override}\";}"
 
-selection=$(awk -F '\t' '{print $1,  $4, $5, $6 }' "$emojiData" | rofi -dmenu -multi-select -i -p "Select an emoji" -config "${roFile}" )
+selection=$(awk -F '\t' '{print $1, $4, $5, $6,$2,$3 }' "$emojiData" | rofi -dmenu -multi-select -i -p "Select an emoji" -config "${roFile}" )
 emoji=$(echo "$selection" | cut -d' ' -f1)
 echo "$emoji" | wl-copy
