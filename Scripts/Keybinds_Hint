@@ -6,6 +6,7 @@ keyConfDir="$ConfDir/hypr"
 keyConf="$keyConfDir/hyprland.conf $keyConfDir/keybindings.conf $keyConfDir/userprefs.conf  $*"
 tmpMapDir="/tmp"
 tmpMap="$tmpMapDir/hyprdots-keybinds.jq"
+trap "rm -f $tmpMap" EXIT
 
 . $HOME/.config/hypr/scripts/globalcontrol.sh
 roDir="/etc/hyprdots-ctl"
