@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.2.0.17.24011902
+hyprdots_ctl_version=v0.2.0.18.24012013
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -310,6 +310,9 @@ power() { #? Power Options
         save) #? Save Power by disabling features
             Power_Manager "$@"
          ;;
+        unset) #? Unset specific changes
+            Power_Manager  "$@"
+        ;;
         game) #? Toggle Game mode
             Power_Manager  "$@"
         ;;

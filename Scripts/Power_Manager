@@ -19,6 +19,13 @@ append() {
     fi
 }
 
+remove() {
+    if grep -q "$1" "$PowManFile"; then
+        sed -i "/$1/d" "$PowManFile"
+        echo "$2"
+    fi
+}
+
 source_files() {
 if [[ ! -f $PowManFile ]]; then 
 touch $PowManFile  && echo "Added: $hyprlandConf" 
@@ -73,6 +80,34 @@ for arg in "$@"; do
         processed_flags[$arg]="true"
     fi
 done
+}
+
+unset() {
+if [[ -z "$@" ]]; then print_help ; fi
+source_files
+declare -A processed_flags
+for arg in "$@"; do
+    if [ "${processed_flags[$arg]}" != "true" ]; then
+        case $arg in
+            -a|--animations) #? Default Animations
+            remove "animations:enabled = 0" "ENABLE Animations"   
+            ;;
+            -ba|--borderangle) #? Default border angle Animation.
+            remove "animation = borderangle, 0" "ENABLE Border angle animation"       
+            sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
+            ;;
+            -b|--blur) #? Default Blur
+            remove "decoration:blur:enabled = 0" "ENABLE Blur"
+            ;;
+            -o|--opacity) #? Default Tranparency
+sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
+            ;;
+            *) echo "Unknown flag: $arg"; print_help; exit 1;;
+        esac
+        processed_flags[$arg]="true"
+    fi
+done
+hyprctl reload
 }
 
 game() { 
