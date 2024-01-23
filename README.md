@@ -9,8 +9,8 @@
 &ensp;[<kbd> <br> Read me <br> </kbd>](#read-me)&ensp;
 &ensp;[<kbd> <br> Installation <br> </kbd>](#installation)&ensp;
 &ensp;[<kbd> <br> Usage <br> </kbd>](#usage)&ensp;
-&ensp;[<kbd> <br> Discussions <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/wiki)&ensp;
-&ensp;[<kbd> <br> wiki <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/discussions)&ensp;
+&ensp;[<kbd> <br> Wiki <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/wiki)&ensp;
+&ensp;[<kbd> <br> Discussions <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/discussions)&ensp;
 <br><br>
 # Read Me
 
