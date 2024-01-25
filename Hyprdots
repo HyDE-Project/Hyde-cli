@@ -350,8 +350,12 @@ show() { #? Some Hypr GUI you might want to use.
 run() { #? TUI Ececuatbles that might be helpful
 
     case $1 in 
-        events) #? Watches hyprland events a
+        events) #? Watches hyprland events
             Hypr_Events
+        ;;
+        screenshot)
+            shift
+            Launch_Screenshot "$@"
         ;;
         *)Parameters "$Function" 
          ;;
