@@ -1,3 +1,5 @@
+Hyprdots: Manual Page 
+Version: v0.2.0.18.24012013
 Usage: Hyprdots [Function] [Arguments]/[Parameters]
 
   [man]                * Show Manual
@@ -47,11 +49,13 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
   [power]              * Power Options
                           [reset]          Reset Changes.
                           [save]           Save Power by disabling features
+                          [unset]          Unset specific changes
                           [game]           Toggle Game mode
   [show]               * Some Hypr GUI you might want to use.
                           [monitors]       Manages Monitors using nwg-displays
                           [binds]          Show Keybindings Hints
                           [emoji]          Show Emojis
                           [pasteboard]     Show pasteboard
-  [run]                * TUI Ececuatbles that might be helpful
-                          [events]         Watches hyprland events a
+  [run]                * Executables
+                          [events]         Watches hyprland events and executes actions
+                          [screencap]      Screenshot and Screenrecord Tool
