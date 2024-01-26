@@ -73,7 +73,7 @@ cliphist_decode() {
 
   output+="$(echo -e "$line\t" | cliphist decode)\n"
  done
- echo -e "$output"
+ echo -e "$output" | sed '$d'
 }
 
 cliphist_delete() {
@@ -110,3 +110,4 @@ case $1 in
         exit 1
         ;;
 esac
+
