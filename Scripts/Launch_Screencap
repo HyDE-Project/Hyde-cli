@@ -3,29 +3,27 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL 
 
-check grimblast wl-screenrec
-
+check grimblast wl-screenrec swappy
 
 if [ -z "$XDG_PICTURES_DIR" ] ; then
     XDG_PICTURES_DIR="$HOME/Pictures"
 fi
-
+ 
 if [ -z "$XDG_VIDEOS_DIR" ] ; then
     XDG_VIDEOS_DIR="$HOME/Videos"
 fi
 
 #variables
+OPTION="${1}"
+PASS="${@:2}"
 logFile="/tmp/hyprdots-${UID}-screencap.log"
-cacheFile="$cacheCtl/screencap"
-
-vid_dir="${2:-$XDG_VIDEOS_DIR/Recordings}"
+cacheFile="${cacheCtl}/screencap"
+vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
-
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
-img_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
+img_dir="${XDG_PICTURES_DIR}/Screenshots"
 img_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
-temp_screenshot="/tmp/screenshot.png"
-
+temp_screenshot="/tmp/Hyprdots-${UID}-screenshot.png"
 
 mkdir -p $img_dir
 mkdir -p $vid_dir
@@ -35,14 +33,14 @@ echo -e "[Default]\nsave_dir=$img_dir\nsave_filename_format=$img_file" > $swpy_d
 
 first_setup() {
 if [ ! -f "${cacheFile}" ]; then
-
+    notify-send -a "ScreenCap" "Initializing for your system...Please wait" -t 3000 -r 56789
 touch "${cacheFile}"
 video_driver_files=$(find /usr/lib/dri -type f -name "*_drv_video.so" -printf '%P\n' | sed 's/_drv_video.so$//')
 
 for libva_Driver in $video_driver_files; do
 vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be used by wl-screenrec" 
     export LIBVA_DRIVER_NAME=$libva_Driver
-    if  wl-screenrec > "${logFile}" 2>&1  & sleep 5 && pkill --signal=SIGINT wl-screenrec ; then
+    if  wl-screenrec > "${logFile}" 2>&1  & sleep 3 && pkill --signal=SIGINT wl-screenrec ; then
         if grep -q "Failed to initialise VAAPI connection" "${logFile}"; then
             echo "$libva_Driver : Not Supported"
         else
@@ -50,7 +48,7 @@ vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be use
                 echo -e "${vaMsg}" 
                 echo "screen_recorder=\"wl-screenrec\"" 
             } >> "${cacheFile}"
-            notify-send -a "ScreenCap" "wl-screenrec will use \"$libva_Driver\" for screen recording."
+            notify-send -a "ScreenCap" "wl-screenrec will use \"$libva_Driver\" for screen recording." -t 3000 -r 56789
             killall wl-screenrec
             break
         fi
@@ -60,7 +58,7 @@ vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be use
 done
 
 if ! grep -q "${vaMsg}" "${cacheFile}"; then
-    notify-send -a "ScreenCap" "Oh no! wl-screenrec might not work on your system. Will use 'wf-recorder' for now."
+    notify-send -a "ScreenCap" "Oh no! wl-screenrec might not work on your system. Will use 'wf-recorder' for now." -t 3000 -r 56789
     vaMsg="#! Oh no! wl-screenrec is not working for you. Do not worry we will use wf-recorder instead. Try to run 'wl-screenrec' in termianl." 
     { 
     echo "${vaMsg}" 
@@ -68,8 +66,9 @@ if ! grep -q "${vaMsg}" "${cacheFile}"; then
     } >> "${cacheFile}"
     check wf-recorder
 fi
+sleep 3
 # Restart the script
-exec "$0"
+exec "${0}" "${*}"
 else 
     . "${cacheFile}"
 fi
@@ -77,38 +76,55 @@ fi
 }
 
 print_error() {
-cat << "EOF"
-    ./screenshot.sh <action>
-    ...valid actions are...
-        p : print all screens
-        s : snip current screen
-        sf : snip current screen (frozen)
-        m : print focused monitor
-EOF
+usage="$(case_help OPTION)"
+
+cat << HELP
+Screenrecord: '$screen_recorder'
+Screenshot: 'grimblast'
+
+[Usage] Hyprdots run screencap [option]
+
+$usage
+
+For Screen Recording you can pass an argument (--help for for options for '$screen_recorder' )
+Example you can append [--audio] to capture audio.
+
+HELP
 }
 
-first_setup
 
-case $1 in
-p)  # print all outputs
+first_setup "${*}"
+
+case ${OPTION} in
+-pa|--print-all) #? 󰄀 Print all outputs
     grimblast copysave screen $temp_screenshot && swappy -f $temp_screenshot ;;
-rs) # record screen
-echo "${vid_dir}/${vid_file}" 
-"${screen_recorder}" -f "${vid_dir}/${vid_file}" 
-;;
-s)  # drag to manually snip an area / click on a window to print it
+-ra|--record-all) #? 󰃽 Record all outputs if supported by the screenrecorder, default to focused monitor
+    grim $temp_screenshot
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" ${PASS};;
+-ps|--print-snip) #? 󰄀 Drag to manually snip an area
     grimblast copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
-sf)  # frozen screen, drag to manually snip an area / click on a window to print it
+-rs|--record-snip) #? 󰃽 Drag to manually snip an area to screen record it
+    GEOM=$(slurp)
+    grim -g "${GEOM}" $temp_screenshot
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS};;
+-f|--freeze) #? 󰄀 Frozen screen, drag to manually snip an area
     grimblast --freeze copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
-m)  # print focused monitor
-    grimblast copysave output $temp_screenshot && swappy -f $temp_screenshot ;;
+-pm|--print-monitor) #? 󰄀 Print focused monitor
+    grimblast copysave output $temp_screenshot && swappy -f  $temp_screenshot ;;
+--stop) #?  Stop every instance of Screencap
+    killall  "${screen_recorder}" 
+    killall slurp
+    killall hyprpicker
+    ;;
 *)  # invalid option
     print_error ;;
 esac
 
-rm -f "$temp_screenshot"
-
 
 if [ -f "$img_dir/$img_file" ] ; then
-    notify-send "t1" -a "Saved in $img_dir" -i "$img_dir/$img_file" -r 91190 -t 2200
+    notify-send "Screencap" -a "Saved in $img_dir" -i "$img_dir/$img_file" -r 91190 -t 2200
+    rm -f "$temp_screenshot"
+elif [ -f "$vid_dir/$vid_file" ] ; then
+    notify-send "Screencap" -a "Saved in $vid_dir" -i "$temp_screenshot" -r 91190 -t 2200
+    rm -f "$temp_screenshot"
 fi

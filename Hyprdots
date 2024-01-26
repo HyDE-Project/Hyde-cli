@@ -347,15 +347,15 @@ show() { #? Some Hypr GUI you might want to use.
     esac
 }
 
-run() { #? TUI Ececuatbles that might be helpful
+run() { #? Executables
 
     case $1 in 
-        events) #? Watches hyprland events
+        events) #? Watches hyprland events and executes actions
             Hypr_Events
         ;;
-        screenshot)
+        screencap) #? Screenshot and Screenrecord Tool
             shift
-            Launch_Screenshot "$@"
+            Launch_Screencap "$@"
         ;;
         *)Parameters "$Function" 
          ;;

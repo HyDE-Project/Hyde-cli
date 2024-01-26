@@ -86,3 +86,8 @@ ask_confirm() {
     fi
   done
 }
+
+case_help() {
+  OPTION="$1"
+  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+}
