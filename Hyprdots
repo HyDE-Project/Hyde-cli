@@ -73,8 +73,8 @@ restore() { #? Restore Hyprdots
         restore_Lister "$CloneDir/Configs" ;  trap 'rm -f ./BAKrestore_cfg.lst' EXIT
         mark_List
         ask_confirm "Sure"
-        ./restore_fnt.sh "BAK"
-        ./restore_cfg.sh
+        ./restore_fnt.sh
+        ./restore_cfg.sh "BAK"
         rename_backup "_before_Hyprdots_restore_defaults"
         ;;
         # custom)
