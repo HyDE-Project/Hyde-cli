@@ -64,7 +64,7 @@ install() { #? Installs Hyprdots
     esac
 }
 
-restore() { #? Restore Hyprdots
+restore() { #! Restore Hyprdots
   case $1 in 
         defaults) #? Restore to Default Dots of Hyprdots
         box_me "Restoring to a default Dots from $CloneDir"
@@ -97,7 +97,7 @@ restore() { #? Restore Hyprdots
   esac
 }
 
-backup() { #? Handles Your Back ups.
+backup() { #! Handles Your Back ups.
             trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
