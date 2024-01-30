@@ -73,7 +73,7 @@ cliphist_decode() {
 
   output+="$(echo -e "$line\t" | cliphist decode)\n"
  done
- echo -e "$output" | sed '$d'
+ echo -e "$output" | sed '$d' 
 }
 
 cliphist_delete() {
@@ -93,7 +93,8 @@ fi
 # clipboard action
 case $1 in
     # c)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}'  | rofi -dmenu $mult  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
-       c) cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu "$mult" -i -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
+    c) cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu "$mult" -i -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
+        wtype -M ctrl  v -m ctrl
         ;; 
     d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  "$mult" -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf |  cliphist_delete
      
@@ -110,4 +111,5 @@ case $1 in
         exit 1
         ;;
 esac
+
 
