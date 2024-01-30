@@ -181,7 +181,33 @@ Restore_Config "/tmp/Hyprdots-${UID}-BAK"
 }
 
 
-
+config() {
+ctlFile="${ctlDir}/manage_cfg.lst"
+if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+    fi
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+    cat "${ctlFile}"
+    print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile} first!"
+    exit
+fi
+print_prompt -y "Please review the list..."
+cat << REVIEW
+O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
+S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
+P   Preserve      Populates Dots But Preserves User existing Dots
+B   Backup        Only Backup the selected Dots
+I   Ignore        Skip/Ignore the Dots
+REVIEW
+        barLine
+        cat ${ctlDir}/manage_cfg.lst
+        barLine
+        print_prompt -y "Clone Directory:" -m "${CloneDir}"
+        print_prompt -y "Is This Correct?"
+        ask_confirm "${USER}"
+        ./restore_fnt.sh
+        Restore_Config
+}
 
 
 "$@"

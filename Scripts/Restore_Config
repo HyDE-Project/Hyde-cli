@@ -7,17 +7,13 @@ FileOverride="${1:-${ctlDir}/}"              #override default config list with 
 ctlFile="${FileOverride}manage_cfg.lst"
 CfgDir="${2:-${CloneDir}/Configs}"  #override default config path with custom theme path [param 2]
 
-if [ ! -f "${ctlFile}" ] ; then
-    print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-
-    if [ -f ${ScriptDir}/restore_cfg.lst ] ; then 
-    print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!" 
-    exit 1
+if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
     fi
     awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
     cat "${ctlFile}"
-    print_prompt -y "[Reminder] Be sure to Modify the ${ctkFile}! "
-exit
+    print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile}! "
+    exit
 fi
 
 if [ ! -d "${CfgDir}" ] ; then

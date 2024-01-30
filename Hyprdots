@@ -95,23 +95,8 @@ restore() { #? Restore Hyprdots
             trap PreserveCloneDir EXIT
             Manage_Configs "$1"
         ;;
-        config) #? Use the control list to Manage Dots '~/.config/hyprdots-ctl/manage_cfg.lst'
-        print_prompt -y "Please review the list..."
-cat << REVIEW
-O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
-S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
-P   Preserve      Populates Dots But Preserves User existing Dots
-B   Backup        Only Backup the selected Dots
-I   Ignore        Skip/Ignore the Dots
-REVIEW
-        barLine
-        cat ${ctlDir}/manage_cfg.lst
-        barLine
-        print_prompt -y "Clone Directory:" -m "${CloneDir}"
-        print_prompt -y "Is This Correct?"
-        ask_confirm "${USER}"
-        ./restore_fnt.sh
-        Restore_Config
+        config) #? Use the control list to Manage Dots : '~/.config/hyprdots-ctl/manage_cfg.lst'
+            Manage_Configs "$1"
         ;;
         *)  Parameters "$Function"  ;;
   esac
