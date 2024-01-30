@@ -8,31 +8,16 @@ ctlFile="${FileOverride}manage_cfg.lst"
 CfgDir="${2:-${CloneDir}/Configs}"  #override default config path with custom theme path [param 2]
 
 if [ ! -f "${ctlFile}" ] ; then
-    echo "ERROR : '${ctlFile}'   does not exist... I will give a sample for you" 
-cat << FILE > "${ctlFile}"
-P|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git
-O|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
-O|${HOME}/.config|dunst|dunst
-O|${HOME}/.config/hypr|animations.conf hyprland.conf theme.ctl windowrules.conf scripts themes wallbash|hyprland
-P|${HOME}/.config/hypr|keybindings.conf monitors.conf userprefs.conf|hyprland
-O|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
-O|${HOME}/.config|kitty|kitty
-O|${HOME}/.config|Kvantum|kvantum
-O|${HOME}/.config|MangoHud|mangohud
-O|${HOME}/.config|neofetch|neofetch
-O|${HOME}/.config|qt5ct|qt5ct
-O|${HOME}/.config|rofi|rofi
-O|${HOME}/.config|swaylock|swaylock-effects
-P|${HOME}/.config|swww|swww
-O|${HOME}/.config|waybar|waybar
-O|${HOME}/.config|wlogout|wlogout
-O|${HOME}/.config|nwg-look gtk-3.0 xsettingsd|nwg-look
-O|${HOME}/.icons|default|nwg-look
-O|${HOME}|.gtkrc-2.0|nwg-look
-O|${HOME}/.config|dolphinrc kdeglobals|dolphin
-O|${HOME}/.local/share|dolphin|dolphin
-O|${HOME}/.local/share/kxmlgui5|dolphin|dolphin   
-FILE
+    print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+
+    if [ -f ${ScriptDir}/restore_cfg.lst ] ; then 
+    print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!" 
+    exit 1
+    fi
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+    cat "${ctlFile}"
+    print_prompt -y "[Reminder] Be sure to Modify the ${ctkFile}! "
+exit
 fi
 
 if [ ! -d "${CfgDir}" ] ; then
@@ -133,7 +118,7 @@ done < "${ctlFile}"
 
 
 
-if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia -c)" -gt 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ] ; then
+if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia |  wc -l )" -gt 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ] ; then
     echo -e 'source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia
 ' >> ${HOME}/.config/hypr/hyprland.conf
 fi

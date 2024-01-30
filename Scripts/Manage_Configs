@@ -16,27 +16,28 @@ list_Backup() {
 list_Marker() {
 echo "Please review the list..."
 cat << REVIEW
-O   Overwrite
-S   Sync 
-B   Back up
-P   Preserve
+O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
+S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
+P   Preserve      Populates Dots But Preserves existing user Dots
+B   Backup        Only Backup the selected Dots (Default)
 REVIEW
 
-OVERWRITE="$(echo -e "\n$(awk -F'|' '{for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Overwrite moves current dots to backup then fetch the dots from Clone' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$OVERWRITE" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+awk -F'|' -v OFS='|' '{$1 = "B"; print}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
 
-SYNC="$(echo -e "\n$(awk -F'|' '{for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Sync will simply copy current dots to backup. Then fetch dots from Clone ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$SYNC" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
-
-PRESERVE="$(echo -e "\n$(awk -F'|' '{for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Preserve will copy files from Clone only if dots do not yet exist ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+PRESERVE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Preserve will copy files from Clone only if dots do not yet exist ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
 awk -v ignore="$PRESERVE" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
 
-# no_Res="$(echo -e "\n$(awk -F'|' '{for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK files to IGNORE on Restore! | CTRL A : mark all  | CTRL D : unmark all |' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-# awk -v ignore="$no_Res" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "I"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+SYNC="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Sync will simply copy current dots to backup. Then fetch dots from Clone ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$SYNC" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+
+OVERWRITE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Overwrite moves current dots to backup then fetch the dots from Clone' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$OVERWRITE" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+
 
 barLine
 cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
 barLine
+echo "Cancel if you change your mind"
 }
 
 restore_Lister() { #* Check the content of a Directory and make a restore list
