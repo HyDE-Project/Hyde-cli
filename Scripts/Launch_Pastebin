@@ -2,6 +2,8 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
+check rofi jq 
+
 pkill -x rofi && exit
 
 roconf="~/.config/rofi/clipboard.rasi"
@@ -65,51 +67,102 @@ r_override="window {border: ${hypr_width}px; border-radius: ${wind_border}px;} e
 fnt_override=`gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}'`
 fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
 
+#? handle pasting 
 
+pasteIt() {
+    # is_xwayland=false
+    is_term=false
+    #  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
+    class=$(hyprctl -j activewindow | jq -r '.initialClass') 
+    list_term=$(sed -n '/^### startCLASS ###$/,/^### endCLASS ###$/{//!p}' "${0}")
+        if echo "${list_term}" | grep -q "${class}" ; then
+        is_term=true
+        fi
+
+        if [ "${TERM}" = "linux" ]; then
+                if ${is_term} ;then 
+                    # notify-send "Terminal"
+                    : #? Terminal should be manually pasted
+                    # wtype "${selClip}"
+                else
+                    # if ! ${is_xwayland}; then      
+                    # notify-send "Wayland"
+                    wtype -M ctrl v -m ctrl #? Better on Wayland
+                    # else      
+                    # notify-send "Xwayland"
+                    # wtype "${selClip}" #? Better on xwayland ;
+                    # fi
+                fi
+        else 
+            wl-paste
+        fi
+}
 #? MultiSelect
+ cliphist_decode() {
+ # Read the entire input into an array
+#  mapfile -t lines #! Not POSIX compiliant
+    lines=()
+    while IFS= read -r line; do
+        lines+=("$line")
+    done
+    
+ # Get the total number of lines
+ total_lines=${#lines[@]}
 
-cliphist_decode() {
- while IFS= read -r line; do
-
-  output+="$(echo -e "$line\t" | cliphist decode)\n"
+ # Iterate over each line in the array
+ for (( i=0; i<$total_lines; i++ )); do
+    line="${lines[$i]}"
+    decoded_line="$(echo -e "$line\t" | cliphist decode)"
+if [ $i -lt $((total_lines - 1)) ]; then
+    printf -v output '%s%s\n' "$output" "$decoded_line"
+else
+    printf -v output '%s%s' "$output" "$decoded_line"
+fi
  done
- echo -e "$output" | sed '$d' 
+
+ echo -n "$output"
 }
 
 cliphist_delete() {
 awk -F "\t\t\t\t\t" '{print $2}' |
  while IFS= read -r line; do
- echo -e "$line\t" | cliphist delete
+ echo -e "${line}\t" | cliphist delete
  done
 }
 
-
-if [[ $* == *--multi* ]]; then
- mult="-multi-select"
-fi
-
-
-
 # clipboard action
 case $1 in
-    # c)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}'  | rofi -dmenu $mult  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
-    c) cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu "$mult" -i -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
-        wtype -M ctrl  v -m ctrl
-        ;; 
-    d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  "$mult" -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf |  cliphist_delete
+     c)  selClip=$(cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}'  | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode)
+        check "wtype"
+        wl-copy "${selClip}"
+        pasteIt
+         ;; 
+    d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf |  cliphist_delete
      
         ;;
-    w)  if [ `echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf` == "Yes" ] ; then
+    w)  if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf)" == "Yes" ] ; then
             cliphist wipe
         fi
         ;;
-    *)  echo -e "cliphist.sh [action]"
+    *)  
+        echo  "cliphist.sh [action]"
         echo "c :  cliphist list and copy selected"
         echo "d :  cliphist list and delete selected"
         echo "w :  cliphist wipe database"
-        echo "--multi:  Multi-line selection"
         exit 1
         ;;
 esac
 
+
+
+exit
+
+
+### startCLASS ###
+kitty
+org.kde.konsole
+terminator
+XTerm
+Alacritty
+### endCLASS ###
 

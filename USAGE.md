@@ -1,6 +1,6 @@
-Hyprdots: Manual Page 
-Version: v0.2.0.18.24012013
-Usage: Hyprdots [Function] [Arguments]/[Parameters]
+Hyprdots: v0.2.0.46.24020600
+
+Usage: Hyprdots [Function] [options]
 
   [man]                * Show Manual
   [version]            * Hyprdots Version
@@ -12,12 +12,13 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [defaults]       Restore to Default Dots of Hyprdots
                           [Clone]          Restores Dots from a Clone Repository
                           [BackUp]         Restores Dots to a previous state.
+                          [config]         Use the control list to Manage Dots : '~/.config/hyprdots-ctl/manage_cfg.lst'
   [backup]             * Handles Your Back ups.
                           [all]            Backs up the current configuration.
                           [revert]         Revert to a Previous Backup run by 'Hyprdots backup all'.
                           [list]           List the backup
                           [clean]          Clear some Storage by Deleting old backups. 
-  [sync]               * Apply your Prefered Configuration defined at ~/.config/hypr/hyprdots.conf
+  [sync]               * Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf
                           [waybar_ctl]     Restore User waybar control file
                           [theme_patch]    Restore Patched custom themes
                           [Code]           Restore $USER Vscode config file
@@ -55,7 +56,8 @@ Usage: Hyprdots [Function] [Arguments]/[Parameters]
                           [monitors]       Manages Monitors using nwg-displays
                           [binds]          Show Keybindings Hints
                           [emoji]          Show Emojis
-                          [pasteboard]     Show pasteboard
+                          [pastebin]       Show pastebin 
   [run]                * Executables
                           [events]         Watches hyprland events and executes actions
                           [screencap]      Screenshot and Screenrecord Tool
+  [reload]             * Just Reload

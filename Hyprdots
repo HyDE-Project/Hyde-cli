@@ -1,5 +1,5 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.2.0.37.24013018
+hyprdots_ctl_version=v0.2.0.46.24020600
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
@@ -22,7 +22,7 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 
 man() { #? Show Manual 
   manPage=$(
-    echo -e "Hyprdots: $hyprdots_ctl_version\nHyprdots Clone Directory: $CloneDir\nUsage: Hyprdots [Function] [Arguments]/[Parameters]\n"
+    echo -e "Hyprdots: $hyprdots_ctl_version\nHyprdots Clone Directory: $CloneDir\nUsage: Hyprdots [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
       desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $5 }')
@@ -344,11 +344,11 @@ show() { #? Some Hypr GUI you might want to use.
             Keybinds_Hint
         ;;
         emoji) #? Show Emojis
-            Emoji_Selector
+            Launch_Emoji
         ;;
-        pasteboard) #? Show pasteboard
+        pastebin) #? Show pastebin 
             shift
-            Launch_Pasteboard "$@"
+            Launch_Pastebin "$@"
         ;;
         # panel) #? Notifications Panel
         #     Launch_Swaync

@@ -1,0 +1,137 @@
+#! /bin/bash
+pkill -x rofi && exit
+export PATH=$PATH:/usr/lib/hyprdots-ctl/
+. GLOBAL
+
+check rofi jq 
+
+emojiData="${etcDir}/emoji.db"
+recentData="${cacheCtl}/show_emoji_recent.db"
+# roFile="${etcDir}/emoji.rasi"
+roFile="~/.config/rofi/clipboard.rasi"
+
+# set position
+x_offset=-15   #* Cursor spawn position on clipboard
+y_offset=210   #* To point the Cursor to the 1st and 2nd latest word
+#!base on $HOME/.config/rofi/clipboard.rasi 
+clip_h=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
+clip_w=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
+#clip_h=55 #! Modify limits for size of the Clipboard
+#clip_w=20 #! This values are transformed per cent(100)
+#? Monitor resolution , scale and rotation 
+x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
+y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
+#? Rotated monitor? 
+monitor_rot=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .transform')
+if [ "$monitor_rot" == "1" ] || [ "$monitor_rot" == "3" ]; then  # if rotated 270 deg
+ tempmon=$x_mon
+    x_mon=$y_mon
+    y_mon=$tempmon
+#! For rotated monitors
+fi
+#? Scaled monitor Size
+monitor_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
+x_mon=$((x_mon * 100 / monitor_scale ))
+y_mon=$((y_mon * 100 / monitor_scale))
+#? monitor position
+x_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .x')
+y_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .y')
+#? cursor position
+x_cur=$(hyprctl -j cursorpos | jq '.x')
+y_cur=$(hyprctl -j cursorpos | jq '.y')
+# Ignore position
+ x_cur=$(( x_cur - x_pos))
+ y_cur=$(( y_cur - y_pos))
+#Limiting
+# Multiply before dividing to avoid losing precision due to integer division
+clip_w=$(( x_mon*clip_w/100 ))
+clip_h=$(( y_mon*clip_h/100 ))
+max_x=$((x_mon - clip_w - 5 )) #offset of 5 for gaps
+max_y=$((y_mon - clip_h - 15 )) #offset of 15 for gaps
+x_cur=$((x_cur - x_offset))
+y_cur=$((y_cur - y_offset))
+# 
+min_x=0 
+min_y=0
+x_cur=$(( x_cur < min_x ? min_x : ( x_cur > max_x ? max_x :  x_cur)))
+y_cur=$(( y_cur < min_y ? min_y : ( y_cur > max_y ? max_y :  y_cur)))
+
+pos="window {location: north west; x-offset: ${x_cur}px; y-offset: ${y_cur}px;}" #! I just Used the old pos function
+#pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}" 
+
+# read hypr theme border
+
+wind_border=$(( hypr_border * 3/2 ))
+elem_border=`[ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border`
+r_override="window {border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+
+
+# read hypr font size
+
+fnt_override=`gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}'`
+fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
+
+pasteIt() {
+    is_xwayland=false
+    is_term=false
+     is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
+    class=$(hyprctl -j activewindow | jq -r '.initialClass') 
+    list_term=$(sed -n '/^### startCLASS ###$/,/^### endCLASS ###$/{//!p}' "${0}")
+        if echo "${list_term}" | grep -q "${class}" ; then
+        is_term=true
+        fi
+        if [[ "${TERM}" = "linux" ]]; then
+                if ${is_term} ;then 
+                    # notify-send "Terminal"
+                    : #? Terminal should be manually pasted
+                    wtype "${selEmoji}"
+                else
+                    if ! ${is_xwayland}; then      
+                    # notify-send "Wayland"
+                    wtype -M ctrl v -m ctrl #? Better on Wayland
+                    else      
+                    # notify-send "Xwayland"
+                    wtype "${selEmoji}" #? Better on xwayland ;
+                    fi
+                fi
+        else 
+            wl-paste
+        fi
+}
+
+save_recent() {
+#? Prepend the selected emoji to the top of the recentData file
+    # sed -i "1i\\$selEmoji" "${recentData}"
+awk -v var="$dataEmoji" 'BEGIN{print var} {print}' "${recentData}" > temp && mv temp "${recentData}"
+#?  Use awk to remove duplicates and empty lines, moving the most recent emoji to the top
+    awk 'NF' "${recentData}" | awk '!seen[$0]++' > temp && mv temp "${recentData}"
+}
+
+if [[ ! -f "${recentData}" ]]; then
+   echo "  Arch selEmojilinux I use Arch BTW" > "${recentData}"
+fi
+#? Read the contents of recent.db and main.db separately
+recent_entries=$(cat "${recentData}")
+main_entries=$(cat "${emojiData}")
+#? Combine the recent entries with the main entries
+combined_entries="${recent_entries}\n${main_entries}"
+#? Remove duplicates from the combined entries
+unique_entries=$(echo -e "${combined_entries}" | awk '!seen[$0]++')
+
+dataEmoji=$(echo "${unique_entries}" | rofi -dmenu -multi-select -i -theme-str  "entry { placeholder: \"Select Emoji...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
+# selEmoji=$(echo -n "${selEmoji}" | cut -d' ' -f1 | tr -d '\n' | wl-copy)
+trap save_recent EXIT
+selEmoji=$(printf "%s" "${dataEmoji}" | cut -d' ' -f1 | tr -d '\n\r' )
+wl-copy "${selEmoji}"
+pasteIt
+
+
+exit
+
+### startCLASS ###
+kitty
+org.kde.konsole
+terminator
+XTerm
+Alacritty
+### endCLASS ###

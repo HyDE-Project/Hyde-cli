@@ -30,17 +30,18 @@ mkdir -p $vid_dir
 mkdir -p $swpy_dir
 echo -e "[Default]\nsave_dir=$img_dir\nsave_filename_format=$img_file" > $swpy_dir/config
 
+focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
+
 
 first_setup() {
 if [ ! -f "${cacheFile}" ]; then
-    notify-send -a "ScreenCap" "Initializing for your system...Please wait" -t 3000 -r 56789
+    notify-send -a "ScreenCap Initilizing" "Testing on monitor: ${focus_monitor}. Please Wait..." -t 10000 -r 56789
 touch "${cacheFile}"
 video_driver_files=$(find /usr/lib/dri -type f -name "*_drv_video.so" -printf '%P\n' | sed 's/_drv_video.so$//')
-
 for libva_Driver in $video_driver_files; do
 vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be used by wl-screenrec" 
     export LIBVA_DRIVER_NAME=$libva_Driver
-    if  wl-screenrec > "${logFile}" 2>&1  & sleep 3 && pkill --signal=SIGINT wl-screenrec ; then
+    if  wl-screenrec -f /tmp/test.mp4 -o "${focus_monitor}"  > "${logFile}" 2>&1  & sleep 3 && pkill --signal=SIGINT wl-screenrec ; then
         if grep -q "Failed to initialise VAAPI connection" "${logFile}"; then
             echo "$libva_Driver : Not Supported"
         else
@@ -48,12 +49,12 @@ vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be use
                 echo -e "${vaMsg}" 
                 echo "screen_recorder=\"wl-screenrec\"" 
             } >> "${cacheFile}"
-            notify-send -a "ScreenCap" "wl-screenrec will use \"$libva_Driver\" for screen recording." -t 3000 -r 56789
+            notify-send -a "ScreenCap" "wl-screenrec will use \"$libva_Driver\" for screen recording." -t 5000 -r 56789
             killall wl-screenrec
             break
         fi
     else
-        echo "Segmentation fault occurred while testing $libva_Driver. Continuing "
+        notify-send -a "ScreenCap: Segfault" "We can't use $libva_Driver. Continuing " -e -r 56789
     fi
 done
 
@@ -72,7 +73,6 @@ exec "${0}" "${*}"
 else 
     . "${cacheFile}"
 fi
-
 }
 
 print_error() {
@@ -92,18 +92,21 @@ Example you can append [--audio] to capture audio.
 HELP
 }
 
-
 first_setup "${*}"
 
 case ${OPTION} in
 -pa|--print-all) #? 󰄀 Print all outputs
     grimblast copysave screen $temp_screenshot && swappy -f $temp_screenshot ;;
--ra|--record-all) #? 󰃽 Record all outputs if supported by the screenrecorder, default to focused monitor
-    grim $temp_screenshot
-    "${screen_recorder}" -f "${vid_dir}/${vid_file}" ${PASS};;
+-ra|--record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
+-rf|--record-focus) #? 󰃽 Record focused monitor
+    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
+    grim -o "${focus_monitor}" $temp_screenshot
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS};;
+
 -ps|--print-snip) #? 󰄀 Drag to manually snip an area
     grimblast copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
 -rs|--record-snip) #? 󰃽 Drag to manually snip an area to screen record it
+    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
     GEOM=$(slurp)
     grim -g "${GEOM}" $temp_screenshot
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS};;
@@ -111,15 +114,17 @@ case ${OPTION} in
     grimblast --freeze copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
 -pm|--print-monitor) #? 󰄀 Print focused monitor
     grimblast copysave output $temp_screenshot && swappy -f  $temp_screenshot ;;
---stop) #?  Stop every instance of Screencap
+--stop) #?  Stop every instance of Screencap
     killall  "${screen_recorder}" 
     killall slurp
     killall hyprpicker
     ;;
+--reset) #?  Reinitialize screencap
+    rm "${cacheFile}"
+    ;; 
 *)  # invalid option
     print_error ;;
 esac
-
 
 if [ -f "$img_dir/$img_file" ] ; then
     notify-send "Screencap" -a "Saved in $img_dir" -i "$img_dir/$img_file" -r 91190 -t 2200
