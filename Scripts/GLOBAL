@@ -92,5 +92,31 @@ ask_confirm() {
 
 case_help() {
   OPTION="$1"
-  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+  sed -n "/case \${$OPTION} in/,/esac/p" "${*}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+}
+
+pkg_installed()
+{
+    local PkgIn=$1
+
+    if pacman -Qi $PkgIn &> /dev/null
+    then
+        #echo "${PkgIn} is already installed..."
+        return 0
+    else
+        #echo "${PkgIn} is not installed..."
+        return 1
+    fi
+}
+
+CHECK () {
+    local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
+
+if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
+    notify-send -a "${0}" "Dependencies: '${Pkg_Dep}' Please run in the terminal first..."
+    ask_confirm
+    if [[ -z "${ans}" ]]; then get_aurhlpr ; $aurhlpr -S $Pkg_Dep
+    else echo "Skipping installation of packages" ;exit 1
+    fi
+fi
 }
