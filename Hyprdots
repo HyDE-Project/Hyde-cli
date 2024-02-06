@@ -1,5 +1,7 @@
 #!/bin/bash
-hyprdots_ctl_version=v0.2.0.46.24020600
+if [ "$(whoami)" = "root" ] || [ $(id -u) -eq 0 ] ; then echo "Oh no! What have you done! Run without 'sudo'...EXITING" ; exit 1 ;fi
+
+hyprdots_ctl_version='v0.3.7.1.gafdc8ad - February 06, 2024 @ 14:35'
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
