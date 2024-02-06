@@ -3,7 +3,7 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL 
 
-check grimblast wl-screenrec swappy
+CHECK grimblast wl-screenrec swappy
 
 if [ -z "$XDG_PICTURES_DIR" ] ; then
     XDG_PICTURES_DIR="$HOME/Pictures"
@@ -17,7 +17,7 @@ fi
 OPTION="${1}"
 PASS="${@:2}"
 logFile="/tmp/hyprdots-${UID}-screencap.log"
-cacheFile="${cacheCtl}/screencap"
+cacheFile="${cacheCtl}/run_screencap"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
@@ -32,10 +32,13 @@ echo -e "[Default]\nsave_dir=$img_dir\nsave_filename_format=$img_file" > $swpy_d
 
 focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
-
 first_setup() {
 if [ ! -f "${cacheFile}" ]; then
-    notify-send -a "ScreenCap Initilizing" "Testing on monitor: ${focus_monitor}. Please Wait..." -t 10000 -r 56789
+
+if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then CHECK libva-intel-driver intel-media-driver ; fi
+if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then CHECK libva-mesa-driver ; fi
+
+notify-send -a "ScreenCap Initilizing" "Testing on monitor: ${focus_monitor}. Please Wait..." -t 10000 -r 56789
 touch "${cacheFile}"
 video_driver_files=$(find /usr/lib/dri -type f -name "*_drv_video.so" -printf '%P\n' | sed 's/_drv_video.so$//')
 for libva_Driver in $video_driver_files; do
@@ -48,6 +51,7 @@ vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be use
             {                 
                 echo -e "${vaMsg}" 
                 echo "screen_recorder=\"wl-screenrec\"" 
+                echo "export LIBVA_DRIVER_NAME=${libva_Driver}"
             } >> "${cacheFile}"
             notify-send -a "ScreenCap" "wl-screenrec will use \"$libva_Driver\" for screen recording." -t 5000 -r 56789
             killall wl-screenrec
@@ -65,7 +69,7 @@ if ! grep -q "${vaMsg}" "${cacheFile}"; then
     echo "${vaMsg}" 
     echo "screen_recorder=\"wf-recorder\"" 
     } >> "${cacheFile}"
-    check wf-recorder
+    CHECK wf-recorder
 fi
 sleep 3
 # Restart the script
@@ -102,7 +106,6 @@ case ${OPTION} in
     if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
     grim -o "${focus_monitor}" $temp_screenshot
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS};;
-
 -ps|--print-snip) #? 󰄀 Drag to manually snip an area
     grimblast copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
 -rs|--record-snip) #? 󰃽 Drag to manually snip an area to screen record it

@@ -92,7 +92,7 @@ ask_confirm() {
 
 case_help() {
   OPTION="$1"
-  sed -n "/case \${$OPTION} in/,/esac/p" "${*}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
 
 pkg_installed()

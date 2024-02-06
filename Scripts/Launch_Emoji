@@ -80,7 +80,7 @@ pasteIt() {
         if echo "${list_term}" | grep -q "${class}" ; then
         is_term=true
         fi
-        if [[ "${TERM}" = "linux" ]]; then
+        # if [[ "${TERM}" = "linux" ]]; then
                 if ${is_term} ;then 
                     # notify-send "Terminal"
                     : #? Terminal should be manually pasted
@@ -94,9 +94,9 @@ pasteIt() {
                     wtype "${selEmoji}" #? Better on xwayland ;
                     fi
                 fi
-        else 
-            wl-paste
-        fi
+        # else 
+            # wl-paste
+        # fi
 }
 
 save_recent() {
