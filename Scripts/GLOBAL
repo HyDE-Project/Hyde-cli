@@ -115,8 +115,24 @@ CHECK () {
 if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
     notify-send -a "${0}" "Dependencies: '${Pkg_Dep}' Please run in the terminal first..."
     ask_confirm
-    if [[ -z "${ans}" ]]; then get_aurhlpr ; $aurhlpr -S $Pkg_Dep
+    if [[ -z "${ans}" ]]; then get_aurhlpr 
+    $"aurhlpr" -S $Pkg_Dep
     else echo "Skipping installation of packages" ;exit 1
     fi
 fi
+}
+
+
+do_contain() {
+    local etc_file="$1"
+    local conf_file="$2"
+    local tag_line=$(grep -i "Hyprdots-ctl tag:" "${etc_file}")
+
+    if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}" ; then
+        cp "${etc_file}" "${conf_file}"
+        # echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
+    else :
+        # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates" 
+    fi
 }

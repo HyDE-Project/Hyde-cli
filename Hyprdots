@@ -10,7 +10,6 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 . FUNCTIONS 
 
-
 #! +----------------------------------------------------------------|
 #? Add functions below this section.
 #? Be careful with spaces in your Function definitions.
@@ -75,7 +74,7 @@ restore() { #? Restore Hyprdots
          restore_Lister "$CloneDir/Configs" ;  trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
          list_Marker
         #  cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
-        ask_confirm "$USER"
+        ask_confirm "${USER}"
         ./restore_fnt.sh
         Restore_Config "/tmp/Hyprdots-${UID}-BAK"
         rename_backup "_Hyprdots_restore_defaults"
@@ -351,6 +350,9 @@ show() { #? Some Hypr GUI you might want to use.
         pastebin) #? Show pastebin 
             shift
             Launch_Pastebin "$@"
+        ;;
+        screencap)
+            Launch_Screencap
         ;;
         # panel) #? Notifications Panel
         #     Launch_Swaync
