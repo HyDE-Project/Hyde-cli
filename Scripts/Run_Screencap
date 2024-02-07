@@ -13,17 +13,24 @@ if [ -z "$XDG_VIDEOS_DIR" ] ; then
     XDG_VIDEOS_DIR="$HOME/Videos"
 fi
 
+STOP() { 
+    pkill -SIGINT "${screen_recorder}" 
+    pkill slurp
+    pkill hyprpicker
+    rm -f "/tmp/Hyprdots-${UID}-*screenshot.png"
+}
+
 #variables
 OPTION="${1}"
 PASS="${@:2}"
 logFile="/tmp/hyprdots-${UID}-screencap.log"
-cacheFile="${cacheCtl}/run_screencap"
+cacheFile="${ctlDir}/run_screencap"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
 img_dir="${XDG_PICTURES_DIR}/Screenshots"
 img_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
-temp_screenshot="/tmp/Hyprdots-${UID}-screenshot.png"
+temp_screenshot="/tmp/Hyprdots-$(id -u)-${img_file}"
 
 mkdir -p $img_dir
 mkdir -p $vid_dir
@@ -79,60 +86,81 @@ else
 fi
 }
 
+warn_dup() {
+    instance=$(pgrep "${screen_recorder}" | wc -l)
+    if [ "${instance}" -ne  0 ]; then
+        notify-send -a "Screencap Warning! ${instance} instances running!" "Recording: ${focus_monitor}" -i "${temp_screenshot}"
+    else
+        notify-send -a "Screencap:" "Recording: ${focus_monitor}" -i "${temp_screenshot}"
+    fi
+}
+
 print_error() {
 usage="$(case_help OPTION)"
 
 cat << HELP
-Screenrecord: '$screen_recorder'
+Screenrecord: '${screen_recorder}'
 Screenshot: 'grimblast'
 
 [Usage] Hyprdots run screencap [option]
 
-$usage
+${usage}
 
-For Screen Recording you can pass an argument (--help for for options for '$screen_recorder' )
+For Screen Recording you can pass an argument (--help for for options for '${screen_recorder}' )
 Example you can append [--audio] to capture audio.
 
 HELP
 }
 
+cleaNotify () {
+if [ -f "${img_dir}/${img_file}" ] ; then
+    notify-send -a "Screencap" "Saved in ${img_dir}" -i "${img_dir}/${img_file}" 
+    rm -f "${temp_screenshot}"
+elif [ -f "${vid_dir}/${vid_file}" ] ; then
+    notify-send -a "Screencap" "Saved in ${vid_dir}" -i "${temp_screenshot}" 
+    rm -f "${temp_screenshot}"
+fi
+}
+
 first_setup "${*}"
+
+if [ "${OPTION}" = "--stop" ]; then
+STOP
+fi
 
 case ${OPTION} in
 -pa|--print-all) #? 󰄀 Print all outputs
-    grimblast copysave screen $temp_screenshot && swappy -f $temp_screenshot ;;
+    grimblast copysave screen $temp_screenshot && swappy -f $temp_screenshot 
+    cleaNotify;;
 -ra|--record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
 -rf|--record-focus) #? 󰃽 Record focused monitor
-    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
-    grim -o "${focus_monitor}" $temp_screenshot
-    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS};;
+    grim -o "${focus_monitor}" "${temp_screenshot}"    
+    warn_dup
+    if [ -z "${screen_recorder}" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS}
+    cleaNotify;;
 -ps|--print-snip) #? 󰄀 Drag to manually snip an area
-    grimblast copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
+    grimblast copysave area $temp_screenshot && swappy -f $temp_screenshot 
+    cleaNotify;;
 -rs|--record-snip) #? 󰃽 Drag to manually snip an area to screen record it
-    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
     GEOM=$(slurp)
     grim -g "${GEOM}" $temp_screenshot
-    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS};;
+    warn_dup
+    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
+    cleaNotify;;
 -f|--freeze) #? 󰄀 Frozen screen, drag to manually snip an area
     grimblast --freeze copysave area $temp_screenshot && swappy -f $temp_screenshot ;;
 -pm|--print-monitor) #? 󰄀 Print focused monitor
-    grimblast copysave output $temp_screenshot && swappy -f  $temp_screenshot ;;
+    grimblast copysave output $temp_screenshot && swappy -f  $temp_screenshot 
+    cleaNotify;;
 --stop) #?  Stop every instance of Screencap
-    killall  "${screen_recorder}" 
-    killall slurp
-    killall hyprpicker
+    :
     ;;
 --reset) #?  Reinitialize screencap
     rm "${cacheFile}"
     ;; 
+GUI) : ;;
 *)  # invalid option
     print_error ;;
 esac
-
-if [ -f "$img_dir/$img_file" ] ; then
-    notify-send "Screencap" -a "Saved in $img_dir" -i "$img_dir/$img_file" -r 91190 -t 2200
-    rm -f "$temp_screenshot"
-elif [ -f "$vid_dir/$vid_file" ] ; then
-    notify-send "Screencap" -a "Saved in $vid_dir" -i "$temp_screenshot" -r 91190 -t 2200
-    rm -f "$temp_screenshot"
-fi
