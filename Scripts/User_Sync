@@ -4,7 +4,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
 # Source the user's settings, overwriting any defaults
-ctlFile="$ConfDir/hypr/hyprdots.conf"
+ctlFile="$ConfDir/hyprdots-ctl/hyprdots.conf"
 runSync="fn_$1"
 if [[ ! -f $ctlFile ]]; then
 #touch $ctlFile
@@ -48,20 +48,20 @@ if echo \"\$(awk -F '|' '{print \$2}' ~/.config/hypr/theme.ctl)\" | grep -Fxq \"
    continue
 fi
 "
-evaluate "theme-patch" "Hyprdots theme patch" "$condition"
+evaluate "theme-patch" "Hyprdots theme patch" "${condition}"
 }
 
 fn_waybar_ctl() {
   section="waybar_ctl"
   targetFile=$HOME/.config/waybar/config.ctl
-   sed -i '/^[[:space:]]*$/d' "$targetFile" && echo "" >> "$targetFile"
+   sed -i '/^[[:space:]]*$/d' "${targetFile}" && echo "" >> "${targetFile}"
    while read -r line; do 
-if ! grep -Fq "$line" "$targetFile";then
-echo  "0|$line" >> "$targetFile"
+if ! grep -Fq "$line" "${targetFile}";then
+echo  "0|${line}" >> "${targetFile}"
 fi
   #  done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$')
-   done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$' | awk -v RS=':' -v FS='\n' -v OFS='\n' 'NR % 2 == 0')
-   sed -i '/^[[:space:]]*$/d' "$targetFile"
+   done < <(grep -Pzo "(?s)\[${section}\][^\[]*" "${ctlFile}" | grep -Eva '^\['"${section}"'\]|^$' | awk -v RS=':' -v FS='\n' -v OFS='\n' 'NR % 2 == 0')
+   sed -i '/^[[:space:]]*$/d' "${targetFile}"
 }
 
 
@@ -138,4 +138,4 @@ append "kitty" "$file"
 # fn_kdeglobals
 # fn_kitty
 
-$runSync
+${runSync}

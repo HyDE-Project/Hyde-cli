@@ -90,20 +90,16 @@ restore() { #? Restore Hyprdots
         # mv "$bak" "$bak--$note"
         # ;;
         Clone) #? Restores Dots from a Clone Repository
-        ./restore_fnt.sh
         Manage_Configs "$1" "$2"
         rename_backup "_Hyprdots_restore_Clone"
-        Hyprdots reload
         ;;
         BackUp) #? Restores Dots to a previous state.
             trap PreserveCloneDir EXIT
             Manage_Configs "$1"
-            Hyprdots reload
         ;;
         config) #? Use the control list to Manage Dots : '~/.config/hyprdots-ctl/manage_cfg.lst'
             Manage_Configs "$1"
             rename_backup "_Hyprdots_restore_config"
-            Hyprdots reload
         ;;
         *)  Parameters "$Function"  ;;
   esac
@@ -381,6 +377,7 @@ run() { #? Executables
 }
 
 reload() { #? Just Reload 
+    box_me "Dots reloaded"
     ${ScrDir}/themeswitch.sh -s "$(cat ${ConfDir}/hypr/theme.ctl | grep "^1" | cut -d '|' -f2)" || true
     killall waybar || true
     $(which waybar) > /dev/null 2>&1 &

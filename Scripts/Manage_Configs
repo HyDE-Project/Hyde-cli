@@ -136,6 +136,7 @@ if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
         ask_confirm "$USER"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
       Restore_Config "/tmp/Hyprdots-${UID}-BAK" "$BkpDir/$selected_backup"
+      Hyprdots reload
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-_before_Hyprdots_restore_BackUp"
@@ -178,6 +179,7 @@ list_Marker
 ask_confirm "$USER"
 ./restore_fnt.sh
 Restore_Config "/tmp/Hyprdots-${UID}-BAK"
+Hyprdots reload
 }
 
 
@@ -192,6 +194,7 @@ if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not e
     exit
 fi
 print_prompt -y "Please review the list..."
+print_prompt -y "Control File:" -w "${ctlDir}/manage_cfg.lst"
 cat << REVIEW
 O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
 S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
@@ -207,6 +210,7 @@ REVIEW
         ask_confirm "${USER}"
         ./restore_fnt.sh
         Restore_Config
+        Hyprdots reload
 }
 
 
