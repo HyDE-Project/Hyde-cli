@@ -87,7 +87,7 @@ hyprpicker -z -r &
 sleep 0.2
 HYPRPICKER_PID=$!
 { crop=$(slurp 2>&1) || true ;} && { echo "${crop}" > /tmp/slurp ;} && { kill "${HYPRPICKER_PID}" && hyprctl keyword animations:enabled 0 > /dev/null 2>&1 && wtype -s 1 -M ctrl m -m ctrl ;} && pkill rofi &
-{ OPT=$(sleep 0.2 && echo -e "${cap} \n${rec} "  | rofi -dmenu  -theme-str  "${pos} ${r_override}" -theme-str "${fnt_override}"  -config "${roFile}" ) || true ;} && pkill slurp ; kill "${HYPRPICKER_PID}"
+{ OPT=$(sleep 0.2 && echo -e "${cap} \n${rec} "  | rofi -dmenu  -theme-str  "${pos} ${r_override}" -theme-str "${fnt_override}"  -config "${roFile}" ) || true ;} && pkill slurp 
 { [[ -f ${geoFile} ]] && GEOM=$(cat "${geoFile}") && snip=true ;} || true
 if [[ "${GEOM}" =~ "selection cancelled" ]]; then GEOM="" ;fi
 [[ -z ${OPT} ]] && exit 1
