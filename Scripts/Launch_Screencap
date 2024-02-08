@@ -6,7 +6,6 @@ unset WLR_NO_HARDWARE_CURSORS
 
 etcFile="/etc/hyprdots-ctl/screencap.rasi"
 roFile="${ConfDir}/rofi/screencap.rasi"
-geoFile="/tmp/slurp"
 rec=''
 cap=''
 snip=false
@@ -14,109 +13,124 @@ snip=false
 do_contain "${etcFile}" "${roFile}"
 
 . Run_Screencap GUI
-
 trap cleaNotify EXIT
-# set position
-x_offset=70   #* Cursor spawn position on clipboard
-y_offset=90   #* To point the Cursor to the 1st and 2nd latest word
-#!base on $HOME/.config/rofi/clipboard.rasi 
-clip_h=1
-clip_w=1
-clip_h=$(cat "${roFile}" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
-clip_w=$(cat "${roFile}" | awk '/window {/,/}/'  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
-#clip_h=55 #! Modify limits for size of the Clipboard
-#clip_w=20 #! This values are transformed per cent(100)
-#? Monitor resolution , scale and rotation 
-x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
-y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
-#? Rotated monitor? 
-monitor_rot=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .transform')
-if [ "$monitor_rot" == "1" ] || [ "$monitor_rot" == "3" ]; then  # if rotated 270 deg
- tempmon=$x_mon
-    x_mon=$y_mon
-    y_mon=$tempmon
-#! For rotated monitors
-fi
-#? Scaled monitor Size
-monitor_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
-x_mon=$((x_mon * 100 / monitor_scale ))
-y_mon=$((y_mon * 100 / monitor_scale))
-#? monitor position
-x_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .x')
-y_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .y')
-#? cursor position
-x_cur=$(hyprctl -j cursorpos | jq '.x')
-y_cur=$(hyprctl -j cursorpos | jq '.y')
-# Ignore position
- x_cur=$(( x_cur - x_pos))
- y_cur=$(( y_cur - y_pos))
-#Limiting
-# Multiply before dividing to avoid losing precision due to integer division
-clip_w=$(( x_mon*clip_w/100 ))
-clip_h=$(( y_mon*clip_h/100 ))
-max_x=$((x_mon - clip_w - 5 )) #offset of 5 for gaps
-max_y=$((y_mon - clip_h - 15 )) #offset of 15 for gaps
-x_cur=$((x_cur - x_offset))
-y_cur=$((y_cur - y_offset))
-# 
-x_cur=$(( x_cur < min_x ? min_x : ( x_cur > max_x ? max_x :  x_cur)))
-y_cur=$(( y_cur < min_y ? min_y : ( y_cur > max_y ? max_y :  y_cur)))
 
-pos="window {location: north west; x-offset: ${x_cur}px; y-offset: ${y_cur}px;}" #! I just Used the old pos function
+# # set position
+# x_offset=70   #* Cursor spawn position on clipboard
+# y_offset=90   #* To point the Cursor to the 1st and 2nd latest word
+# #!base on $HOME/.config/rofi/clipboard.rasi 
+# clip_h=1
+# clip_w=1
+# clip_h=$(cat "${roFile}" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
+# clip_w=$(cat "${roFile}" | awk '/window {/,/}/'  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
+# #clip_h=55 #! Modify limits for size of the Clipboard
+# #clip_w=20 #! This values are transformed per cent(100)
+# #? Monitor resolution , scale and rotation 
+# x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
+# y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
+# #? Rotated monitor? 
+# monitor_rot=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .transform')
+# if [ "$monitor_rot" == "1" ] || [ "$monitor_rot" == "3" ]; then  # if rotated 270 deg
+#  tempmon=$x_mon
+#     x_mon=$y_mon
+#     y_mon=$tempmon
+# #! For rotated monitors
+# fi
+# #? Scaled monitor Size
+# monitor_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
+# x_mon=$((x_mon * 100 / monitor_scale ))
+# y_mon=$((y_mon * 100 / monitor_scale))
+# #? monitor position
+# x_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .x')
+# y_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .y')
+# #? cursor position
+# x_cur=$(hyprctl -j cursorpos | jq '.x')
+# y_cur=$(hyprctl -j cursorpos | jq '.y')
+# # Ignore position
+#  x_cur=$(( x_cur - x_pos))
+#  y_cur=$(( y_cur - y_pos))
+# #Limiting
+# # Multiply before dividing to avoid losing precision due to integer division
+# clip_w=$(( x_mon*clip_w/100 ))
+# clip_h=$(( y_mon*clip_h/100 ))
+# max_x=$((x_mon - clip_w - 5 )) #offset of 5 for gaps
+# max_y=$((y_mon - clip_h - 15 )) #offset of 15 for gaps
+# x_cur=$((x_cur - x_offset))
+# y_cur=$((y_cur - y_offset))
+# # 
+# x_cur=$(( x_cur < min_x ? min_x : ( x_cur > max_x ? max_x :  x_cur)))
+# y_cur=$(( y_cur < min_y ? min_y : ( y_cur > max_y ? max_y :  y_cur)))
+
+# pos="window {location: north west; x-offset: ${x_cur}px; y-offset: ${y_cur}px;}" #! I just Used the old pos function
 #pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}" 
 
-fnt_size=`gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}'`
+fnt_size=$(gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}')
 fnt_override=$((fnt_size *  3))
 w_width=$((fnt_size *  17))
 # read hypr theme border
 wind_border=$(( hypr_border * 3/2 ))
-elem_border=`[ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border`
+elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
 r_override="window {width: ${w_width}px; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
 fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
+
+config_reload() { #? Expand soon
+hyprctl keyword animations:enabled "${state}" > /dev/null 2>&1
+}
 
 DIE() {
     pkill rofi
     pkill slurp
     pkill wtype
-    rm -fr "${geoFile}"
-    # hyprctl reload > /dev/null 2>&1
-    hyprctl keyword animations:enabled 1
+    config_reload
       }
+
 trap DIE EXIT
-hyprpicker -z -r &
+
+state=$(hyprctl getoption animations:enabled -j | jq -r '.int' )
+hyprctl keyword animations:enabled 0 > /dev/null 2>&1
+
+hyprpicker -zrn &
 sleep 0.2
 HYPRPICKER_PID=$!
-{ crop=$(slurp 2>&1) || true ;} && { echo "${crop}" > /tmp/slurp ;} && { kill "${HYPRPICKER_PID}" && hyprctl keyword animations:enabled 0 > /dev/null 2>&1 && wtype -s 1 -M ctrl m -m ctrl ;} && pkill rofi &
-{ OPT=$(sleep 0.2 && echo -e "${cap} \n${rec} "  | rofi -dmenu  -theme-str  "${pos} ${r_override}" -theme-str "${fnt_override}"  -config "${roFile}" ) || true ;} && pkill slurp 
-{ [[ -f ${geoFile} ]] && GEOM=$(cat "${geoFile}") && snip=true ;} || true
-if [[ "${GEOM}" =~ "selection cancelled" ]]; then GEOM="" ;fi
+GEOM=$(slurp 2>&1)
+{ [[ -n "${GEOM}" ]]  && snip=true ;} || true
+
+x=$(echo "$GEOM" | cut -d ' ' -f2 | cut -d 'x' -f1)
+y=$(echo "$GEOM" | cut -d ' ' -f2 | cut -d 'x' -f2)
+
+kill "${HYPRPICKER_PID}"
+if [[ "${GEOM}" =~ "selection cancelled" ]] || (( x <  16 || y <  16 )) ;  then GEOM=""
+else grim -g "${GEOM}" "${temp_screenshot}"
+fi
+
+{ OPT=$(echo -e "${cap} \n${rec} "  | rofi -dmenu  -theme-str  "${pos} ${r_override}" -theme-str "${fnt_override}"  -config "${roFile}" ) || true ;} &&
 [[ -z ${OPT} ]] && exit 1
 
 wait
 case ${OPT} in 
 "${cap}"*) 
-hyprctl keyword animations:enabled 0 > /dev/null 2>&1
 if ! ${snip}; then
     grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
 elif [[ -z ${GEOM} ]] ; then
     grimblast copysave output "${temp_screenshot}" && swappy -f  "${temp_screenshot}"
 else
-    grim -g "${GEOM}" "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    swappy -f "${temp_screenshot}"
 fi
 ;;
 
 "${rec}"*) 
-hyprctl reload > /dev/null 2>&1
+config_reload
 if ! ${snip} ; then
  Hyprdots run screencap -rf 
 elif [[ -z ${GEOM} ]]; then
- Hyprdots run screencap -rf 
+ Hyprdots run screencap -rf
 else
     grim -g "${GEOM}" $temp_screenshot
     warn_dup
-    if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
+    if [ -z "${screen_recorder}" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
 fi
 ;;
 *) exit ;;
 esac
+ 
