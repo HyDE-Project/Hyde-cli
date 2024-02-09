@@ -2,7 +2,7 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
-check rofi jq 
+CHECK rofi jq wtype
 
 pkill -x rofi && exit
 
@@ -100,15 +100,13 @@ pasteIt() {
 #? MultiSelect
  cliphist_decode() {
  # Read the entire input into an array
-#  mapfile -t lines #! Not POSIX compiliant
-    lines=()
-    while IFS= read -r line; do
-        lines+=("$line")
-    done
-    
+  mapfile -t lines #! Not POSIX compiliant    
  # Get the total number of lines
  total_lines=${#lines[@]}
 
+if [ "${lines}" = "delete" ] ; then Hyprdots show pastebin d ;exit 0
+elif [ "${lines}" = "wipe" ] ; then Hyprdots show pastebin w ; exit 0
+else
  # Iterate over each line in the array
  for (( i=0; i<$total_lines; i++ )); do
     line="${lines[$i]}"
@@ -121,6 +119,7 @@ fi
  done
 
  echo -n "$output"
+fi
 }
 
 cliphist_delete() {
@@ -130,17 +129,33 @@ awk -F "\t\t\t\t\t" '{print $2}' |
  done
 }
 
+checkContent() {
+    # Read the input line by line
+read -r line
+        if  [[ ${line} == *"binary data image/png"* ]]; then
+        # echo -e "${line}" 
+        # else 
+         imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
+        echo -e "${imag}\t" | cliphist decode | wl-copy 
+        return 1
+        fi
+}
+
 # clipboard action
 case $1 in
-     c)  selClip=$(cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}'  | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode)
-        check "wtype"
-        wl-copy "${selClip}"
+    # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | cliphist decode | wl-copy
+     c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf ) 
+        echo -e "$selClip" | checkContent
+        if [ $? -eq  1 ]; then pasteIt ; exit 0 ; fi
+        echo -e "${selClip}" | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
         pasteIt
          ;; 
     d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf |  cliphist_delete
      
         ;;
-    w)  if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf)" == "Yes" ] ; then
+    w) 
+        r_override="window {height:  20%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+        if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf)" == "Yes" ] ; then
             cliphist wipe
         fi
         ;;
@@ -165,4 +180,3 @@ terminator
 XTerm
 Alacritty
 ### endCLASS ###
-
