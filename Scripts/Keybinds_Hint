@@ -230,7 +230,7 @@ GROUP() {
         line = substr(lines[j], index(lines[j], "=") + 2)
         print line
       }
-      for (j = 1; j <= 68; j++) printf "━"
+      for (j = 1; j <= 100; j++) printf "━"
       printf "\n"
     }
   }'
@@ -241,7 +241,7 @@ DISPLAY() { awk -F '!=!' '{if ($0 ~ /=/ && $6 != "") printf "%-25s    >  %-30s\n
 
 #? Extra design use for distiction
 header="$(printf "%-35s %-1s %-20s\n" "󰌌 Keybinds" "󱧣" "Description")"
-line="$(printf '%.0s━' $(seq 1 68) "")"
+line="$(printf '%.0s━' $(seq 1 100) "")"
 
 
 # echo "$jsonData"
