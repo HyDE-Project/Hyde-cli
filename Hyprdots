@@ -23,16 +23,16 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 
 man() { #? Show Manual 
   manPage=$(
-    echo -e "Hyprdots: $hyprdots_ctl_version\nHyprdots Clone Directory: $CloneDir\nUsage: Hyprdots [Function] [options]\n"
+    echo -e "Hyprdots: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
       desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $5 }')
-      printf "  %-20s %s\n" "[$Function]" "*$desc"
-      Parameters "$Function"
+      printf "  %-20s %s\n" "[${Function}]" "*${desc}"
+      Parameters "${Function}"
     done 
   ) 
   box_me "Manual Page"
-  echo "$manPage"
+  echo "${manPage}"
 }
 
 version() { #? Hyprdots Version
@@ -189,11 +189,12 @@ esac
 }
 
 wallpaper() { #? Wallpaper related Actions
-  case $1 in 
+  case $1 in
         set) #? Set /Path/to/Wallpapers as new Wallpaper Directory
             shift
-            if [ -z "$2" ]; then echo "Missing: /Path/to/Wallpaper" ; exit 1 ; fi
-            "$ScrDir"/swwwallpaper.sh -s "$2"
+            cd - || exit
+            if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
+            "$ScrDir"/swwwallpaper.sh -s "$1"
         ;;
         next) #? Next Wallppaer
             "$ScrDir"/swwwallpaper.sh -n 
@@ -203,6 +204,11 @@ wallpaper() { #? Wallpaper related Actions
         ;;
         select) #? Wallpaper Selector
             "$ScrDir"/swwwallselect.sh
+        ;;
+        path) #? Current Theme will follow /path/to/wallpaper/* as its wallpaper directory 
+                shift
+            if [[ -z "${1}" ]]; then echo "Missing /absolute/path/to/wallpaper/*.: ${1}" ; exit 1 ; fi                                    
+                ./create_cache.sh -c "$1"*
         ;;
         *)  Parameters "$Function"  ;;
 
@@ -275,13 +281,6 @@ cache() { #? Cache
             read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
             ./create_cache.sh -f
          ;;
-        add) #? Cache custom /path/to/wallpaper/* ( Broken)
-                if [[ -z $2 ]]; then
-                    echo "Please provide a /path/to/wallpaper/*." 
-                else
-                ./create_cache.sh -c "$2"
-        fi
-        ;;
         *)
         Parameters "$Function" 
          ;;
