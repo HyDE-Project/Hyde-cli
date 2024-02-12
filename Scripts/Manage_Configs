@@ -125,21 +125,29 @@ ask_confirm
 }
 
 BackUp() {
+if [[ -z ${1} ]] ; then
   list_Backup
 print_prompt -r "WARNING! " -y "Not all Dots may have been fully backed up, You might encounter errors!" ; ask_confirm
        selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf --prompt='Restoring from a Backup Directory.' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | cut -d ' ' -f4)  
-if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then     
-      echo "Restoring from: $BkpDir/$selected_backup"     
+config_source="${BkpDir}/${selected_backup}"
+else
+config_source="${1}"
+[[ ! -e ${config_source} ]] && print_prompt -r "Invalid Directory: ${config_source} "
+fi
+
+if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]] || [[ -e ${config_source} ]] ; then     
+      print_prompt -y "Restoring from:" -w "${config_source}"     
       echo "Please Review files to be re-populated to your Dots" 
-        restore_Lister "$BkpDir/$selected_backup" ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+        restore_Lister "${config_source}" ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
         list_Marker
-        ask_confirm "$USER"
+        ask_confirm "${USER}"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
-      Restore_Config "/tmp/Hyprdots-${UID}-BAK" "$BkpDir/$selected_backup"
+      Restore_Config "/tmp/Hyprdots-${UID}-BAK" "${config_source}"
       Hyprdots reload
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
-      if [[ "$last_bak" != $bak ]]; then
+      if [[ "${last_bak}" != "${bak}" ]]; then
         mv "$bak" "$bak-_before_Hyprdots_restore_BackUp"
+        print_prompt -y "Bakckup: $bak-_before_Hyprdots_restore_BackUp"
       fi
 else
   print_prompt -y "Operation cancelled" 

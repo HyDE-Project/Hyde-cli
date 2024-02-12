@@ -134,10 +134,11 @@ checkContent() {
     # Read the input line by line
 read -r line
         if  [[ ${line} == *"binary data image/png"* ]]; then
-        # echo -e "${line}" 
-        # else 
-         imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
+        imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
+        temprev="/tmp/hyprdots-${UID}-pastebin-preview${imag}"
         echo -e "${imag}\t" | cliphist decode | wl-copy 
+        wl-paste > "${temprev}"
+        notify-send -a "Pastebin:" "Preview: ${imag}" -i "${temprev}" -t 2000
         return 1
         fi
 }

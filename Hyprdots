@@ -95,7 +95,7 @@ restore() { #? Restore Hyprdots
         ;;
         BackUp) #? Restores Dots to a previous state.
             trap PreserveCloneDir EXIT
-            Manage_Configs "$1"
+            Manage_Configs "${@}"
         ;;
         config) #? Use the control list to Manage Dots : '~/.config/hyprdots-ctl/manage_cfg.lst'
             Manage_Configs "$1"
