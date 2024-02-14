@@ -65,7 +65,7 @@ install() { #? Installs Hyprdots
     esac
 }
 
-restore() { #? Restore Hyprdots
+restore() { #? Restore Hyprdots deps
   case $1 in 
         defaults) #? Restore to Default Dots of Hyprdots
         shift
@@ -105,7 +105,7 @@ restore() { #? Restore Hyprdots
   esac
 }
 
-backup() { #? Handles Your Back ups.
+backup() { #? Handles Your Back ups. 
             trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
@@ -210,6 +210,10 @@ wallpaper() { #? Wallpaper related Actions
             if [[ -z "${1}" ]]; then echo "Missing /absolute/path/to/wallpaper/*.: ${1}" ; exit 1 ; fi                                    
                 ./create_cache.sh -c "$1"*
         ;;
+        variety) #? EXPERIMENTAL! Use variety package to manage wallpapers.
+            shift
+            /usr/lib/hyprdots-ctl/Run_Wallpaper "${@}"
+        ;;
         *)  Parameters "$Function"  ;;
 
 esac
@@ -287,28 +291,6 @@ cache() { #? Cache
     esac
 }
 
-Helper() { #! Some of Scripts you might want to use.
-
-    case $1 in 
-      chaotic) #? Reload Caches if you have new wallpapers.
-            ./create_cache.sh
-         ;;
-      rebuild) #? Force rebuild cache
-            read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
-         ;;
-        add) #? Cache custom /path/to/wallpaper/* ( Broken)
-                    echo "Please provide a /path/to/wallpaper/*." 
-        ;;
-        *)
-        Parameters "$Function" 
-         ;;
-    esac
-
-}
-
-
-
-
 power() { #? Power Options
 
     case $1 in 
@@ -375,11 +357,26 @@ run() { #? Executables
 
 }
 
+inject() { #? Some of Scripts you might want to use.
+
+    case $1 in 
+      chaotic) #? install Chaotic AUR 
+        shift
+          sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR "${@}"
+         ;;
+        *)
+        Parameters "$Function" 
+         ;;
+    esac
+
+}
+
 reload() { #? Just Reload 
     box_me "Dots reloaded"
     ${ScrDir}/themeswitch.sh -s "$(cat ${ConfDir}/hypr/theme.ctl | grep "^1" | cut -d '|' -f2)" || true
     killall waybar || true
     $(which waybar) > /dev/null 2>&1 &
+
 }
 
 
