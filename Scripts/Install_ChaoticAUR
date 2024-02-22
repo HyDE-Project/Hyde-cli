@@ -164,8 +164,6 @@ exit 0
 }
 
 
-
-
 fresh() {
 clear 
 if distro_ID "Arch Linux"; then

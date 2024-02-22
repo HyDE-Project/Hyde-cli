@@ -2,11 +2,23 @@
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-handle_error() { echo "Error: $1" ; Install_Hyprdots ; exit 1 ; }
+handle_error() { 
+cat << HANDLE_ERROR 
+Please run:
+           'Hyprdots-install'                                 Install Hyprdots (default)
+For advanced usage see options below
+        --clone= /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
+                                                                Default: '${HOME}/Hyprdots'
 
-! source $HOME/.config/hypr/scripts/globalcontrol.sh 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
+        --git https://gitclone/link/                          Repository link to be cloned
+                                                                Default: 'https://github.com/prasanthrangan/hyprdots'
+HANDLE_ERROR
+  exit 1 
+ }
+
+! source ${HOME}/.config/hypr/scripts/globalcontrol.sh 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
 [[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Directory"
-[ ! -f "$CloneDir/Scripts/global_fn.sh" ] && handle_error "$ConfDir/Scripts/global_fn.sh does not exist"
+[ ! -f "$CloneDir/Scripts/global_fn.sh" ] && handle_error "${ConfDir}/Scripts/global_fn.sh does not exist"
 
 ScrDir="$ConfDir/hypr/scripts"
 ScriptDir="$CloneDir/Scripts"

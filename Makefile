@@ -12,8 +12,6 @@ check:
 #	@which tree >/dev/null || (echo "Error: tree is not installed" && exit 1)
 
 
-download:
-	curl -o Hyprdots https://raw.githubusercontent.com/prasanthrangan/hyprdots/a40b2aa3a3fc5fe9e6bf9395e517326f21d3f0ee/Scripts/Hyprdots
 
 update:
 	git fetch
@@ -37,11 +35,16 @@ backup:
 	if [ -f $(DESTDIR)$(bindir)/Hyprdots ]; then \
 	cp $(DESTDIR)$(bindir)/Hyprdots $(BACKUPDIR)/bin; \
 	fi
+		if [ -f $(DESTDIR)$(bindir)/Hyprdots-install ]; then \
+	cp $(DESTDIR)$(bindir)/Hyprdots-install $(BACKUPDIR)/bin; \
+	fi
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true
 
 install:
 	install -m 755 ./Hyprdots $(DESTDIR)$(bindir) || make restore
+	install -m 755 ./Hyprdots-install $(DESTDIR)$(bindir) || make restore
+
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) || make restore
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) || make restore
 
@@ -54,10 +57,15 @@ restore:
 
 uninstall:
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
+
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/*)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/*)
 
 clean:
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
+
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/*)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/*)
+	
