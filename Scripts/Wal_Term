@@ -1,0 +1,17 @@
+#!/bin/bash
+
+selected_number=${1}
+
+
+
+
+[[ -z ${selected_number}  ]] && exit 1
+
+# Define the sequence you want to send to all terminals
+sequence="$(grep "^${selected_number}" ~/.cache/hyprdots-ctl/wallbash-sequences | cut -d'|' -f2)"
+
+# Send the sequence to all active terminals
+for term in /dev/pts/[0-9]*; do
+  echo -e "$sequence" > "$term" &
+done
+
