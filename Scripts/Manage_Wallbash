@@ -1,0 +1,56 @@
+#!/bin/bash
+
+. /usr/lib/hyprdots-ctl/GLOBAL
+
+STATE=${cacheCtl}/wallbash-state
+DCOL=${cacheCtl}/wallbash-sequences
+
+
+ChangeValue() {  
+  local var_name=${1}
+  local var_value=${2}
+  sed -i "/^${var_name}=/ s/=.*/=${var_value}/" "${STATE}"
+  grep -q "^${var_name}=" "${STATE}" || echo "${var_name}=\"${var_value}\"" >> "${STATE}"
+}
+
+function term() {
+start=1 max=3 
+if [[ "$1" == "-t" || "$1" == "--toggle" ]]; then
+ ((term_last_state++))
+if (( term_last_state > max )); then term_last_state=${start} ; fi
+pre_set="${term_last_state}"
+elif [[ $1 =~ ^[0-9]+$ ]] ; then
+pre_set=${1}
+elif [[ "$1" == "--help" ]] ; then
+
+cat << TERM
+Presets: ${max}
+================================================================
+[*]                   No options specified means reload last colors.
+[ -t | --toggle ]     Toggles the preset.
+[n]                   Set [n] preset as terminal colors  
+TERM
+fi
+
+
+[[ -z ${pre_set}  ]] && pre_set=${term_last_state} 
+
+sequence="$(grep "^${pre_set}" "${DCOL}" | cut -d'|' -f2)"
+# Send the sequence to all active terminals
+for term in /dev/pts/[0-9]*; do  echo -en "${sequence}" > "${term}" &  done
+echo -en "${sequence}" > /tmp/sequence
+
+ChangeValue "term_last_state" "${pre_set}"
+}
+
+
+[[ ! -e ${STATE} ]] && touch "${STATE}"
+. "${STATE}"
+
+if [[ "$1" == "reload" ]]; then
+ echo "Reloading" 
+ # Add Soon
+else
+"${@}"
+fi
+
