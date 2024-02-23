@@ -234,6 +234,9 @@ wallbash() { #? Toggle to use wallpaper color as theme color.
         toggle) #? Toggle Wall bash On/Off
             "$ScrDir"/wallbashtoggle.sh
         ;;
+        term) #? Toogle Terminal into some presets [ --help for help ]
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
         *)  Parameters "$Function"  ;;
 
 esac
