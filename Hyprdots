@@ -36,11 +36,11 @@ man() { #? Show Manual
 }
 
 version() { #? Hyprdots Version
-    box_me "$hyprdots_ctl_version"
+    box_me "${hyprdots_ctl_version}"
 }
 
 update() { #? Pull Updates From Hyprdots Repository 
-echo "CloneDirectory: $CloneDir"
+echo "CloneDirectory: ${CloneDir}"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
@@ -65,13 +65,18 @@ rm -f "/tmp/hyprdots_update_check"
 #     esac
 # }
 
-restore() { #? Restore Hyprdots deps
+upgrade() { #? Upgrades from the repository
+    Manage_Configs "upgrade"
+    rename_backup "_Hyprdots_upgrade"
+}
+
+restore() { #? Restore Hyprdots configs
   case $1 in 
         defaults) #? Restore to Default Dots of Hyprdots
         shift
-        box_me "Overwriting Dots from $CloneDir"
+        box_me "Overwriting Dots from ${CloneDir}"
         . Manage_Configs
-         restore_Lister "$CloneDir/Configs" ;  trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+         restore_Lister "${CloneDir}/Configs" ;  trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
          list_Marker
         #  cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
         ask_confirm "${USER}"
