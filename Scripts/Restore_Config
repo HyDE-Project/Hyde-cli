@@ -82,20 +82,21 @@ crnt_cfg="${pth}/${cfg_chk}"
 
             case "${ctlFlag}" in
                 "B")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     ;;
                 "O")
                     
-                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" 
+                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[MOVED TO BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..." 
                     cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
                     echo "[OVERWRITE] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "S")
-                    # Code to execute if ctlFlag is 'S'
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     cp -rf "${CfgDir}$tgt/${cfg_chk}" "${pth}"    
                     echo "[Sync] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "P")
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     if ! cp -rn "${CfgDir}$tgt/${cfg_chk}" "${pth}" 2>/dev/null ; then
                         echo "[PRESERVED] ${pth}${tgt}/${cfg_chk}"
                     else
