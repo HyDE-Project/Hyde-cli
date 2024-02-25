@@ -106,6 +106,16 @@ restore() { #? Restore Hyprdots configs
             Manage_Configs "$1"
             rename_backup "_Hyprdots_restore_config"
         ;;
+        link) #? Links a Clone Directory. Useful if you want to change your CloneDir
+            shift ; [[ -z "${1}" ]] && echo "Missing /path/to/CloneDir/*.: ${1}" && exit 1     
+            new_CloneDir=${1}  
+            [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "${new_CloneDir} not a directory" && exit 1 ;}    
+            [[ ! -e ${new_CloneDir}/Configs/.config/hypr/scripts/globalcontrol.sh ]] && { print_prompt -r "MISSING:" -w "  ./Configs/.config/hypr/scripts/globalcontrol.sh" && exit 1 ;}
+            [[ ! -e ${new_CloneDir}/Scripts/global_fn.sh ]] && { print_prompt -r "MISSING:" -w "./Configs/global_fn.sh " && exit 1 ;}        
+            cd "${new_CloneDir}/Scripts" || { print_prompt -r "ERROR:" -w " cd ${new_CloneDir}" && exit 1 ;}    
+            ./restore_lnk.sh
+            Hyprdots reload
+        ;;
         *)  Parameters "$Function"  ;;
   esac
 }
@@ -211,8 +221,7 @@ wallpaper() { #? Wallpaper related Actions
             "$ScrDir"/swwwallselect.sh
         ;;
         path) #? Current Theme will follow /path/to/wallpaper/* as its wallpaper directory 
-                shift
-            if [[ -z "${1}" ]]; then echo "Missing /absolute/path/to/wallpaper/*.: ${1}" ; exit 1 ; fi                                    
+                shift ; [[ -z "${1}" ]] && echo "Missing /path/to/wallpaper/*.: ${1}" && exit 1                                  
                 ./create_cache.sh -c "$1"*
         ;;
         variety) #? EXPERIMENTAL! Use variety package to manage wallpapers.
@@ -286,8 +295,10 @@ fi
 
 cache() { #? Cache 
     case $1 in 
-      reload) #? Reload Caches if you have new wallpapers.
-            ./create_cache.sh
+      reload) #? Reload Wallpaper Cache.
+            shift
+            [[ -z ${*} ]] && print_prompt -y "NOTE: Append the 'Theme-Name' to reload specific theme"
+             ./create_cache.sh "${@}" 
          ;;
       rebuild) #? Force rebuild cache
             read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
