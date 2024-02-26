@@ -3,8 +3,12 @@
 . /usr/lib/hyprdots-ctl/GLOBAL
 
 STATE=${cacheCtl}/wallbash-state
-DCOL=${cacheCtl}/wallbash-sequences
+DWAL=${cacheCtl}/wallbash-sequences
+DCOL="${ConfDir}/hypr/wallbash/sequence.dcol"
 
+
+[[ ! -e ${DCOL} ]] &&  do_contain "${etcDir}/sequence.dcol" "${ConfDir}/hypr/wallbash/sequence.dcol"
+[[ ! -e ${DWAL} ]] && Hyprdots reload
 
 ChangeValue() {  
   local var_name=${1}
@@ -35,7 +39,7 @@ fi
 
 [[ -z ${pre_set}  ]] && pre_set=${term_last_state} 
 
-sequence="$(grep "^${pre_set}" "${DCOL}" | cut -d'|' -f2)"
+sequence="$(grep "^${pre_set}" "${DWAL}" | cut -d'|' -f2)"
 # Send the sequence to all active terminals
 for term in /dev/pts/[0-9]*; do  echo -en "${sequence}" > "${term}" &  done
 echo -en "${sequence}" > /tmp/sequence

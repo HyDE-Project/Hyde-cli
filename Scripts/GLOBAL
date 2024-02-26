@@ -142,7 +142,7 @@ do_contain() {
 
     if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}" ; then
         cp "${etc_file}" "${conf_file}"
-        # echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
+        echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
     else :
         # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
         print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates" 
