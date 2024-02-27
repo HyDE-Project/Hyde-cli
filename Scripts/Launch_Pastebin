@@ -12,7 +12,7 @@ roconf="~/.config/rofi/clipboard.rasi"
 x_offset=-15   #* Cursor spawn position on clipboard
 y_offset=210   #* To point the Cursor to the 1st and 2nd latest word
 #!base on $HOME/.config/rofi/clipboard.rasi 
-# clip_h=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
+clip_h=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
 clip_w=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
 #clip_h=55 #! Modify limits for size of the Clipboard
 #clip_w=20 #! This values are transformed per cent(100)
@@ -21,10 +21,13 @@ x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
 y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
 #? Rotated monitor? 
 monitor_rot=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .transform')
-if [ "$monitor_rot" == "1" ] || [ "$monitor_rot" == "3" ]; then  # if rotated 270 deg
+if [ $((monitor_rot %  2)) -eq  1 ]; then  # if rotated 270 deg
  tempmon=$x_mon
     x_mon=$y_mon
     y_mon=$tempmon
+    tempclip=$clip_w
+    clip_w=$clip_h
+    clip_h=$tempclip
 #! For rotated monitors
 fi
 #? Scaled monitor Size
@@ -42,11 +45,14 @@ y_cur=$(hyprctl -j cursorpos | jq '.y')
  y_cur=$(( y_cur - y_pos))
 #Limiting
 # Multiply before dividing to avoid losing precision due to integer division
-clip_w=$(( x_mon * clip_w/100 ))
-clip_h=$(( clip_w * 175/100 ))
-# clip_h=$(( y_mon*clip_h/100 ))
+clip_w=$(( x_mon*clip_w/100 ))
+clip_h=$(( y_mon*clip_h/100 ))
 max_x=$((x_mon - clip_w - 5 )) #offset of 5 for gaps
-max_y=$((y_mon - clip_h - 50 )) #offset of 15 for gaps
+max_y=$((y_mon - clip_h - 15 )) #offset of 15 for gaps
+
+# best for multi monitor
+# [ $((monitor_rot %  2)) -eq  1 ] && clip_h=$(( clip_w * 175/100 )) && h_override="height: ${clip_h}px;" 
+
 x_cur=$((x_cur - x_offset))
 y_cur=$((y_cur - y_offset))
 # 
@@ -57,10 +63,9 @@ pos="window {location: north west; x-offset: ${x_cur}px; y-offset: ${y_cur}px;}"
 #pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}" 
 
 # read hypr theme border
-
 wind_border=$(( hypr_border * 3/2 ))
 elem_border=`[ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border`
-r_override="window {height: ${clip_h}px; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+r_override="window {${h_override}border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
 
 
 # read hypr font size
@@ -147,7 +152,7 @@ read -r line
 case $1 in
     # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | cliphist decode | wl-copy
      c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf ) 
-        echo -e "${selClip}" | checkContent
+        ( [ -n "${selClip}" ] && echo -e "${selClip}" | checkContent ) || exit 0
         if [ $? -eq  1 ]; then pasteIt ; exit 0 ; fi
         echo -e "${selClip}" | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
         pasteIt
