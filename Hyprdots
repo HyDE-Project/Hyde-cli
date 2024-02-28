@@ -248,11 +248,16 @@ wallbash() { #? Toggle to use wallpaper color as theme color.
         toggle) #? Toggle Wall bash On/Off
             "$ScrDir"/wallbashtoggle.sh
         ;;
-        term) #? Toogle Terminal into some presets [ --help for help ]
+        term) #? Toogle Terminal into some presets
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        kitty) #? Toogle wallbash for kitty
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        waybar) #? Toogle wallbash for waybar
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
         *)  Parameters "$Function"  ;;
-
 esac
 }
 

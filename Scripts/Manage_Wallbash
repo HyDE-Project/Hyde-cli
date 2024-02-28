@@ -5,7 +5,9 @@
 STATE=${cacheCtl}/wallbash-state
 DWAL=${cacheCtl}/wallbash-sequences
 DCOL="${ConfDir}/hypr/wallbash/sequence.dcol"
-
+grep -iq "EnableWallDcol=1" "${ConfDir}"/hypr/scripts/globalcontrol.sh && toggle_wallbash=true
+FLAG=${2}
+echo ${FLAG}
 
 [[ ! -e ${DCOL} ]] &&  do_contain "${etcDir}/sequence.dcol" "${ConfDir}/hypr/wallbash/sequence.dcol"
 [[ ! -e ${DWAL} ]] && Hyprdots reload
@@ -17,25 +19,81 @@ ChangeValue() {
   grep -q "^${var_name}=" "${STATE}" || echo "${var_name}=\"${var_value}\"" >> "${STATE}"
 }
 
+handle_toggle() {
+dcol_file=${1}
+dcol_mask=${2}
+
+if [[ "${FLAG}" == "0" || "${FLAG}" == "--off" ]]; then
+toggle_wallbash && echo "Wallbash Enabled!, Disabling first..." && trap toggle_wallbash EXIT  
+  [[ ! -e ${dcol_file} ]] &&  print_prompt -r "Already turned off" && exit 1 
+    print_prompt -y "Masking ${dcol_file}" 
+    mv "${dcol_file}" "${dcol_mask}"  
+elif [[ ${FLAG} =~ ^[0-9]+$ ]] ; then
+toggle_wallbash && echo "Wallbash Enabled!, Disabling first..." && trap toggle_wallbash EXIT  
+[[ -e ${dcol_file} ]] &&  print_prompt -r "Already turned on" && exit 1
+print_prompt -y "Unmasking ${dcol_file}"
+mv "${dcol_mask}" "${dcol_file}"
+fi
+exit 0
+}
+
+toggle_wallbash() {
+[[ ${toggle_wallbash} = true ]] && Hyprdots wallbash toggle
+}
+
+function kitty() {
+dcol_file=${ConfDir}/hypr/wallbash/kitty.dcol
+dcol_mask=${ConfDir}/hypr/wallbash/.kitty.dcol
+
+[[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
+
+cat << KITTY
+Presets: 1
+================================================================
+[ 0 | --off ]           Disables wallbash for kitty
+[ n ]                   Set a preset [n]umber as terminal colors (1 preset available)
+ 
+KITTY
+exit 0
+}
+
+
+function waybar() {
+dcol_file=${ConfDir}/hypr/wallbash/waybar.dcol
+dcol_mask=${ConfDir}/hypr/wallbash/.waybar.dcol
+
+[[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
+
+cat << WAYBAR
+Presets: 1
+================================================================
+[ 0 | --off ]           Disables wallbash for waybar
+[ n ]                   Set a preset [n]umber as terminal colors (1 preset available)
+ 
+WAYBAR
+exit 0
+}
+
 function term() {
 start=1 max=3 
-if [[ "$1" == "-t" || "$1" == "--toggle" ]]; then
+if [[ "${FLAG}" == "-t" || "${FLAG}" == "--toggle" ]]; then
  ((term_last_state++))
 if (( term_last_state > max )); then term_last_state=${start} ; fi
 pre_set="${term_last_state}"
-elif [[ $1 =~ ^[0-9]+$ ]] ; then
+elif [[ ${FLAG} =~ ^[0-9]+$ ]] ; then
 pre_set=${1}
-elif [[ "$1" == "--help" ]] ; then
-
+elif [[ "${FLAG}" == "--restore" || "${FLAG}" == "-R" ]] ; then
+:
+else 
 cat << TERM
 Presets: ${max}
 ================================================================
-[*]                   No options specified means reload last colors.
-[ -t | --toggle ]     Toggles the preset.
-[n]                   Set [n] preset as terminal colors  
+[ -R | --restore]       Restore last colors.
+[ -t | --toggle ]       Toggles the preset.
+[ n ]                   Set a preset [n]umber as terminal colors  
 TERM
+exit 0
 fi
-
 
 [[ -z ${pre_set}  ]] && pre_set=${term_last_state} 
 
@@ -51,10 +109,9 @@ ChangeValue "term_last_state" "${pre_set}"
 [[ ! -e ${STATE} ]] && touch "${STATE}"
 . "${STATE}"
 
-if [[ "$1" == "reload" ]]; then
+if [[ "${FLAG}" == "reload" ]]; then
  echo "Reloading" 
  # Add Soon
 else
 "${@}"
 fi
-
