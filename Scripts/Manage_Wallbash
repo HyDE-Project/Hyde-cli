@@ -43,7 +43,7 @@ toggle_wallbash() {
 
 function kitty() {
 dcol_file=${ConfDir}/hypr/wallbash/kitty.dcol
-dcol_mask=${ConfDir}/hypr/wallbash/.kitty.dcol
+dcol_mask=${ConfDir}/hypr/wallbash/.kitty.dcol.X
 
 [[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
 
@@ -60,7 +60,7 @@ exit 0
 
 function waybar() {
 dcol_file=${ConfDir}/hypr/wallbash/waybar.dcol
-dcol_mask=${ConfDir}/hypr/wallbash/.waybar.dcol
+dcol_mask=${ConfDir}/hypr/wallbash/.waybar.dcol.X
 
 [[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
 
