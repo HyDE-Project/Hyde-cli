@@ -57,6 +57,23 @@ KITTY
 exit 0
 }
 
+function spotify() {
+dcol_file=${ConfDir}/hypr/wallbash/spotify.dcol
+dcol_mask=${ConfDir}/hypr/wallbash/.spotify.dcol.X
+
+[[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
+
+cat << SPOTIFY
+Presets: 1
+================================================================
+[ 0 | --off ]           Disables wallbash for spotify
+[ n ]                   Set a preset [n]umber as terminal colors (1 preset available)
+ 
+SPOTIFY
+print_prompt -r "WARNING:" -y "Disabling wallbash for spotify will not revert spotify to default theme.\nThis section only disabels further wallbash execution"
+exit 0
+}
+
 
 function waybar() {
 dcol_file=${ConfDir}/hypr/wallbash/waybar.dcol

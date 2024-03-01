@@ -248,13 +248,16 @@ wallbash() { #? Toggle to use wallpaper color as theme color.
         toggle) #? Toggle Wall bash On/Off
             "$ScrDir"/wallbashtoggle.sh
         ;;
-        term) #? Toogle Terminal into some presets
+        term) #? Toogle Terminal colors into some presets (Follows wallpaper accent)
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
-        kitty) #? Toogle wallbash for kitty
+        kitty) #? Toogle wallbash for 'kitty'
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
-        waybar) #? Toogle wallbash for waybar
+        waybar) #? Toogle wallbash for 'waybar'
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        spotify) #? Toogle wallbash for 'spotify'
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
         *)  Parameters "$Function"  ;;
