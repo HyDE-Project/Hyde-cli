@@ -3,14 +3,14 @@ bindir := $(prefix)/bin
 libdir := $(prefix)/lib/hyprdots-ctl
 etcdir := /etc/hyprdots-ctl
 BACKUPDIR := $(shell mktemp -d)
+VERSION := $(shell git describe --tags)
+LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
+COMMIT_MESSAGE := $(shell git show -s --format='%B')
 
 all: check directories backup  install
 
 check:
 	@which git >/dev/null || (echo "Error: git is not installed" && exit 1)
-#	@which fzf >/dev/null || (echo "Error: fzf is not installed" && exit 1)
-#	@which tree >/dev/null || (echo "Error: tree is not installed" && exit 1)
-
 
 
 update:
@@ -41,9 +41,17 @@ backup:
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true
 
+
+
 install:
 	install -m 755 ./Hyprdots $(DESTDIR)$(bindir) || make restore
 	install -m 755 ./Hyprdots-install $(DESTDIR)$(bindir) || make restore
+
+	@echo "Version: $(VERSION)" > .hyprdots-ctl.ver
+	@echo "Last commit: $(LAST_COMMIT)" >> .hyprdots-ctl.ver
+	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .hyprdots-ctl.ver
+
+	install -m 644 ./.hyprdots-ctl.ver $(DESTDIR)$(etcdir) || make restore
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) || make restore
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) || make restore

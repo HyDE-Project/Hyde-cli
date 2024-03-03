@@ -1,8 +1,6 @@
 #!/bin/bash
 if [ "$(whoami)" = "root" ] || [ $(id -u) -eq 0 ] ; then echo "Oh no! What have you done! Run without 'sudo'...EXITING" ; exit 1 ;fi
 
-hyprdots_ctl_version='v0.4.0-0-g013a914-240227@20:49:46'
-
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
 . DEVEL
@@ -36,9 +34,27 @@ man() { #? Show Manual
 }
 
 version() { #? Hyprdots Version
-    box_me "${hyprdots_ctl_version}"
+box_me -s "Hyprdots-ctl Version" -c 77
+cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
 }
 
+systeminfo() { #? Hyprdots, System, Drivers Information
+echo -e "**Hyprdots-ctl Version:**"
+cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
+
+echo -e "\n**GPU:** "
+lspci -nn | grep -Ei "VGA|3d"  
+
+echo -e "\n**CPU:** "
+lscpu | awk -F': ' '/Model name/ {gsub(/^ *| *$| CPU.*/,"",$2); print $2}'
+
+echo -e "\n**OS:** "
+cat /etc/os-release 
+
+echo -e "\n**Hyprland System Information:** (Not always available)" 
+hyprctl systeminfo
+
+}
 update() { #? Pull Updates From Hyprdots Repository 
 echo "CloneDirectory: ${CloneDir}"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 

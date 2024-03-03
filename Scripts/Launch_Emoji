@@ -3,7 +3,7 @@ pkill -x rofi && exit
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
-CHECK rofi jq wtype
+CHECK rofi jq wtype noto-fonts-emoji
 
 emojiData="${etcDir}/emoji.db"
 recentData="${cacheCtl}/show_emoji_recent.db"
