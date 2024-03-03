@@ -128,7 +128,7 @@ if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
     notify-send -a "${0}" "Dependencies: '${Pkg_Dep}' Please run in the terminal first..."
     ask_confirm
     if [[ -z "${ans}" ]]; then get_aurhlpr 
-    $"aurhlpr" -S $Pkg_Dep
+    pkexec "${aurhlpr}" -S $Pkg_Dep --noconfirm
     else echo "Skipping installation of packages" ;exit 1
     fi
 fi
