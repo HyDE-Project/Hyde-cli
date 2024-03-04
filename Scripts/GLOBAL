@@ -79,7 +79,7 @@ print_prompt() {
 }
 
 box_me() {
- local sender="Hyprdots: "
+ local sender="Hyprdots-ctl: "
  local color=3
 
  while (( "$#" )); do
@@ -169,4 +169,16 @@ do_contain() {
     fi
 }
 
-
+set_branch() {
+ git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ if [[ $git_branch == *"*"* ]]; then
+    print_prompt -y "Already in branch: ${git_branch}"
+    return 1
+ else
+# Extract the branch name without the remote prefix and trim leading whitespace
+branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+# Switch to the selected branch
+git checkout "${branch_name}"
+echo "On branch: ${branch_name}"
+ fi
+}

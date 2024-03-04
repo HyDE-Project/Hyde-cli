@@ -3,6 +3,9 @@ if [ "$(whoami)" = "root" ] || [ $(id -u) -eq 0 ] ; then echo "Oh no! What have 
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
+hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
+
+
 . DEVEL
 . GLOBAL 
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
@@ -21,7 +24,7 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 
 man() { #? Show Manual 
   manPage=$(
-    echo -e "Hyprdots: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
+    echo -e "Hyprdots-ctl: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
       desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $5 }')
@@ -33,14 +36,16 @@ man() { #? Show Manual
   echo "${manPage}"
 }
 
-version() { #? Hyprdots Version
+version() { #? Hyprdots-ctl Version
 box_me -s "Hyprdots-ctl Version" -c 77
 cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
 }
 
-systeminfo() { #? Hyprdots, System, Drivers Information
+systeminfo() { #? System Information
 echo -e "**Hyprdots-ctl Version:**"
 cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
+
+echo -e "\n**Clone Directory:**\n${CloneDir}"
 
 echo -e "\n**GPU:** "
 lspci -nn | grep -Ei "VGA|3d"  
@@ -53,8 +58,13 @@ cat /etc/os-release
 
 echo -e "\n**Hyprland System Information:** (Not always available)" 
 hyprctl systeminfo
-
 }
+
+branch() { #? Set pref Hyprdots branch
+( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
+set_branch
+}
+
 update() { #? Pull Updates From Hyprdots Repository 
 echo "CloneDirectory: ${CloneDir}"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
@@ -81,7 +91,7 @@ rm -f "/tmp/hyprdots_update_check"
 #     esac
 # }
 
-upgrade() { #? Upgrades from the repository
+upgrade() { #? Upgrades dots from the Repository; Manage the control file : '~/.config/hyprdots-ctl/manage_cfg.lst'
     Manage_Configs "upgrade"
     rename_backup "_Hyprdots_upgrade"
 }
