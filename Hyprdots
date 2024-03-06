@@ -21,6 +21,8 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 #* |}
 #! +----------------------------------------------------------------|
 
+current_branch="Git Branch: '$(git branch --show-current)'"  
+
 man() { #? Show Manual 
   manPage=$(
     echo -e "Hyprdots-ctl: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
@@ -66,7 +68,7 @@ set_branch
 
 update() { #? Pull Updates From Hyprdots Repository 
 echo "CloneDirectory: ${CloneDir}"
-echo -e "Git Branch: '$(git branch --show-current)'"  
+echo "${current_branch}"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }

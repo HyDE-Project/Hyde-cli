@@ -18,7 +18,7 @@ HANDLE_ERROR
 
 #Handles Transition
 ScrDir="${HOME}/.config/hyprdots/scripts"
-[[ ! -d ${ScrDir} ]] && ScrDir="${HOME}/.config/hypr/scripts" && echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration."
+[[ ! -d ${ScrDir} ]] && ScrDir="${HOME}/.config/hypr/scripts" #&& echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration."
 
 ! source "${ScrDir}/globalcontrol.sh" 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
 [[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Directory"
