@@ -118,6 +118,9 @@ restore() { #? Restore Hyprdots configs
             rename_backup "_Hyprdots_restore_config"
         ;;
         link) #? Links a Clone Directory. Useful if you want to change your CloneDir
+        repo_info
+        ( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
+        set_branch            
             shift ; [[ -z "${1}" ]] && echo "Missing /path/to/CloneDir/*.: ${1}" && exit 1     
             new_CloneDir=${1}  
             [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "${new_CloneDir} not a directory" && exit 1 ;}    

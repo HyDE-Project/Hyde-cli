@@ -88,6 +88,10 @@ Git_Repo="$(git remote get-url origin)"
 echo "$branch"
 
 git checkout -b ${branch}
+
+git pull origin ${branch}
+
+
   echo "Clone Directory exist: ${CloneDir}"
   echo "Git URL: $(git remote get-url origin)"
   echo "Git Branch: ${branch}"
