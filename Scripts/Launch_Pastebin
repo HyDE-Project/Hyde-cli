@@ -6,7 +6,7 @@ CHECK rofi jq wtype
 
 pkill -x rofi && exit
 
-roconf="~/.config/rofi/clipboard.rasi"
+roFile="~/.config/rofi/clipboard.rasi"
 
 # set position
 x_offset=-15   #* Cursor spawn position on clipboard
@@ -150,19 +150,19 @@ read -r line
 
 # clipboard action
 case $1 in
-    # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf | cliphist decode | wl-copy
-     c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf ) 
+    # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | cliphist decode | wl-copy
+     c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile ) 
         ( [ -n "${selClip}" ] && echo -e "${selClip}" | checkContent ) || exit 0
         if [ $? -eq  1 ]; then pasteIt ; exit 0 ; fi
         echo -e "${selClip}" | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
         pasteIt
          ;; 
-    d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf |  cliphist_delete
+    d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile |  cliphist_delete
      
         ;;
     w) 
         r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
-        if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roconf)" == "Yes" ] ; then
+        if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)" == "Yes" ] ; then
             cliphist wipe
         fi
         ;;

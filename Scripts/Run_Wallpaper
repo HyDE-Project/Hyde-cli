@@ -38,9 +38,12 @@ exit 0
 
 WP="${1}"
 ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-ThemeCtl="$ConfDir/hypr/theme.ctl"
+hyprdotsDir="${ConfDir}/hyprdots"
+ScrDir="${hyprdotsDir}/scripts"
+source "${ScrDir}/globalcontrol.sh"
+
 CurrThemeDir=$(awk -F '|' '/^1/ {print $NF}' ${ThemeCtl} | xargs -d '\n' dirname)
-THEME=$(awk -F '|' '/^1/ {print $2}' ~/.config/hypr/theme.ctl)
+THEME=$(awk -F '|' '/^1/ {print $2}' "${ThemeCtl}")
 varBase="A_VARIETY_WALLPAPER_${THEME}.png"
 VARIETY="$(eval realpath "${CurrThemeDir}")/${varBase}"
 

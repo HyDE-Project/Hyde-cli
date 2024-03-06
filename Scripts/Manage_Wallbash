@@ -4,12 +4,12 @@
 
 STATE=${cacheCtl}/wallbash-state
 DWAL=${cacheCtl}/wallbash-sequences
-DCOL="${ConfDir}/hypr/wallbash/sequence.dcol"
-grep -iq "EnableWallDcol=1" "${ConfDir}"/hypr/scripts/globalcontrol.sh && toggle_wallbash=true
+DCOL="${wallbashDir}/sequence.dcol"
+grep -iq "EnableWallDcol=1" "${ScrDir}/globalcontrol.sh" && toggle_wallbash=true
 FLAG=${2}
 echo ${FLAG}
 
-[[ ! -e ${DCOL} ]] &&  do_contain "${etcDir}/sequence.dcol" "${ConfDir}/hypr/wallbash/sequence.dcol"
+[[ ! -e ${DCOL} ]] &&  do_contain "${etcDir}/sequence.dcol" "${wallbashDir}/sequence.dcol"
 [[ ! -e ${DWAL} ]] && Hyprdots reload
 
 ChangeValue() {  
@@ -42,8 +42,8 @@ toggle_wallbash() {
 }
 
 function kitty() {
-dcol_file=${ConfDir}/hypr/wallbash/kitty.dcol
-dcol_mask=${ConfDir}/hypr/wallbash/.kitty.dcol.X
+dcol_file=${wallbashDir}/kitty.dcol
+dcol_mask=${wallbashDir}/.kitty.dcol.X
 
 [[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
 
@@ -58,8 +58,8 @@ exit 0
 }
 
 function spotify() {
-dcol_file=${ConfDir}/hypr/wallbash/spotify.dcol
-dcol_mask=${ConfDir}/hypr/wallbash/.spotify.dcol.X
+dcol_file=${wallbashDir}/spotify.dcol
+dcol_mask=${wallbashDir}/.spotify.dcol.X
 
 [[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
 
@@ -76,8 +76,8 @@ exit 0
 
 
 function waybar() {
-dcol_file=${ConfDir}/hypr/wallbash/waybar.dcol
-dcol_mask=${ConfDir}/hypr/wallbash/.waybar.dcol.X
+dcol_file=${wallbashDir}/waybar.dcol
+dcol_mask=${wallbashDir}/.waybar.dcol.X
 
 [[ -n ${FLAG} ]] && handle_toggle "${dcol_file}" "${dcol_mask}"
 

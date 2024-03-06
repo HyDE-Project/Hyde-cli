@@ -2,6 +2,8 @@
 
 . GLOBAL
 
+config_override="/tmp/Hyprdots-${UID}-BAKmanage_cfg.lst"
+
 list_Backup() {
   if [ -d "$BkpDir" ] && [ "$(ls -A "$BkpDir")" ]; then
     print_prompt -m "List of Backups:"
@@ -12,8 +14,8 @@ list_Backup() {
   fi
 }
 
-
 list_Marker() {
+barLine
 echo "Please review the list..."
 cat << REVIEW
 O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
@@ -22,20 +24,19 @@ P   Preserve      Populates Dots But Preserves existing user Dots
 B   Backup        Only Backup the selected Dots (Default)
 REVIEW
 
-awk -F'|' -v OFS='|' '{$1 = "B"; print}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
 
-PRESERVE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Preserve will copy files from Clone only if dots do not yet exist ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$PRESERVE" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+PRESERVE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Preserve will copy files from Clone only if dots do not yet exist ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
 
-SYNC="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Sync will simply copy current dots to backup. Then fetch dots from Clone ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$SYNC" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+SYNC="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Sync will simply copy current dots to backup. Then fetch dots from Clone ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
 
-OVERWRITE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst)" | fzf -m --marker '' --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Overwrite moves current dots to backup then fetch the dots from Clone' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$OVERWRITE" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst > ./temp.lst && mv ./temp.lst /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
-
+OVERWRITE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Overwrite moves current dots to backup then fetch the dots from Clone' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
+awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
 
 barLine
-cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+cat "${config_override}"
 barLine
 echo "Cancel if you change your mind"
 }
@@ -44,7 +45,7 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
 # Define the backup directory
 restore_directory="$1"
 # echo "$restore_directory"
-: > /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+: > "${config_override}"
 # Read the file line by line
 while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
 
@@ -60,11 +61,11 @@ while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
   for file in "${files_array[@]}"; do
 
 if [ "$restore_directory" = "CUSTOM" ]; then
-  echo "B|$dir|$file|$pkg" >> "/tmp/Hyprdots-${UID}-BAKmanage_cfg.lst"
+  echo "B|$dir|$file|$pkg" >> "${config_override}"
 else
  if [ -e "$restore_directory$curr/$file" ]; then
     #  echo -e "$curr/$file"
-     echo "P|$dir|$file|$pkg" >> "/tmp/Hyprdots-${UID}-BAKmanage_cfg.lst"
+     echo "P|$dir|$file|$pkg" >> "${config_override}"
  fi
 fi
   done
@@ -77,7 +78,7 @@ all() {
   list_Backup
   echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" 
   ask_confirm
-         awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+         awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
       Restore_Config "/tmp/Hyprdots-${UID}-BAK"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != "$bak" ]]; then
@@ -90,14 +91,14 @@ all() {
 # custom() {
 #   list_Backup
 # #       restore_Lister "CUSTOM"
-# # cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
+# # cat ${config_override} | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
 # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
 # #echo "$selected_line"
-# awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
-# cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+# awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ${config_override}
+# cat ${config_override}
 
 #         exit 0
-#         trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+#         trap 'rm -f ${config_override}' EXIT
 #         ./restore_cfg.sh "BAK" "" 
 #       bak=$(ls -td -- $BkpDir/* | head -n 1 )
 #       if [[ "$last_bak" != $bak ]]; then
@@ -110,7 +111,7 @@ all() {
 revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyprdots backup all' to save the current Dots"
 ask_confirm
-         awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+         awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
             
             
             selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt 'List of explicit Backup, Run by Hyprdots backup all' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | cut -d ' ' -f4) && echo "$selected_backup" 
@@ -138,7 +139,8 @@ fi
 if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]] || [[ -e ${config_source} ]] ; then     
       print_prompt -y "Restoring from:" -w "${config_source}"     
       echo "Please Review files to be re-populated to your Dots" 
-        restore_Lister "${config_source}" ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+        restore_Lister "${config_source}"
+         trap 'rm -f ${config_override}' EXIT
         list_Marker
         ask_confirm "${USER}"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
@@ -175,14 +177,15 @@ fi
 Clone() {
 if [ ! -d "$1" ]; then echo "Not a directory" ; exit 1 ; fi
 custClone="$1"
-if [ ! -f "$custClone/Configs/.config/hypr/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
+# if [ ! -f "$custClone/Configs/.config/hyprdots/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
+if [ ! -f "$custClone/Configs/.config/hyprdots/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
   echo "Broken Hyprdots Clone!"
   exit 1
 fi
 echo "Generating a Restore List"
 cd $custClone/Scripts || exit
 ls -la
-restore_Lister "$custClone/Configs" ; trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+restore_Lister "$custClone/Configs" ; trap 'rm -f ${config_override}' EXIT
 list_Marker
 ask_confirm "$USER"
 ./restore_fnt.sh
