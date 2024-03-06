@@ -5,7 +5,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
 hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
 
-. DEVEL
+# . DEVEL
 . GLOBAL 
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 . FUNCTIONS 
