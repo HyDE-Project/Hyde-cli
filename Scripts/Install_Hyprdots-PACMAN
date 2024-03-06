@@ -1,5 +1,7 @@
 #! /bin/bash
 
+#TODO: Clean This
+
 CloneDir=${1}
 GIT=${2}
 
@@ -37,29 +39,28 @@ Git Repository: ${GIT}
 GREET
 
 
-read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; echo ; [[ -z "$key" ]] || exit 0 
 
 #? Attempt to install using Chaotic AUR
  sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
 
 # rm -fr "${CloneDir}" || true
-
 git clone --depth 1 "${GIT}" "${CloneDir}"
 cd "${CloneDir}"/Scripts || exit 0
 
+#? Select Branch
+Git_Repo=${GIT}
+    if echo "$Git_Repo" | grep -q "/tree/"; then
+        branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
+    else branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
+        if [[ ${#branches[@]} -le 1 ]]; then
+            branch=${branches[0]}
+        else echo "Select a Branch"
+            select branch in "${branches[@]}"; do [[ -n $branch ]] && break || echo "Invalid selection. Please try again." ; done
+        fi
+    fi
 
-# Change Branch
-git fetch --depth=1
- git_branch=$(git branch -a | fzf --prompt='Choose a branch')
- if [[ $git_branch == *"*"* ]]; then
-     echo "Already in branch: ${git_branch}"
- else
-# Extract the branch name without the remote prefix and trim leading whitespace
-branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
-# Switch to the selected branch
-git checkout "${branch_name}"
-echo "On branch: ${branch_name}"
- fi
+echo "$branch"
 
 
 custom_apps="${CloneDir}/Scripts/custom_apps.lst"

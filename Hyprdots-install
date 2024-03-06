@@ -1,4 +1,7 @@
 #!/bin/bash
+
+#TODO: Clean This
+
 is_link=false
     while (( "$#" )); do
         case "$1" in
@@ -31,6 +34,7 @@ HANDLE_ERROR
                 ;;
         esac
     done
+    
 [[ -n ${CloneDir} ]] && echo "Set Clone Directory: ${CloneDir}"
 [[ ${is_link} == true ]] && echo "Linked to Clone Directory: ${CloneDir}"
 [[ -n ${GIT} ]] &&    echo "Cloning from: ${GIT}"
@@ -62,26 +66,28 @@ case "${distro_ID}" in
 esac
 }
 
-
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
+#? Select Branch
 if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
   cd "${CloneDir}"/Scripts || exit 0
 
-# Change Branch
-git fetch --depth=1
- git_branch=$(git branch -a | fzf --prompt='Choose a branch')
- if [[ $git_branch == *"*"* ]]; then
-     echo "Already in branch: ${git_branch}"
- else
-# Extract the branch name without the remote prefix and trim leading whitespace
-branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
-# Switch to the selected branch
-git checkout "${branch_name}"
-echo "On branch: ${branch_name}"
- fi
+Git_Repo=${GIT}
+    if echo "$Git_Repo" | grep -q "/tree/"; then
+        branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
+    else branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
+        if [[ ${#branches[@]} -le 1 ]]; then
+            branch=${branches[0]}
+        else echo "Select a Branch"
+            select branch in "${branches[@]}"; do [[ -n $branch ]] && break || echo "Invalid selection. Please try again." ; done
+        fi
+    fi
 
+echo "$branch"
+
+git checkout -b ${branch}
   echo "Clone Directory exist: ${CloneDir}"
+  echo "Git Branch: ${branch}"
   echo "[*]Using existing directory."
   echo "[*]Uncommited changes will be stashed"
 
@@ -97,3 +103,4 @@ echo "On branch: ${branch_name}"
 else 
 install_distro
 fi
+
