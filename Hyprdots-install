@@ -72,7 +72,9 @@ export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
   cd "${CloneDir}"/Scripts || exit 0
 
-Git_Repo=${GIT}
+Git_Repo="$(git remote get-url origin)"
+
+
     if echo "$Git_Repo" | grep -q "/tree/"; then
         branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
     else branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
@@ -87,6 +89,7 @@ echo "$branch"
 
 git checkout -b ${branch}
   echo "Clone Directory exist: ${CloneDir}"
+  echo "Git URL: $(git remote get-url origin)"
   echo "Git Branch: ${branch}"
   echo "[*]Using existing directory."
   echo "[*]Uncommited changes will be stashed"

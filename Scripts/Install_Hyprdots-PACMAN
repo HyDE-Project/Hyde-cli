@@ -60,8 +60,9 @@ Git_Repo=${GIT}
         fi
     fi
 
-echo "$branch"
-
+echo "Clone Directory exist: ${CloneDir}"
+echo "Git URL: $(git remote get-url origin)"
+echo "Git Branch: ${branch}"
 
 custom_apps="${CloneDir}/Scripts/custom_apps.lst"
 

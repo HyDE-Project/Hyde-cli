@@ -192,5 +192,6 @@ echo "On branch: ${branch_name}"
 
 repo_info() {
 print_prompt -g "CloneDirectory: " -n "${CloneDir}"
+print_prompt -g "Git URL: " -n "$( git remote get-url origin)"
 print_prompt -g "Git Branch: " -n "$(git branch --show-current)"
 }
