@@ -72,5 +72,27 @@ echo -e "Optional packages loaded:"
 cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
 fi
 
+# Change Branch
+git fetch --depth=1
+ git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ if [[ $git_branch == *"*"* ]]; then
+     echo "Already in branch: ${git_branch}"
+ else
+# Extract the branch name without the remote prefix and trim leading whitespace
+branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+# Switch to the selected branch
+git checkout "${branch_name}"
+echo "On branch: ${branch_name}"
+ fi
+
+
+custom_apps="${CloneDir}/Scripts/custom_apps.lst"
+
+if [[ -e ${custom_apps} ]] ; then 
+sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+echo -e "Optional packages loaded:"
+cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+fi
+
 
  ./install.sh /tmp/hyprdots-ctl-$(id -u)-temporary-apps
