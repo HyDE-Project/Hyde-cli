@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
+export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
 handle_error() { 
 cat << HANDLE_ERROR 
@@ -16,35 +16,36 @@ HANDLE_ERROR
   exit 1 
  }
 
-! source ${HOME}/.config/hypr/scripts/globalcontrol.sh 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
+#Handles Transition
+ScrDir="${HOME}/.config/hyprdots/scripts"
+[[ ! -d ${ScrDir} ]] && ScrDir="${HOME}/.config/hypr/scripts" && echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration."
+
+! source "${ScrDir}/globalcontrol.sh" 2> /dev/null && handle_error "Failed to source globalcontrol.sh"
 [[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Directory"
-[ ! -f "$CloneDir/Scripts/global_fn.sh" ] && handle_error "${ConfDir}/Scripts/global_fn.sh does not exist"
+[[ ! -f "${CloneDir}/Scripts/global_fn.sh" ]] && handle_error "${ConfDir}/Scripts/global_fn.sh does not exist"
 
-ScrDir="$ConfDir/hypr/scripts"
-ScriptDir="$CloneDir/Scripts"
-BkpDir="$ConfDir/cfg_backups"
-cacheDir="$HOME/.cache/hyprdots"
-cacheCtl="$HOME/.cache/hyprdots-ctl"
+ScriptDir="${CloneDir}/Scripts"
+BkpDir="${ConfDir}/cfg_backups"
+cacheDir="${HOME}/.cache/hyprdots"
+cacheCtl="${HOME}/.cache/hyprdots-ctl"
 etcDir="/etc/hyprdots-ctl"
-ctlDir="$ConfDir/hyprdots-ctl"
-
+ctlDir="${ConfDir}/hyprdots-ctl"
 
 barLine() { printf '=%.0s' $(seq 3 "$(tput cols)") ; }
 
-
 make_dir=(
-  "$ScrDir"
-  "$ScriptDir"
-  "$BkpDir"
-  "$cacheDir"
-  "$cacheCtl"
-  "$etcDir"
-  "$ctlDir"
+  "${ScrDir}"
+  "${ScriptDir}"
+  "${BkpDir}"
+  "${cacheDir}"
+  "${cacheCtl}"
+  "${etcDir}"
+  "${ctlDir}"
 )
   for dir in "${make_dir[@]}"; do
-    if [ ! -d "$dir" ]; then
-      mkdir -p "$dir"
-      echo "Hyprdots-ctl created a directory: $dir"
+    if [[ ! -d "${dir}" ]]; then
+      mkdir -p "${dir}"
+      echo "Hyprdots-ctl created a directory: ${dir}"
     fi
   done
 

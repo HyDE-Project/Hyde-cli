@@ -5,7 +5,6 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
 hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
 
-
 . DEVEL
 . GLOBAL 
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
@@ -67,29 +66,10 @@ set_branch
 
 update() { #? Pull Updates From Hyprdots Repository 
 echo "CloneDirectory: ${CloneDir}"
+echo -e "Git Branch: '$(git branch --show-current)'"  
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
-
-# install() { #? Installs Hyprdots
-
-#     case $1 in
-#         fresh) #? Fresh installation of Hyprdots
-#             ./install.sh
-#             ;;
-#         custom) #? Custom installation of Apps
-#         echo "Fresh installation plus custom apps... Press any key to Proceed..."
-#         ConfigCtl "$CloneDir/Scripts/custom_apps.lst" "$ACTION"
-#         echo "List of packages to be installed:"
-#         grep -v '^#' ./custom_apps.lst
-#             read -n 1 -s -r -p "[ENTER/SPACE:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
-#             ./install.sh ./custom_apps.lst
-#             ;;
-#             *)
-#             Parameters "$Function" 
-#             ;;
-#     esac
-# }
 
 upgrade() { #? Upgrades dots from the Repository; Manage the control file : '~/.config/hyprdots-ctl/manage_cfg.lst'
     Manage_Configs "upgrade"
