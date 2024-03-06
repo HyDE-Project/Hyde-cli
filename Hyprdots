@@ -5,7 +5,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
 hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
 
-. DEVEL
+# . DEVEL
 . GLOBAL 
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 . FUNCTIONS 
@@ -20,6 +20,8 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 #* |   esac
 #* |}
 #! +----------------------------------------------------------------|
+
+current_branch="Git Branch: '$(git branch --show-current)'"  
 
 man() { #? Show Manual 
   manPage=$(
@@ -66,7 +68,7 @@ set_branch
 
 update() { #? Pull Updates From Hyprdots Repository 
 echo "CloneDirectory: ${CloneDir}"
-echo -e "Git Branch: '$(git branch --show-current)'"  
+echo "${current_branch}"
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
