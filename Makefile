@@ -67,13 +67,13 @@ uninstall:
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
 
-	-rm -rf $(wildcard $(DESTDIR)$(libdir)/*)
-	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/*)
+	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
+	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
 
 clean:
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
 
-	-rm -rf $(wildcard $(DESTDIR)$(libdir)/*)
-	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/*)
+	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
+	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
 	

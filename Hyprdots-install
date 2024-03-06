@@ -21,7 +21,7 @@ Unknown option: $1
 Please run: 'Hyprdots-install'                                Install Hyprdots (Default)
 
 Advanced usage:
-        --clone= /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
+        --clone /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
                                                               Default: '${HOME}/Hyprdots'
 
         --git https://gitclone/repo/link/                          Repository link to be cloned
@@ -62,20 +62,29 @@ case "${distro_ID}" in
 esac
 }
 
-custom_apps="${CloneDir}/Scripts/custom_apps.lst"
-
-if [[ -e ${custom_apps} ]] ; then 
-sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-echo -e "Optional packages loaded:"
-cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-fi
-
 
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
 if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
   cd "${CloneDir}"/Scripts || exit 0
-  echo -e "\nDirectory exist: ${CloneDir}\n[*]Using existing directory.\n[*]Uncommited changes will be stashed\n"
+
+# Change Branch
+git fetch --depth=1
+ git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ if [[ $git_branch == *"*"* ]]; then
+     echo "Already in branch: ${git_branch}"
+ else
+# Extract the branch name without the remote prefix and trim leading whitespace
+branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+# Switch to the selected branch
+git checkout "${branch_name}"
+echo "On branch: ${branch_name}"
+ fi
+
+  echo "Clone Directory exist: ${CloneDir}"
+  echo "[*]Using existing directory."
+  echo "[*]Uncommited changes will be stashed"
+
   read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0 
   ( git reset --hard HEAD  && git clean -fd  && git pull )  || true
       if [[ ${is_link} == true ]]; then
