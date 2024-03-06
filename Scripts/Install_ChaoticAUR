@@ -188,7 +188,7 @@ This repo is generated on-demand from packages we use on our personal computers.
 For more information, visit: https://aur.chaotic.cx/
 $vertL
 
-Hyprdots-ctl is not affiliated with the Chaotic AUR.
+Hyprdots-ctl is not affiliated with Chaotic AUR.
 
 CHAOS
 
@@ -210,7 +210,7 @@ case "$1" in
 --install)
   if [ "$2" == "fresh" ]; then fresh ; fi
   if check_Integrity > /dev/null; then
-    echo "Chaotic AUR already installed. Would you like a reinstallation? [y/N]"
+    echo "Chaotic AUR already installed. Would you like a reinstall? [y/N]"
     read ans
     if [ "$ans" != "Y" ] && [ "$ans" != "y" ]; then echo "Chaotic AUR: Operation Cancelled."
       exit 0
