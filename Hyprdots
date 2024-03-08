@@ -372,6 +372,9 @@ show() { #? Some Hypr GUI you might want to use.
         screencap) #? Experimental! Rofi will conflict. Will use yad in the future
             Launch_Screencap
         ;;
+        glyph) #? Show Glyph selection * Be sure to have Nerd Fonts installed
+            Launch_Glyph
+        ;;
         # panel) #? Notifications Panel
         #     Launch_Swaync
         # ;;
