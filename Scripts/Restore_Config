@@ -121,6 +121,6 @@ if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia |  wc -l )" -gt 0 ] 
 ' >> ${HOME}/.config/hypr/hyprland.conf
 fi
 
-./restore_shl.sh  
 ./create_cache.sh
 ./restore_lnk.sh
+./install_pst.sh

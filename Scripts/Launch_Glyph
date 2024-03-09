@@ -11,7 +11,7 @@ trap 'killall wtype' EXIT
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`
 #* I don't own anything of it
 #TODO:   Needed a way to fetch the glyph from the NerdFonts source.
-#TODO:    find a way make the self DB update 
+#TODO:    find a way make the  DB update 
 #TODO:    make the Script run on User space
 
 glyphDATA="${etcDir}/glyph.db"
