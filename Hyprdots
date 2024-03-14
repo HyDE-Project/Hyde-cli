@@ -159,7 +159,7 @@ backup() { #? Handles Your Back ups.
     esac
 }
 
-sync() { #! ** Not Maintained ** Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
+sync() { #? ** Needed your suggestions here ** Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
 if [ $# -eq 0 ]; then
 echo "Usage: Hyprdots sync [options]"
 Parameters "$Function"
