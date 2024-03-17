@@ -1,4 +1,7 @@
 #!/bin/bash
+
+#TODO: Clean This
+
 is_link=false
     while (( "$#" )); do
         case "$1" in
@@ -21,7 +24,7 @@ Unknown option: $1
 Please run: 'Hyprdots-install'                                Install Hyprdots (Default)
 
 Advanced usage:
-        --clone= /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
+        --clone /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
                                                               Default: '${HOME}/Hyprdots'
 
         --git https://gitclone/repo/link/                          Repository link to be cloned
@@ -31,6 +34,7 @@ HANDLE_ERROR
                 ;;
         esac
     done
+    
 [[ -n ${CloneDir} ]] && echo "Set Clone Directory: ${CloneDir}"
 [[ ${is_link} == true ]] && echo "Linked to Clone Directory: ${CloneDir}"
 [[ -n ${GIT} ]] &&    echo "Cloning from: ${GIT}"
@@ -62,20 +66,38 @@ case "${distro_ID}" in
 esac
 }
 
-custom_apps="${CloneDir}/Scripts/custom_apps.lst"
-
-if [[ -e ${custom_apps} ]] ; then 
-sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-echo -e "Optional packages loaded:"
-cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-fi
-
-
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
+#? Select Branch
 if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
   cd "${CloneDir}"/Scripts || exit 0
-  echo -e "\nDirectory exist: ${CloneDir}\n[*]Using existing directory.\n[*]Uncommited changes will be stashed\n"
+
+Git_Repo="$(git remote get-url origin)"
+
+
+    if echo "$Git_Repo" | grep -q "/tree/"; then
+        branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
+    else branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
+        if [[ ${#branches[@]} -le 1 ]]; then
+            branch=${branches[0]}
+        else echo "Select a Branch"
+            select branch in "${branches[@]}"; do [[ -n $branch ]] && break || echo "Invalid selection. Please try again." ; done
+        fi
+    fi
+
+echo "$branch"
+
+git checkout -b ${branch}
+
+git pull origin ${branch}
+
+
+  echo "Clone Directory exist: ${CloneDir}"
+  echo "Git URL: $(git remote get-url origin)"
+  echo "Git Branch: ${branch}"
+  echo "[*]Using existing directory."
+  echo "[*]Uncommited changes will be stashed"
+
   read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0 
   ( git reset --hard HEAD  && git clean -fd  && git pull )  || true
       if [[ ${is_link} == true ]]; then
@@ -88,3 +110,4 @@ if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then
 else 
 install_distro
 fi
+

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
-. GLOBAL
+. /usr/lib/hyprdots-ctl/GLOBAL
 
 # Source the user's settings, overwriting any defaults
 ctlFile="$ConfDir/hyprdots-ctl/hyprdots.conf"
@@ -43,7 +42,7 @@ fn_hyprland() {
 
 fn_theme_patch() {
 condition="
-if echo \"\$(awk -F '|' '{print \$2}' ~/.config/hypr/theme.ctl)\" | grep -Fxq \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\" ; then
+if echo \"\$(awk -F '|' '{print \$2}' ${ThemeCtl})\" | grep -Fxq \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\" ; then
    print_prompt -y \"[EXIST]\"; echo \"\$(echo \$line | cut -d' ' -f1 | tr -d '\"')\"
    continue
 fi

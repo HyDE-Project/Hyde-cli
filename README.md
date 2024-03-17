@@ -80,5 +80,8 @@ If you encounter any issues, please submit them...
 
 ## Roadmap
 
-This will just be an active helper to some issues or some feature requests for Hyprdots.
++ This will just be an active helper to some issues or some feature requests for Hyprdots.
++ Add interactive installation using fzf
+
+
 

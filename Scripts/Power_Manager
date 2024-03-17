@@ -71,9 +71,10 @@ for arg in "$@"; do
             append "decoration:blur:enabled = 0" "DISABLE Blur"
             ;;
             -o|--opacity) #? Disable Tranparency
-                if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
-                    sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
-                fi
+            append 'windowrule=opacity 1 override 1 override,title:(.*)' "DISABLE Transparent opacity"
+                #! DEPRECATED if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
+                #! DEPRECATED     sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
+                #! DEPRECATED fi
             ;;
             *) echo "Unknown flag: $arg"; print_help; exit 1;;
         esac
@@ -100,7 +101,8 @@ for arg in "$@"; do
             remove "decoration:blur:enabled = 0" "ENABLE Blur"
             ;;
             -o|--opacity) #? Default Tranparency
-sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
+            remove "windowrule=opacity 1 override 1 override,title:(.*)" "ENABLE Tranparency"
+            #! DEPRECATED sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
             ;;
             *) echo "Unknown flag: $arg"; print_help; exit 1;;
         esac

@@ -1,14 +1,18 @@
 #!/usr/bin/env sh
 
 pkill -x rofi && exit
-ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+. /usr/lib/hyprdots-ctl/GLOBAL
+
 keyConfDir="$ConfDir/hypr"
+#TODO: read all the sourced files of hyprland.conf
+# keyConf="$keyConfDir/* $*"
 keyConf="$keyConfDir/hyprland.conf $keyConfDir/keybindings.conf $keyConfDir/userprefs.conf  $*"
+
 tmpMapDir="/tmp"
 tmpMap="$tmpMapDir/hyprdots-keybinds.jq"
 trap "rm -f $tmpMap" EXIT
 
-. $HOME/.config/hypr/scripts/globalcontrol.sh
 roDir="/etc/hyprdots-ctl"
 roconf="$roDir/Keybinds_Hint.rasi"
 
@@ -121,7 +125,7 @@ include "hyprdots-keybinds";
     "XF86MonBrightnessDown" : "󰃜",
     "XF86MonBrightnessUp" : "󰃠",
     "switch:on:Lid Switch" : "󰛧",
-    "backspace" : "󰁮"
+    "backspace" : "󰁮 "
   };
   def category_mapping: { #? Define Category Names, derive from Dispatcher
     "exec" : "Execute a Command:",

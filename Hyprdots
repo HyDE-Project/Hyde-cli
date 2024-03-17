@@ -1,11 +1,11 @@
 #!/bin/bash
-if [ "$(whoami)" = "root" ] || [ $(id -u) -eq 0 ] ; then echo "Oh no! What have you done! Run without 'sudo'...EXITING" ; exit 1 ;fi
-
-hyprdots_ctl_version='v0.4.0-0-g013a914-240227@20:49:46'
+if [ "$(whoami)" = "root" ] || [ $(id -u) -eq 0 ] ; then echo "Oh no! What have you done! Hyprdots-ctl is design for 'user' space ONLY ...EXITING" ; exit 1 ;fi
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 
-. DEVEL
+hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
+
+# . DEVEL
 . GLOBAL 
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 . FUNCTIONS 
@@ -23,7 +23,7 @@ cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 
 man() { #? Show Manual 
   manPage=$(
-    echo -e "Hyprdots: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
+    echo -e "Hyprdots-ctl: ${hyprdots_ctl_version}\nHyprdots Clone Directory: "${CloneDir}"\nUsage: Hyprdots [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
       desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $5 }')
@@ -35,37 +35,46 @@ man() { #? Show Manual
   echo "${manPage}"
 }
 
-version() { #? Hyprdots Version
-    box_me "${hyprdots_ctl_version}"
+version() { #? Hyprdots-ctl Version
+box_me -s "Hyprdots-ctl Version" -c 77
+cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
+}
+
+systeminfo() { #? System Information
+print_prompt -y "**Hyprdots-ctl Version:**"
+cat /etc/hyprdots-ctl/.hyprdots-ctl.ver
+
+print_prompt -y "\n**Repository:**"
+repo_info
+
+print_prompt -y "\n**GPU:** "
+lspci -nn | grep -Ei "VGA|3d"  
+
+print_prompt -y "\n**CPU:** "
+lscpu | awk -F': ' '/Model name/ {gsub(/^ *| *$| CPU.*/,"",$2); print $2}'
+
+print_prompt -y "\n**OS:** "
+cat /etc/os-release 
+
+print_prompt -y "\n**Hyprland System Information:** (Not always available)" 
+hyprctl systeminfo
+}
+
+branch() { #? Set pref Hyprdots branch
+repo_info
+( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
+set_branch
 }
 
 update() { #? Pull Updates From Hyprdots Repository 
-echo "CloneDirectory: ${CloneDir}"
+repo_info
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 rm -f "/tmp/hyprdots_update_check"
   }
 
-# install() { #? Installs Hyprdots
-
-#     case $1 in
-#         fresh) #? Fresh installation of Hyprdots
-#             ./install.sh
-#             ;;
-#         custom) #? Custom installation of Apps
-#         echo "Fresh installation plus custom apps... Press any key to Proceed..."
-#         ConfigCtl "$CloneDir/Scripts/custom_apps.lst" "$ACTION"
-#         echo "List of packages to be installed:"
-#         grep -v '^#' ./custom_apps.lst
-#             read -n 1 -s -r -p "[ENTER/SPACE:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
-#             ./install.sh ./custom_apps.lst
-#             ;;
-#             *)
-#             Parameters "$Function" 
-#             ;;
-#     esac
-# }
-
-upgrade() { #? Upgrades from the repository
+upgrade() { #? Upgrades dots from the Repository; Manage the control file : '~/.config/hyprdots-ctl/manage_cfg.lst'
+    repo_info
+    ask_confirm
     Manage_Configs "upgrade"
     rename_backup "_Hyprdots_upgrade"
 }
@@ -74,11 +83,13 @@ restore() { #? Restore Hyprdots configs
   case $1 in 
         defaults) #? Restore to Default Dots of Hyprdots
         shift
-        box_me "Overwriting Dots from ${CloneDir}"
+        box_me "Restoring Dots"
+            repo_info
+                    ask_confirm
         . Manage_Configs
-         restore_Lister "${CloneDir}/Configs" ;  trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+         restore_Lister "${CloneDir}/Configs" ;  trap 'rm -f ${config_override}' EXIT
          list_Marker
-        #  cat /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
+        #  cat ${config_override}
         ask_confirm "${USER}"
         ./restore_fnt.sh
         Restore_Config "/tmp/Hyprdots-${UID}-BAK"
@@ -87,8 +98,8 @@ restore() { #? Restore Hyprdots configs
         ;;
         # custom)
         # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
-        # awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst
-        # trap 'rm -f /tmp/Hyprdots-${UID}-BAKmanage_cfg.lst' EXIT
+        # awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ${config_override}
+        # trap 'rm -f ${config_override}' EXIT
         # ./restore_cfg.lst.sh "BAK" "" ; bak=$(ls -td -- $BkpDir/* | head -n 1 )
         # echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
         # read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
@@ -107,10 +118,13 @@ restore() { #? Restore Hyprdots configs
             rename_backup "_Hyprdots_restore_config"
         ;;
         link) #? Links a Clone Directory. Useful if you want to change your CloneDir
+        repo_info
+        ( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
+        set_branch            
             shift ; [[ -z "${1}" ]] && echo "Missing /path/to/CloneDir/*.: ${1}" && exit 1     
             new_CloneDir=${1}  
             [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "${new_CloneDir} not a directory" && exit 1 ;}    
-            [[ ! -e ${new_CloneDir}/Configs/.config/hypr/scripts/globalcontrol.sh ]] && { print_prompt -r "MISSING:" -w "  ./Configs/.config/hypr/scripts/globalcontrol.sh" && exit 1 ;}
+            [[ ! -e ${new_CloneDir}/Configs/.config/hyprdots/scripts/globalcontrol.sh ]] && { print_prompt -r "MISSING:" -w "  ./Configs/.config/hyprdots/scripts/globalcontrol.sh" && exit 1 ;}
             [[ ! -e ${new_CloneDir}/Scripts/global_fn.sh ]] && { print_prompt -r "MISSING:" -w "./Configs/global_fn.sh " && exit 1 ;}        
             cd "${new_CloneDir}/Scripts" || { print_prompt -r "ERROR:" -w " cd ${new_CloneDir}" && exit 1 ;}    
             ./restore_lnk.sh
@@ -145,7 +159,7 @@ backup() { #? Handles Your Back ups.
     esac
 }
 
-sync() { #? Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf
+sync() { #? ** Needed your suggestions here ** Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
 if [ $# -eq 0 ]; then
 echo "Usage: Hyprdots sync [options]"
 Parameters "$Function"
@@ -183,16 +197,16 @@ theme() { #? Theme Related Actions
 case $1 in 
         set) #? Set Theme
         sel_Theme=$(cat $ThemeCtl | awk -F'|' '{print $2}' | fzf )
-        "$ScrDir"/themeswitch.sh -s "$sel_Theme"
+        "${ScrDir}"/themeswitch.sh -s "$sel_Theme"
         ;;
         next) #? Next Theme
-            "$ScrDir"/themeswitch.sh -n
+            "${ScrDir}"/themeswitch.sh -n
         ;; 
         prev) #? Previous Theme
-            "$ScrDir"/themeswitch.sh -p
+            "${ScrDir}"/themeswitch.sh -p
         ;;
         select) #? Theme Selector
-            "$ScrDir"/themeselect.sh
+            "${ScrDir}"/themeselect.sh
         ;;
         patch) #? Patch A Theme from different repository.
            shift
@@ -209,16 +223,16 @@ wallpaper() { #? Wallpaper related Actions
             shift
             cd - || exit
             if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
-            "$ScrDir"/swwwallpaper.sh -s "$1"
+            "${ScrDir}"/swwwallpaper.sh -s "$1"
         ;;
         next) #? Next Wallppaer
-            "$ScrDir"/swwwallpaper.sh -n 
+            "${ScrDir}"/swwwallpaper.sh -n 
         ;;
         prev) #? Previous Wallpaper
-            "$ScrDir"/swwwallpaper.sh -p
+            "${ScrDir}"/swwwallpaper.sh -p
         ;;
         select) #? Wallpaper Selector
-            "$ScrDir"/swwwallselect.sh
+            "${ScrDir}"/swwwallselect.sh
         ;;
         path) #? Current Theme will follow /path/to/wallpaper/* as its wallpaper directory 
                 shift ; [[ -z "${1}" ]] && echo "Missing /path/to/wallpaper/*.: ${1}" && exit 1                                  
@@ -233,31 +247,31 @@ wallpaper() { #? Wallpaper related Actions
 esac
 }
 
-sddm() { #? Sddm Things
+sddm() { #! Sddm Things ; Not usable for now.
   case $1 in 
         set) #? Set active Wallpaper to Sddm Lockscreen
-            "$ScrDir"/sddmwall.sh
+            "${ScrDir}"/sddmwall.sh
         ;;
         *)  Parameters "$Function"  ;;
 
 esac
 }
 
-wallbash() { #? Toggle to use wallpaper color as theme color.
+wallbash() { #? Toggle to use wallpaper accent color for theme.
   case $1 in 
-        toggle) #? Toggle Wall bash On/Off
-            "$ScrDir"/wallbashtoggle.sh
+        toggle) #? Toggle Wallbash On/Off
+            "${ScrDir}"/wallbashtoggle.sh
         ;;
-        term) #? Toogle Terminal colors into some presets (Follows wallpaper accent)
+        # term) #? Toogle Terminal colors into some presets
+        #     /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        # ;;
+        kitty) #? Toogle 'kitty'
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
-        kitty) #? Toogle wallbash for 'kitty'
+        waybar) #? Toogle 'waybar'
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
-        waybar) #? Toogle wallbash for 'waybar'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        spotify) #? Toogle wallbash for 'spotify'
+        spotify) #? Toogle 'spotify'
             /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         ;;
         *)  Parameters "$Function"  ;;
@@ -267,7 +281,7 @@ esac
 waybar() { #? Waybar related Things
     case $1 in
         control) #? Edit waybar Control File.
-            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; "$ScrDir"/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
+            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; "${ScrDir}"/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
             ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
             ;;
         *)
@@ -288,7 +302,7 @@ select_theme() {
             else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," $ConfDir/Code/User/settings.json
             fi
 }
-if [[ ! -z "$(cat $HOME/.config/hypr/theme.ctl | grep "^1|" | cut -d'|' -f3)" ]]; then select_theme
+if [[ ! -z "$(cat "${ThemeCtl}" | grep "^1|" | cut -d'|' -f3)" ]]; then select_theme
 else echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
     ask_confirm ; sel_ext=$(/usr/bin/code --list-extensions | fzf)   
     sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
@@ -358,6 +372,9 @@ show() { #? Some Hypr GUI you might want to use.
         screencap) #? Experimental! Rofi will conflict. Will use yad in the future
             Launch_Screencap
         ;;
+        glyph) #? Show Glyph selection * Be sure to have Nerd Fonts installed
+            Launch_Glyph
+        ;;
         # panel) #? Notifications Panel
         #     Launch_Swaync
         # ;;
@@ -400,7 +417,7 @@ inject() { #? Some of Scripts you might want to use.
 
 reload() { #? Just Reload 
     box_me "Dots reloaded"
-    ${ScrDir}/themeswitch.sh -s "$(cat ${ConfDir}/hypr/theme.ctl | grep "^1" | cut -d '|' -f2)" || true
+    ${ScrDir}/themeswitch.sh -s "$(cat "${ThemeCtl}" | grep "^1" | cut -d '|' -f2)" || true
     killall waybar || true
     $(which waybar) > /dev/null 2>&1 &
 

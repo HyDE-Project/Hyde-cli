@@ -75,17 +75,18 @@ crnt_cfg="${pth}/${cfg_chk}"
         continue
     fi
 
+        [[ ! -d "${pth}" ]] && mkdir -p "${pth}" 
+
         if [ -e "${crnt_cfg}" ]; then
         # echo "Files exist: ${crnt_cfg}"
             # Check if the directory specified by BkpDir and tgt exists, if it doesn't, create it
-            if [ ! -d "${BkpDir}${tgt}" ] ; then mkdir -p "${BkpDir}${tgt}" ; fi
+            [[ ! -d "${BkpDir}${tgt}" ]] && mkdir -p "${BkpDir}${tgt}"
 
             case "${ctlFlag}" in
                 "B")
                     cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     ;;
                 "O")
-                    
                     mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[MOVED TO BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..." 
                     cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
                     echo "[OVERWRITE] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
@@ -105,8 +106,8 @@ crnt_cfg="${pth}/${cfg_chk}"
                     ;;
             esac
         else
-                    cp "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                    echo "[POPULATE] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"                  
+                    cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
+                    echo "[*POPULATE*] ${pth} <-- ${CfgDir}$tgt/${cfg_chk}"                  
         fi
 
     done
@@ -122,3 +123,4 @@ fi
 
 ./create_cache.sh
 ./restore_lnk.sh
+./install_pst.sh
