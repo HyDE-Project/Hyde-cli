@@ -85,5 +85,6 @@ sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [
 echo -e "Optional packages loaded:"
 cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
 fi
-
+ 
+ 
  ./install.sh /tmp/hyprdots-ctl-$(id -u)-temporary-apps
