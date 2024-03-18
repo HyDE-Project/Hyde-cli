@@ -69,11 +69,9 @@ esac
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
 #? Select Branch
-if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
-  cd "${CloneDir}"/Scripts || exit 0
+if cd "${CloneDir}"/Scripts ; then 
 
 Git_Repo="$(git remote get-url origin)"
-
 
     if echo "$Git_Repo" | grep -q "/tree/"; then
         branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
