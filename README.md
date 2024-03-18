@@ -39,7 +39,7 @@ yay -Sy hyprdots-ctl-git
 
 Manual: Use makepkg
 ```
-git clone https://aur.archlinux.org/hyprdots-ctl
+git clone https://aur.archlinux.org/hyprdots-ctl-git.git
 cd hyprdots-ctl
 makepkg -si
 ```
