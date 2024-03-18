@@ -64,14 +64,6 @@ echo "Clone Directory exist: ${CloneDir}"
 echo "Git URL: $(git remote get-url origin)"
 echo "Git Branch: ${branch}"
 
-custom_apps="${CloneDir}/Scripts/custom_apps.lst"
-
-if [[ -e ${custom_apps} ]] ; then 
-sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-echo -e "Optional packages loaded:"
-cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
-fi
-
 # Change Branch
 git fetch --depth=1
  git_branch=$(git branch -a | fzf --prompt='Choose a branch')
@@ -93,6 +85,5 @@ sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [
 echo -e "Optional packages loaded:"
 cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
 fi
-
 
  ./install.sh /tmp/hyprdots-ctl-$(id -u)-temporary-apps
