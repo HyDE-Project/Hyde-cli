@@ -1,3 +1,8 @@
+> [!Note]
+> for AUR
+> hyprdots-ctl was renamed into hyprdots-ctl-git. Please install the "-git" package
+
+
 ```
   _   _                     _       _                  _   _ 
  | | | |_   _ _ __  _ __ __| | ___ | |_ ___        ___| |_| |
@@ -28,8 +33,8 @@ These scripts may alter or mess up your configurations. Please use them at your 
 
 Recommended: Use your preferred AUR helper `paru` or `yay`.
 ```
-paru -Sy hyprdots-ctl
-yay -Sy hyprdots-ctl
+paru -Sy hyprdots-ctl-git
+yay -Sy hyprdots-ctl-git
 ```
 
 Manual: Use makepkg
