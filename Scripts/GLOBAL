@@ -11,9 +11,10 @@ Please run:
 For advanced usage see options below
         --clone= /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
                                                                 Default: '${HOME}/Hyprdots'
-
         --git https://gitclone/link/                          Repository link to be cloned
                                                                 Default: 'https://github.com/prasanthrangan/hyprdots'
+        --link                                                Flag to transfer the link to a Clone Directory
+                                                                    Default: 'false'
 HANDLE_ERROR
   exit 1 
  }
