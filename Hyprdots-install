@@ -10,9 +10,8 @@ is_link=false
                 shift  2
                 ;;
             --link)
-                 CloneDir=${2}
                  is_link=true
-                shift  2
+                shift  1
                 ;;
             --git)
                 GIT="$2"
@@ -24,11 +23,12 @@ Unknown option: $1
 Please run: 'Hyprdots-install'                                Install Hyprdots (Default)
 
 Advanced usage:
-        --clone /path/to/Clone/Hyprdots                      Clone Hyprdots in a Custom path then run installation.
-                                                              Default: '${HOME}/Hyprdots'
-
-        --git https://gitclone/repo/link/                          Repository link to be cloned
-                                                              Default: 'https://github.com/prasanthrangan/hyprdots'
+        --clone /path/to/Clone/Hyprdots                       Clone Hyprdots in a Custom path then run installation.
+                                                                    Default: '${HOME}/Hyprdots'
+        --git https://gitclone/repo/link/                     Remote Repository link to be cloned
+                                                                    Default: 'https://github.com/prasanthrangan/hyprdots'
+        --link                                                Flag to transfer the link to a Clone Directory
+                                                                    Default: 'false'
 HANDLE_ERROR
                 exit  1
                 ;;
@@ -108,4 +108,3 @@ git pull origin ${branch}
 else 
 install_distro
 fi
-
