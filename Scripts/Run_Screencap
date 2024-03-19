@@ -155,7 +155,7 @@ case ${OPTION} in
     grimblast copysave output "${temp_screenshot}" && swappy -f  "${temp_screenshot}" 
     cleaNotify;;
 -sc|--scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
-    CHECK tesseract
+    CHECK tesseract-data-eng tesseract 
     GEOM=$(slurp)
     grim -g "${GEOM}" "${temp_screenshot}"
     pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"

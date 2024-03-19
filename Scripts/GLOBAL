@@ -153,15 +153,11 @@ CHECK () {
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
 
 if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
-    notify-send -a "${0}" "Dependencies: '${Pkg_Dep}' Please run in the terminal first..."
-    ask_confirm
-    if [[ -z "${ans}" ]]; then get_aurhlpr 
-    pkexec "${aurhlpr}" -S $Pkg_Dep --noconfirm
-    else echo "Skipping installation of packages" ;exit 1
-    fi
+    notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
+     get_aurhlpr 
+    { pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
 fi
 }
-
 
 do_contain() {
     local etc_file="$1"
