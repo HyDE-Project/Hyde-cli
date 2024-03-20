@@ -7,7 +7,7 @@ export PATH=$PATH:/usr/lib/hyprdots-ctl/
 rofi_pos
 
 CHECK wtype
-trap 'killall wtype' EXIT
+# trap 'killall wtype' EXIT
 
 #? handle pasting 
 pasteIt() {
