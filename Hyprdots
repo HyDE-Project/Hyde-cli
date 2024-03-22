@@ -247,11 +247,28 @@ wallpaper() { #? Wallpaper related Actions
 esac
 }
 
-sddm() { #! Sddm Things ; Not usable for now.
+sddm() { #? Sddm Things
   case $1 in 
-        set) #? Set active Wallpaper to Sddm Lockscreen
-            "${ScrDir}"/sddmwall.sh
+        theme) #? Select Sddm Theme
+        sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
+        sddm_conf=/etc/sddm.conf.d/kde_settings.conf
+        sddm_theme_list=("Candy" "Corners")
+
+        sddm_theme="$(for theme in "${sddm_theme_list[@]}"; do
+            echo -e "$theme"
+        done | fzf --prompt='Please select your sddm theme...' )"
+
+        print_prompt -y "Setting into '${sddm_theme} theme'..."
+        ask_confirm "${USER}"
+        [ -f "${sddm_bak}" ] && sudo rm "${sddm_bak}"  
+        sudo tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C /usr/share/sddm/themes/
+        sudo touch "${sddm_conf}"
+        sudo cp "${sddm_conf}" "${sddm_bak}"
+        sudo cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
         ;;
+        # set) #? Set active Wallpaper to Sddm Lockscreen
+        #     "${ScrDir}"/sddmwall.sh
+        # ;;
         *)  Parameters "$Function"  ;;
 
 esac
