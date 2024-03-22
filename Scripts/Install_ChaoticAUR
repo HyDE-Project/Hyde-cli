@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 #! REQURED ROOT
 execName="$0 $*"

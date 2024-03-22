@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 if [ "$(whoami)" = "root" ] || [ "$(id -u)" -eq 0 ] ; then echo "Oh no! What have you done! Hyprdots-ctl is design for 'user' space ONLY ...EXITING" ; exit 1 ;fi
 
 export PATH=$PATH:/usr/lib/hyprdots-ctl/

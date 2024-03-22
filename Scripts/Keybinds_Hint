@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/env bash
 
 pkill -x rofi && exit
 

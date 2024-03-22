@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env bash
 
 # cat << EVENTS
 # event_workspace() {

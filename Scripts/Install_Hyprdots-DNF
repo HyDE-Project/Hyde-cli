@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/env bash
 
 CloneDir=${1:-$HOME/Hyprdots}
 

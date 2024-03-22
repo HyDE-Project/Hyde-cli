@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 . /usr/lib/hyprdots-ctl/GLOBAL
 
@@ -56,17 +56,7 @@ fn_waybar_ctl() {
    sed -i '/^[[:space:]]*$/d' "${targetFile}" && echo "" >> "${targetFile}"
    while read -r line; do 
 if ! grep -Fq "$line" "${targetFile}";then
-echo  "0|${line}" >> "${targetFile}"
-fi
-  #  done < <(grep -Pzo "(?s)\[$section\][^\[]*" "$ctlFile" | grep -Eva '^\['"$section"'\]|^$')
-   done < <(grep -Pzo "(?s)\[${section}\][^\[]*" "${ctlFile}" | grep -Eva '^\['"${section}"'\]|^$' | awk -v RS=':' -v FS='\n' -v OFS='\n' 'NR % 2 == 0')
-   sed -i '/^[[:space:]]*$/d' "${targetFile}"
-}
-
-
-fn_Code() {  
-evaluate "Code"
-  file="$HOME/.config/Code/User/settings.json"
+echo  "0|${line}" >> "${targetFile}"— Dolphin
   declare -A vars=(
     ["workbench.colorTheme"]=${workbench_colorTheme:-"Catppuccin Mocha"}
     ["window.menuBarVisibility"]=${window_menuBarVisibility:-"toggle"}

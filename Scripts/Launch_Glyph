@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/bin/env bash
+
 pkill -x rofi && exit
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL

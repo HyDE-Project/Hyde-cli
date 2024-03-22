@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/env bash
+
 is_link=false
     while (( "$#" )); do
         case "$1" in

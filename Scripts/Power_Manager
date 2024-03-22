@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/bin/env bash
+
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 

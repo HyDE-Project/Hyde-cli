@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 defKeys="${1:-$HOME/.config/hypr/keybindings.conf}"
 usrKeys="${2:-$HOME/.config/hypr/userprefs.conf}" #Overrides
