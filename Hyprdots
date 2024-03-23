@@ -70,13 +70,13 @@ update() { #? Pull Updates From Hyprdots Repository
 trap 'rm -f "/tmp/hyprdots_update_check"' EXIT
 repo_info
 get_aurhlpr
-print_prompt -y "Fetching updates..."
-if ${aurhlpr} -Qu hyprdots-ctl-git | grep -q hyprdots-ctl-git; then
-    # If updates are found, install them
-    ${aurhlpr} -S hyprdots-ctl-git
-fi
 print_prompt -y "Pulling Hyprdots repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
+# Check release
+ [ ! -f /etc/arch-release ] && exit 0
+ print_prompt -y "Checking Hyprdots CLI updates..."
+if ${aurhlpr} -Qu hyprdots-ctl-git | grep -q hyprdots-ctl-git; then 
+${aurhlpr} -S hyprdots-ctl-git ; fi
 }
 
 upgrade() { #? Upgrades dots from the Repository; Manage the control file : '~/.config/hyprdots-ctl/manage_cfg.lst'
