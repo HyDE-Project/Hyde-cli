@@ -71,7 +71,11 @@ trap 'rm -f "/tmp/hyprdots_update_check"' EXIT
 repo_info
 get_aurhlpr
 print_prompt -y "Fetching updates..."
-${aurhlpr} -Sy --devel hyprdots-ctl-git
+if ${aurhlpr} -Qu hyprdots-ctl-git | grep -q hyprdots-ctl-git; then
+    # If updates are found, install them
+    ${aurhlpr} -S hyprdots-ctl-git
+fi
+print_prompt -y "Pulling Hyprdots repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 }
 
