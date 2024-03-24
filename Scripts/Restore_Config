@@ -70,7 +70,7 @@ do
 tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
 crnt_cfg="${pth}/${cfg_chk}"
 
-    if [ ! -e "${CfgDir}$tgt/${cfg_chk}" ]; then
+    if [ ! -e "${CfgDir}$tgt/${cfg_chk}" ] && [ "${ctlFlag}" != "B" ]; then
         echo "Source: ${CfgDir}$tgt/${cfg_chk} does not exist, skipping..."
         continue
     fi
