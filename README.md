@@ -36,6 +36,11 @@ Recommended: Use your preferred AUR helper `paru` or `yay`.
 paru -Sy hyprdots-ctl-git
 yay -Sy hyprdots-ctl-git
 ```
+> [!Important]
+> Incase you did not recieve updates for a long time.
+
+![image](https://github.com/kRHYME7/Hyprdots-ctl/assets/53417443/60dd1d75-e38b-4a15-a5f6-2f002fbb4d2a)
+
 
 Manual: Use makepkg
 ```
