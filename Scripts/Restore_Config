@@ -106,8 +106,9 @@ crnt_cfg="${pth}/${cfg_chk}"
                     ;;
             esac
         else
-                    cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                    echo "[*POPULATE*] ${pth} <-- ${CfgDir}$tgt/${cfg_chk}"                  
+                if [ "${ctlFlag}" != "B" ]; then cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
+                        echo "[*POPULATE*] ${pth} <-- ${CfgDir}$tgt/${cfg_chk}"    
+                fi         
         fi
 
     done
