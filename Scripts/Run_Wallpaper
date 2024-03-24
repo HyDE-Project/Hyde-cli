@@ -2,7 +2,7 @@
 
 . /usr/lib/hyprdots-ctl/GLOBAL
 
-check variety
+CHECK variety
 
 varietyDir=$ConfDir/variety/hyprdots
 varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"
