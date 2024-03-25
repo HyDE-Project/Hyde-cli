@@ -143,7 +143,7 @@ restore() { #? Restore Hyprdots configs
   esac
 }
 
-backup() { #? Handles Your Back ups. 
+backup() { #? Backing up commands 
             trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
@@ -168,7 +168,26 @@ backup() { #? Handles Your Back ups.
     esac
 }
 
-sync() { #? ** Needed your suggestions here ** Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
+
+cache() { #? Manages Hyprdots' Cache 
+    case $1 in 
+      reload) #? Reload Wallpaper Cache.
+            shift
+            [[ -z ${*} ]] && print_prompt -y "NOTE: Append the 'Theme-Name' to reload specific theme"
+             ./create_cache.sh "${@}" 
+         ;;
+      rebuild) #? Force rebuild cache
+            read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
+            echo ""
+            ./create_cache.sh -f
+         ;;
+        *)
+        Parameters "$Function" 
+         ;;
+    esac
+}
+
+sync() { #? Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
 if [ $# -eq 0 ]; then
 echo "Usage: Hyprdots sync [options]"
 Parameters "$Function"
@@ -201,7 +220,7 @@ exit 0
 }
 
 
-theme() { #? Theme Related Actions 
+theme() { #? Theme Commands 
   # Function for managing themes
 case $1 in 
         set) #? Set Theme
@@ -226,7 +245,7 @@ case $1 in
 esac
 }
 
-wallpaper() { #? Wallpaper related Actions
+wallpaper() { #? Wallpaper Commands
   case $1 in
         set) #? Set /Path/to/Wallpapers as new Wallpaper Directory
             shift
@@ -256,7 +275,42 @@ wallpaper() { #? Wallpaper related Actions
 esac
 }
 
-sddm() { #? Sddm Things
+
+wallbash() { #? Toggle to use wallpaper accent themes .
+  case $1 in 
+        toggle) #? Toggle Wallbash On/Off
+            "${ScrDir}"/wallbashtoggle.sh
+        ;;
+        # term) #? Toogle Terminal colors into some presets
+        #     /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        # ;;
+        kitty) #? Toogle 'kitty'
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        waybar) #? Toogle 'waybar'
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        spotify) #? Toogle 'spotify'
+            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        ;;
+        *)  Parameters "$Function"  ;;
+esac
+}
+
+waybar() { #? Waybar commands
+    case $1 in
+        control) #? Edit waybar Control File.
+            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; ${ScrDir}/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
+            ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
+            ;;
+        *)
+            Parameters "$Function" 
+            ;;
+    esac
+}
+
+
+sddm() { #? Sddm commands.
   case $1 in 
         theme) #? Select Sddm Theme
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
@@ -283,77 +337,18 @@ sddm() { #? Sddm Things
 esac
 }
 
-wallbash() { #? Toggle to use wallpaper accent color for theme.
-  case $1 in 
-        toggle) #? Toggle Wallbash On/Off
-            "${ScrDir}"/wallbashtoggle.sh
-        ;;
-        # term) #? Toogle Terminal colors into some presets
-        #     /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        # ;;
-        kitty) #? Toogle 'kitty'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        waybar) #? Toogle 'waybar'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        spotify) #? Toogle 'spotify'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        *)  Parameters "$Function"  ;;
-esac
-}
+shell() { #! Shell commands
 
-waybar() { #? Waybar related Things
-    case $1 in
-        control) #? Edit waybar Control File.
-            ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; ${ScrDir}/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
-            ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
-            ;;
-        *)
-            Parameters "$Function" 
-            ;;
-    esac
-}
-
-code() { #? Modify Vscode Extensionscode
 case $1 in 
-         select) #? Selector for default Theme presets
 
-select_theme() {
-            dir=$( grep "^1|" "${ThemeCtl}" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
-        code_SubExt=$(cat $HOME/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
-        awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" > temp && mv temp "$ThemeCtl"
-            if [ "$(grep -c "workbench.colorTheme" "${ConfDir}"/Code/User/settings.json)" -eq 1 ] ; then sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
-            else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
-            fi
-}
-if [[ ! -z "$(cat "${ThemeCtl}" | grep "^1|" | cut -d'|' -f3)" ]]; then select_theme
-else echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
-    ask_confirm ; sel_ext=$(/usr/bin/code --list-extensions | fzf)   
-    sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
-     select_theme
-fi
-         ;;
-        *)
-        Parameters "$Function" 
-         ;;
-    esac
-}
+        select) #? Shell selector
+            :
+            echo -e "zsh\nfish" | fzf
 
-cache() { #? Cache 
-    case $1 in 
-      reload) #? Reload Wallpaper Cache.
-            shift
-            [[ -z ${*} ]] && print_prompt -y "NOTE: Append the 'Theme-Name' to reload specific theme"
-             ./create_cache.sh "${@}" 
-         ;;
-      rebuild) #? Force rebuild cache
-            read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
-            ./create_cache.sh -f
-         ;;
-        *)
-        Parameters "$Function" 
+
+        ;;
+
+        *)Parameters "$Function" 
          ;;
     esac
 }
@@ -379,13 +374,38 @@ power() { #? Power Options
 
 }
 
+code() { #? Modify Vscode Extensions
+case $1 in 
+         select) #? Selector for default Theme presets
+
+select_theme() {
+            dir=$( grep "^1|" "${ThemeCtl}" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
+        code_SubExt=$(cat $HOME/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
+        awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" > temp && mv temp "$ThemeCtl"
+            if [ "$(grep -c "workbench.colorTheme" "${ConfDir}"/Code/User/settings.json)" -eq 1 ] ; then sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
+            else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
+            fi
+}
+if [[ ! -z "$(cat "${ThemeCtl}" | grep "^1|" | cut -d'|' -f3)" ]]; then select_theme
+else echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
+    ask_confirm ; sel_ext=$(/usr/bin/code --list-extensions | fzf)   
+    sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
+     select_theme
+fi
+         ;;
+        *)
+        Parameters "$Function" 
+         ;;
+    esac
+}
+
 show() { #? Some Hypr GUI you might want to use.
     
     case $1 in 
         monitors) #? Manages Monitors using nwg-displays
             Monitor_Manager
         ;;
-        binds) #? Show Keybindings Hints(Click to execute)
+        binds) #? Show Keybindings Hints (Click to execute)
             Keybinds_Hint
         ;;
         emoji) #? Show Emojis

@@ -3,12 +3,13 @@
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL
 
-check "nwg-displays"
+CHECK "nwg-displays"
 
 pid=$$
 monitorsConf="$ConfDir/hypr/monitors.conf"
 nwgConf="$ConfDir/hypr/hyprdots-ctl/nwg-displays.conf"
-touch "$nwgConf"
+mkdir -p $(dirname "${nwgConf}")
+touch "${nwgConf}"
 WSConf="$ConfDir/hypr/workspaces.conf"
 touch "$WSConf"
 
@@ -31,7 +32,7 @@ move_lines_to_bottom() {
     done
 }
 
-sM="source = $nwgConf #! Hyprdots-ctl: Current monitor setting is here"
+sM="source = ${nwgConf} #! Hyprdots-ctl: Current monitor setting is here"
 wS="source = $WSConf #! Hyprdots-ctl: Saves workspace assignment per monitor"
 trap 'move_lines_to_bottom "$sM" "$wS" "$monitorsConf"' EXIT
 
@@ -63,6 +64,4 @@ currMon=$(hyprctl monitors all -j | jq -r '.[] | .description ' | sed 's/ (.*//'
 
 
 
-
-nwg-displays -n 20 -m "$nwgConf"
-
+nwg-displays -n 30 -m "${nwgConf}"
