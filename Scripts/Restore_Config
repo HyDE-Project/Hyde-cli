@@ -1,5 +1,10 @@
 #!/bin/env bash
 
+restore_only=false
+if [ "$1" == "--only" ]; then restore_only=true
+shift
+fi
+
 export PATH=$PATH:/usr/lib/hyprdots-ctl/
 . GLOBAL 
 
@@ -84,30 +89,30 @@ crnt_cfg="${pth}/${cfg_chk}"
 
             case "${ctlFlag}" in
                 "B")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     ;;
                 "O")
-                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[MOVED TO BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..." 
+                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -n "[MOVED TO BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..." 
                     cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                    echo "[OVERWRITE] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
+                    print_prompt -m "[OVERWRITE]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "S")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     cp -rf "${CfgDir}$tgt/${cfg_chk}" "${pth}"    
-                    echo "[Sync] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
+                    print_prompt -y "[Sync]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "P")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; echo "[COPY BACK-UP] ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
                     if ! cp -rn "${CfgDir}$tgt/${cfg_chk}" "${pth}" 2>/dev/null ; then
-                        echo "[PRESERVED] ${pth}${tgt}/${cfg_chk}"
+                        print_prompt -g "[PRESERVED]" -w "${pth}${tgt}/${cfg_chk}"
                     else
-                        echo "[POPULATE] ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
+                        print_prompt -g "[POPULATE]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     fi
                     ;;
             esac
         else
                 if [ "${ctlFlag}" != "B" ]; then cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                        echo "[*POPULATE*] ${pth} <-- ${CfgDir}$tgt/${cfg_chk}"    
+                        print_prompt -g "[*POPULATE*]" -w "${pth} <-- ${CfgDir}$tgt/${cfg_chk}"    
                 fi         
         fi
 
@@ -122,6 +127,9 @@ if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia |  wc -l )" -gt 0 ] 
 ' >> ${HOME}/.config/hypr/hyprland.conf
 fi
 
-./create_cache.sh
-./restore_lnk.sh
-./install_pst.sh
+if [ "$restore_only" != "true" ]; then
+    # If it's not true, execute the following commands
+    ./create_cache.sh
+    ./restore_lnk.sh
+    ./install_pst.sh
+fi
