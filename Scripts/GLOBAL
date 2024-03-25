@@ -120,7 +120,7 @@ ask_confirm() {
   local key=$1
   while true; do
     if [ -z "$key" ]; then
-    read -n 1 -s -r -p "[ENTER: continue ANY: exit]" key ; [[ -z "$key" ]] && break || exit 0
+    read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:")" key ; [[ -z "$key" ]] && break || exit 0
     else
       read -p "Please type '$(print_prompt -m "$key")' to continue: " answer 
       if [[ "$answer" == "$key" ]]; then
@@ -268,5 +268,4 @@ fnt_override=`gsettings get org.gnome.desktop.interface monospace-font-name | aw
 fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
 
 }
-
 

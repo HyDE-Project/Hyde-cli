@@ -79,7 +79,7 @@ all() {
   echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" 
   ask_confirm
          awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
-      Restore_Config "/tmp/Hyprdots-${UID}-BAK"
+      Restore_Config --only "/tmp/Hyprdots-${UID}-BAK"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != "$bak" ]]; then
         echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"

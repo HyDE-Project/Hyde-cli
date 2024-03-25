@@ -320,7 +320,7 @@ sddm() { #? Sddm commands.
         sddm_theme="$(for theme in "${sddm_theme_list[@]}"; do
             echo -e "$theme"
         done | fzf --prompt='Please select your sddm theme...' )"
-
+        [ -z "${sddm_theme}" ] && print_prompt -r  "Operation Cancelled" && exit 0
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"
         [ -f "${sddm_bak}" ] && sudo rm "${sddm_bak}"  
@@ -329,9 +329,10 @@ sddm() { #? Sddm commands.
         sudo cp "${sddm_conf}" "${sddm_bak}"
         sudo cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
         ;;
-        # set) #? Set active Wallpaper to Sddm Lockscreen
-        #     "${ScrDir}"/sddmwall.sh
-        # ;;
+          set) #? Directory   Lockscreen
+        :    #  "${ScrDir}"/sddmwall.sh
+        # 
+          ;;
         *)  Parameters "$Function"  ;;
 
 esac
