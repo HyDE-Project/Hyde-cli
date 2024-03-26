@@ -28,13 +28,13 @@ pasteIt() {
                     : #? Terminal should be manually pasted
                     wtype "${selEmoji}"
                 else
-                    if ! ${is_xwayland}; then      
+                    # if ! ${is_xwayland}; then      
                     # notify-send "Wayland"
                     wtype -M ctrl v -m ctrl #? Better on Wayland
-                    else      
+                    # else      
                     # notify-send "Xwayland"
-                    wtype "${selEmoji}" #? Better on xwayland ;
-                    fi
+                    # wtype "${selEmoji}" #? Better on xwayland ;
+                    # fi
                 fi
         # else 
             # wl-paste

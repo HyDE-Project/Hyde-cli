@@ -279,7 +279,7 @@ esac
 wallbash() { #? Toggle to use wallpaper accent themes .
   case $1 in 
         toggle) #? Toggle Wallbash On/Off
-            "${ScrDir}"/wallbashtoggle.sh
+            "${ScrDir}/wallbashtoggle.sh"
         ;;
         # term) #? Toogle Terminal colors into some presets
         #     /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
@@ -450,7 +450,8 @@ show() { #? Some Hypr GUI you might want to use.
             Monitor_Manager
         ;;
         binds) #? Show Keybindings Hints (Click to execute)
-            Keybinds_Hint
+            # Keybinds_Hint #! Moved to .extra 
+            "${ScrDir}"/keybinds_hint.sh
         ;;
         emoji) #? Show Emojis
             Launch_Emoji
