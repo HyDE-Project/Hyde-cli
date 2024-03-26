@@ -81,7 +81,7 @@ hyprctl keyword animations:enabled "${state}" > /dev/null 2>&1
 DIE() {
     pkill rofi
     pkill slurp
-    pkill wtype
+    # pkill wtype
     config_reload
       }
 
