@@ -460,16 +460,17 @@ show() { #? Some Hypr GUI you might want to use.
             "${ScrDir}"/keybinds_hint.sh
         ;;
         emoji) #? Emoji Selector \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
-            pasteIt "${*}"
+            [[ $* == *"--ignore"* ]] && pasteIt "${*}"
             Launch_Emoji
         ;;
         pastebin) #? Pastebin manager \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
-            pasteIt "${*}"
+        [[ $* == *"--ignore"* ]] && pasteIt "${*}"
+    
             shift
             Launch_Pastebin "$@"
         ;;
         glyph) #? Glyph selector \n ﯧ Requires Nerd Fonts \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
-            pasteIt "${*}"
+            [[ $* == *"--ignore"* ]] && pasteIt "${*}"
             Launch_Glyph 
         ;;
         screencap) #? Use rofi to select screenshot options \n  kills another rofi session 
