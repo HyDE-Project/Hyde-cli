@@ -8,35 +8,6 @@ rofi_pos
 CHECK wtype
 # trap 'killall wtype' EXIT
 
-#? handle pasting 
-pasteIt() {
-    # is_xwayland=false
-    is_term=false
-    #  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
-    class=$(hyprctl -j activewindow | jq -r '.initialClass') 
-    list_term=$(sed -n '/^### startCLASS ###$/,/^### endCLASS ###$/{//!p}' "${0}")
-        if echo "${list_term}" | grep -q "${class}" ; then
-        is_term=true
-        fi
-
-        # if [ "${TERM}" = "linux" ]; then
-                if ${is_term} ;then 
-                    # notify-send "Terminal"
-                    : #? Terminal should be manually pasted
-                    # wtype "${selClip}"
-                else
-                    # if ! ${is_xwayland}; then      
-                    # notify-send "Wayland"
-                    wtype -M ctrl v -m ctrl #? Better on Wayland
-                    # else      
-                    # notify-send "Xwayland"
-                    # wtype "${selClip}" #? Better on xwayland ;
-                    # fi
-                fi
-        # else 
-        #     wl-paste
-        # fi
-}
 #? MultiSelect
  cliphist_decode() {
  # Read the entire input into an array
@@ -87,9 +58,9 @@ case $1 in
     # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | cliphist decode | wl-copy
      c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile ) 
         ( [ -n "${selClip}" ] && echo -e "${selClip}" | checkContent ) || exit 0
-        if [ $? -eq  1 ]; then pasteIt ; exit 0 ; fi
+        if [ $? -eq  1 ]; then pasteIt "${*}" ; exit 0 ; fi
         echo -e "${selClip}" | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
-        pasteIt
+        pasteIt "${*}"
          ;; 
     d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile |  cliphist_delete
      
@@ -108,16 +79,3 @@ case $1 in
         exit 1
         ;;
 esac
-
-
-
-exit
-
-
-### startCLASS ###
-kitty
-org.kde.konsole
-terminator
-XTerm
-Alacritty
-### endCLASS ###

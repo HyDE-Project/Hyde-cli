@@ -220,7 +220,7 @@ REVIEW
         print_prompt -y "Is This Correct?"
         ask_confirm "${USER}"
         ./restore_fnt.sh
-        Restore_Config
+        Restore_Config --only
         Hyprdots reload
 }
 

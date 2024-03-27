@@ -1,8 +1,8 @@
 #!/bin/env bash
 
 pkill -x rofi && exit
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
-. GLOBAL
+. /usr/lib/hyprdots-ctl/GLOBAL
+
 
 rofi_pos
 
@@ -11,35 +11,6 @@ CHECK wtype noto-fonts-emoji
 
 emojiData="${etcDir}/emoji.db"
 recentData="${cacheCtl}/show_emoji_recent.db"
-
-#? handle pasting 
-pasteIt() {
-    is_xwayland=false
-    is_term=false
-     is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
-    class=$(hyprctl -j activewindow | jq -r '.initialClass') 
-    list_term=$(sed -n '/^### startCLASS ###$/,/^### endCLASS ###$/{//!p}' "${0}")
-        if echo "${list_term}" | grep -q "${class}" ; then
-        is_term=true
-        fi
-        # if [[ "${TERM}" = "linux" ]]; then
-                if ${is_term} ;then 
-                    # notify-send "Terminal"
-                    : #? Terminal should be manually pasted
-                    wtype "${selEmoji}"
-                else
-                    # if ! ${is_xwayland}; then      
-                    # notify-send "Wayland"
-                    wtype -M ctrl v -m ctrl #? Better on Wayland
-                    # else      
-                    # notify-send "Xwayland"
-                    # wtype "${selEmoji}" #? Better on xwayland ;
-                    # fi
-                fi
-        # else 
-            # wl-paste
-        # fi
-}
 
 save_recent() {
 #? Prepend the selected emoji to the top of the recentData file
@@ -65,15 +36,4 @@ dataEmoji=$(echo "${unique_entries}" | rofi -dmenu -multi-select -i -theme-str  
 trap save_recent EXIT
 selEmoji=$(printf "%s" "${dataEmoji}" | cut -d' ' -f1 | tr -d '\n\r' )
 wl-copy "${selEmoji}"
-pasteIt
-
-
-exit
-
-### startCLASS ###
-kitty
-org.kde.konsole
-terminator
-XTerm
-Alacritty
-### endCLASS ###
+pasteIt "${*}"

@@ -269,3 +269,28 @@ fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}
 
 }
 
+#? handle pasting 
+pasteIt() {
+
+ignore_paste_file=${cacheCtl}/ignore.paste
+
+ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
+[ -n "${ignore_class}" ] && echo "${ignore_class}" >> "${ignore_paste_file}"  && print_prompt -y "[ignore]" -w "'$ignore_class'"
+
+if [[ ! -e "${ignore_paste_file}" ]]; then
+cat << IGNOREWTYPE > "${ignore_paste_file}"
+kitty
+org.kde.konsole
+terminator
+XTerm
+Alacritty
+xterm-256color
+IGNOREWTYPE
+fi
+# is_xwayland=false
+#  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
+class=$(hyprctl -j activewindow | jq -r '.initialClass') 
+ if ! grep -q "${class}" "${ignore_paste_file}" ; then
+     wtype -M ctrl v -m ctrl
+ fi
+}

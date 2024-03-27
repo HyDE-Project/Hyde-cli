@@ -26,8 +26,8 @@ man() { #? Show Manual
     echo -e "Hyprdots-ctl: ${hyprdots_ctl_version}\nHyprdots Clone Directory: ${CloneDir}\nUsage: Hyprdots [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
-      desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $5 }')
-      printf "  %-20s %s\n" "[${Function}]" "*${desc}"
+      desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t", $5); print $5 }')
+      printf " \n%-45s %s\n\n" "$(print_prompt -y "[" -w "${Function}" -y "]")" "$(print_prompt -n "﬌${desc}")"
       Parameters "${Function}"
     done 
   ) 
@@ -81,7 +81,7 @@ else print_prompt -w "Already up to date"
 fi
 }
 
-upgrade() { #? Upgrades dots from the Repository; Manage the control file : '~/.config/hyprdots-ctl/manage_cfg.lst'
+upgrade() { #? Upgrades dots from the Repository  \n  Manage the control  file: '$HOME/.config/hyprdots-ctl/manage_cfg.lst'
     repo_info
     ask_confirm
     Manage_Configs "upgrade"
@@ -122,7 +122,7 @@ restore() { #? Restore Hyprdots configs
             trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
-        config) #? Use the control list to Manage Dots : '~/.config/hyprdots-ctl/manage_cfg.lst'
+        config) #? Resoring the Configs declared on the file \n  file: '~/.config/hyprdots-ctl/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
             Manage_Configs "$1"
             rename_backup "_Hyprdots_restore_config"
         ;;
@@ -187,14 +187,14 @@ cache() { #? Manages Hyprdots' Cache
     esac
 }
 
-sync() { #? Apply your Prefered Configuration defined at ~/.config/hyprdots-ctl/hyprdots.conf  
+sync() { #? Apply your Prefered Configuration \n  file: $HOME/.config/hyprdots-ctl/hyprdots.conf" 
 if [ $# -eq 0 ]; then
 echo "Usage: Hyprdots sync [options]"
 Parameters "$Function"
 exit 0
         fi
     for arg in "$@"; do
-        case $arg in
+        case $arg in 
             waybar_ctl) #? Restore User waybar control file
                 User_Sync "$arg"
                 ;;
@@ -207,7 +207,7 @@ exit 0
             kitty) #? Restore $USER kitty.conf file
                 User_Sync "$arg"
                 ;;
-            kdeglobals)
+            kdeglobals) 
                 User_Sync "$arg"
                 ;;
             *)  
@@ -449,22 +449,22 @@ show() { #? Some Hypr GUI you might want to use.
         monitors) #? Manages Monitors using nwg-displays
             Monitor_Manager
         ;;
-        binds) #? Show Keybindings Hints (Click to execute)
+        binds) #? Keybind Hints (Click to execute)
             # Keybinds_Hint #! Moved to .extra 
             "${ScrDir}"/keybinds_hint.sh
         ;;
-        emoji) #? Show Emojis
+        emoji) #? Emoji Selector \n  pass '--ignore=initialclass' to disable autopaste
             Launch_Emoji
         ;;
-        pastebin) #? Show pastebin 
+        pastebin) #? Pastebin manager \n  pass '--ignore=initialclass' to disable autopaste
             shift
             Launch_Pastebin "$@"
         ;;
-        screencap) #? Experimental! Rofi will conflict. Will use yad in the future
-            Launch_Screencap
+        glyph) #? Glyph selector \n  Requires Nerd Fonts \n  pass '--ignore=initialclass' to disable autopaste
+            Launch_Glyph 
         ;;
-        glyph) #? Show Glyph selection * Be sure to have Nerd Fonts installed
-            Launch_Glyph
+        screencap) #? Use rofi to select screenshot options \n  kills another rofi session 
+            Launch_Screencap
         ;;
         # panel) #? Notifications Panel
         #     Launch_Swaync
