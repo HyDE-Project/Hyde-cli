@@ -289,15 +289,15 @@ wallbash() { #? Toggle to use wallpaper accent themes .
         # term) #? Toogle Terminal colors into some presets
         #     /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
         # ;;
-        kitty) #? Toogle 'kitty'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        waybar) #? Toogle 'waybar'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
-        spotify) #? Toogle 'spotify'
-            /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
-        ;;
+        # kitty) #? Toogle 'kitty'
+            # /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        # ;;
+        # waybar) #? Toogle 'waybar'
+            # /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        # ;;
+        # spotify) #? Toogle 'spotify'
+            # /usr/lib/hyprdots-ctl/Manage_Wallbash "${@}"
+        # ;;
         *)  Parameters "$Function"  ;;
 esac
 }

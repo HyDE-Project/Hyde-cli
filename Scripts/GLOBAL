@@ -25,8 +25,7 @@ hyprdotsDir="${ConfDir}/hyprdots"
 ScrDir="${hyprdotsDir}/scripts"
 wallbashDir="${hyprdotsDir}/wallbash"
 
-[[ ! -d ${hyprdotsDir} ]] && ScrDir="${HOME}/.config/hypr/scripts"  && wallbashDir="${HOME}/.config/hypr/wallbash"  && echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration."
-
+[[ ! -d ${hyprdotsDir} ]] && ScrDir="${HOME}/.config/hypr/scripts"  && wallbashDir="${HOME}/.config/hypr/wallbash"  && echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration." && exit 0
 
 ! source "${ScrDir}/globalcontrol.sh" 2> /dev/null && handle_error "Failed to source ${ScrDir}/globalcontrol.sh"
 [[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Clone Directory"
@@ -157,7 +156,7 @@ CHECK () {
 if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
     notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
      get_aurhlpr 
-    { pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
+    { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
 fi
 }
 
