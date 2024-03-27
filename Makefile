@@ -6,12 +6,12 @@ BACKUPDIR := $(shell mktemp -d)
 VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
 COMMIT_MESSAGE := $(shell git show -s --format='%B')
+INSTALLATION_DIRECTORY := $(shell pwd)
 
 all: check directories backup  install
 
 check:
 	@which git >/dev/null || (echo "Error: git is not installed" && exit 1)
-
 
 update:
 	git fetch
@@ -41,8 +41,6 @@ backup:
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true
 
-
-
 install:
 	install -m 755 ./Hyprdots $(DESTDIR)$(bindir) || make restore
 	install -m 755 ./Hyprdots-install $(DESTDIR)$(bindir) || make restore
@@ -50,6 +48,7 @@ install:
 	@echo "Version: $(VERSION)" > .hyprdots-ctl.ver
 	@echo "Last commit: $(LAST_COMMIT)" >> .hyprdots-ctl.ver
 	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .hyprdots-ctl.ver
+	@echo "Installation directory: '$(INSTALLATION_DIRECTORY)'" >> .hyprdots-ctl.ver
 
 	install -m 644 ./.hyprdots-ctl.ver $(DESTDIR)$(etcdir) || make restore
 
