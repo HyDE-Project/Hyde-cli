@@ -27,16 +27,14 @@ man() { #? Show Manual
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
       Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
       desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t", $5); print $5 }')
-      printf " \n%-45s %s\n\n" "$(print_prompt -y "[" -w "${Function}" -y "]")" "$(print_prompt -n "﬌${desc}")"
+      printf " \n%-45s %s\n\n" "$(print_prompt -y "[" -w "${Function}" -y "]")" "$(print_prompt -y "﬌${desc}")"
       Parameters "${Function}"
     done 
   ) 
   box_me "Manual Page"
-print_prompt -y "${manPage}" \
+echo -e "${manPage}" \
 | sed "s|\${CloneDir}|$CloneDir|g" \
 | sed -e "s|\${HOME}|${HOME}|g"
-
-
 }
 
 version() { #? Hyprdots-ctl Version
