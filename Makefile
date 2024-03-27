@@ -48,7 +48,6 @@ install:
 	@echo "Version: $(VERSION)" > .hyprdots-ctl.ver
 	@echo "Last commit: $(LAST_COMMIT)" >> .hyprdots-ctl.ver
 	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .hyprdots-ctl.ver
-	@echo "Installation directory: '$(INSTALLATION_DIRECTORY)'" >> .hyprdots-ctl.ver
 
 	install -m 644 ./.hyprdots-ctl.ver $(DESTDIR)$(etcdir) || make restore
 
