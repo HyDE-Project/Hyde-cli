@@ -32,7 +32,11 @@ man() { #? Show Manual
     done 
   ) 
   box_me "Manual Page"
-  echo "${manPage}"
+print_prompt -y "${manPage}" \
+| sed "s|\${CloneDir}|$CloneDir|g" \
+| sed -e "s|\${HOME}|${HOME}|g"
+
+
 }
 
 version() { #? Hyprdots-ctl Version
@@ -81,7 +85,7 @@ else print_prompt -w "Already up to date"
 fi
 }
 
-upgrade() { #? Upgrades dots from the Repository  \n  Manage the control  file: '$HOME/.config/hyprdots-ctl/manage_cfg.lst'
+upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.config/hyprdots-ctl/manage_cfg.lst'
     repo_info
     ask_confirm
     Manage_Configs "upgrade"
@@ -90,7 +94,7 @@ upgrade() { #? Upgrades dots from the Repository  \n  Manage the control  
 
 restore() { #? Restore Hyprdots configs
   case $1 in 
-        defaults) #? Restore to Default Dots of Hyprdots
+        defaults) #? Restore Dots from '${CloneDir}'. 
         shift
         box_me "Restoring Dots"
             repo_info
@@ -114,15 +118,15 @@ restore() { #? Restore Hyprdots configs
         # read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
         # mv "$bak" "$bak--$note"
         # ;;
-        Clone) #? Restores Dots from a Clone Repository
+        Clone) #? Restores Dots from a Clone Repository. \n ﯧ Provide ~/path/to/clone/directory
         Manage_Configs "$1" "$2"
         rename_backup "_Hyprdots_restore_Clone"
         ;;
-        BackUp) #? Restores Dots to a previous state.
+        BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete
             trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
-        config) #? Resoring the Configs declared on the file \n  file: '~/.config/hyprdots-ctl/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
+        Configs) #? Resoring the Configs declared on the file \n  file: '~/.config/hyprdots-ctl/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
             Manage_Configs "$1"
             rename_backup "_Hyprdots_restore_config"
         ;;
@@ -130,9 +134,12 @@ restore() { #? Restore Hyprdots configs
         repo_info
         ( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
         set_branch            
-            shift ; [[ -z "${1}" ]] && echo "Missing /path/to/CloneDir/*.: ${1}" && exit 1     
-            new_CloneDir=${1}  
-            [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "${new_CloneDir} not a directory" && exit 1 ;}    
+        shift
+        new_CloneDir=${1}  
+        [[ -z "${1}" ]] && new_CloneDir=${CloneDir} && print_prompt -r "Missing /path/to/CloneDir" 
+        print_prompt -y "\n[LINKING]:" -w "${CloneDir}"     
+        ask_confirm
+            [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "'${new_CloneDir}' not a directory" && exit 1 ;}    
             [[ ! -e ${new_CloneDir}/Configs/.config/hyprdots/scripts/globalcontrol.sh ]] && { print_prompt -r "MISSING:" -w "  ./Configs/.config/hyprdots/scripts/globalcontrol.sh" && exit 1 ;}
             [[ ! -e ${new_CloneDir}/Scripts/global_fn.sh ]] && { print_prompt -r "MISSING:" -w "./Configs/global_fn.sh " && exit 1 ;}        
             cd "${new_CloneDir}/Scripts" || { print_prompt -r "ERROR:" -w " cd ${new_CloneDir}" && exit 1 ;}    
@@ -187,7 +194,7 @@ cache() { #? Manages Hyprdots' Cache
     esac
 }
 
-sync() { #? Apply your Prefered Configuration \n  file: $HOME/.config/hyprdots-ctl/hyprdots.conf" 
+sync() { #? Apply your Prefered Configuration \n  file: ~/.config/hyprdots-ctl/hyprdots.conf" 
 if [ $# -eq 0 ]; then
 echo "Usage: Hyprdots sync [options]"
 Parameters "$Function"
@@ -301,7 +308,7 @@ waybar() { #? Waybar commands
     case $1 in
         control) #? Edit waybar Control File.
             ACTION="notify-send -a \"Hyprdots\" \"Waybar Updated\" ; ${ScrDir}/wbarconfgen.sh ; killall waybar 2> /dev/null ; $(which waybar) > /dev/null 2>&1 & disown "
-            ConfigCtl "$HOME/.config/waybar/config.ctl" "$ACTION"
+            ConfigCtl "${HOME}/.config/waybar/config.ctl" "$ACTION"
             ;;
         *)
             Parameters "$Function" 
@@ -350,7 +357,7 @@ case $1 in
             CHECK zsh oh-my-zsh-git 
             # add zsh plugins            
                 # set variables
-                Zsh_rc="${ZDOTDIR:-$HOME}/.zshrc"
+                Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
                 Zsh_Path="/usr/share/oh-my-zsh"
                 Zsh_Plugins="$Zsh_Path/custom/plugins"
                 Fix_Completion=""
@@ -424,7 +431,7 @@ case $1 in
 
 select_theme() {
             dir=$( grep "^1|" "${ThemeCtl}" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
-        code_SubExt=$(cat $HOME/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
+        code_SubExt=$(cat ${HOME}/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf )
         awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" > temp && mv temp "$ThemeCtl"
             if [ "$(grep -c "workbench.colorTheme" "${ConfDir}"/Code/User/settings.json)" -eq 1 ] ; then sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
             else sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${ConfDir}"/Code/User/settings.json
@@ -444,23 +451,25 @@ fi
 }
 
 show() { #? Some Hypr GUI you might want to use.
-    
     case $1 in 
         monitors) #? Manages Monitors using nwg-displays
             Monitor_Manager
         ;;
-        binds) #? Keybind Hints (Click to execute)
+        binds) #? Keybind Hints ﯧ Click to execute
             # Keybinds_Hint #! Moved to .extra 
             "${ScrDir}"/keybinds_hint.sh
         ;;
-        emoji) #? Emoji Selector \n  pass '--ignore=initialclass' to disable autopaste
+        emoji) #? Emoji Selector \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
+            pasteIt "${*}"
             Launch_Emoji
         ;;
-        pastebin) #? Pastebin manager \n  pass '--ignore=initialclass' to disable autopaste
+        pastebin) #? Pastebin manager \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
+            pasteIt "${*}"
             shift
             Launch_Pastebin "$@"
         ;;
-        glyph) #? Glyph selector \n  Requires Nerd Fonts \n  pass '--ignore=initialclass' to disable autopaste
+        glyph) #? Glyph selector \n ﯧ Requires Nerd Fonts \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
+            pasteIt "${*}"
             Launch_Glyph 
         ;;
         screencap) #? Use rofi to select screenshot options \n  kills another rofi session 

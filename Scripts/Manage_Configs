@@ -194,7 +194,7 @@ Hyprdots reload
 }
 
 
-config() {
+Configs() {
 ctlFile="${ctlDir}/manage_cfg.lst"
 if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
     if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
