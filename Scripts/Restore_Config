@@ -132,7 +132,4 @@ if [ "$restore_only" != "true" ]; then
     ./create_cache.sh
     ./restore_lnk.sh
     ./install_pst.sh
-else
-print_prompt -y "restoring link..." 
-    ./restore_lnk.sh
 fi
