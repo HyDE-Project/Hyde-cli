@@ -25,7 +25,7 @@ hyprdotsDir="${ConfDir}/hyprdots"
 ScrDir="${hyprdotsDir}/scripts"
 wallbashDir="${hyprdotsDir}/wallbash"
 
-[[ ! -d ${hyprdotsDir} ]] && ScrDir="${HOME}/.config/hypr/scripts"  && wallbashDir="${HOME}/.config/hypr/wallbash"  && echo -e  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration." && exit 0
+[[ ! -d ${hyprdotsDir} ]] && ScrDir="${HOME}/.config/hypr/scripts"  && wallbashDir="${HOME}/.config/hypr/wallbash"  && handle_error  "You are using an older version of Hyprdots! Please see upstream to adjust your configuration."
 
 ! source "${ScrDir}/globalcontrol.sh" 2> /dev/null && handle_error "Failed to source ${ScrDir}/globalcontrol.sh"
 [[ -z "${CloneDir// }" ]] && handle_error "Cannot find Hyprdots Clone Directory"
@@ -117,9 +117,22 @@ box_me() {
 
 ask_confirm() {
   local key=$1
+if [[ "$key" == "Yy"  ]]; then
+    while true; do
+     read -n 1 -s -r -p "$(print_prompt -n "[y] " -w "yes (default) " -m "[n] " -w "no:\n")" key
+     [[ -z "$key" ]] && key=y
+     if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
+        return 0
+     elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
+        return 1
+     else
+        echo "What?"
+     fi
+    done
+else
   while true; do
     if [ -z "$key" ]; then
-    read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:")" key ; [[ -z "$key" ]] && break || exit 0
+    read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key ; [[ -z "$key" ]] && break || exit 0
     else
       read -p "Please type '$(print_prompt -m "$key")' to continue: " answer 
       if [[ "$answer" == "$key" ]]; then
@@ -129,6 +142,7 @@ ask_confirm() {
       fi
     fi
   done
+fi
 }
 
 case_help() {

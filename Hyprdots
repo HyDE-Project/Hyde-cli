@@ -96,9 +96,8 @@ restore() { #? Restore Hyprdots configs
         shift
         box_me "Restoring Dots"
             repo_info
-                    ask_confirm
+                    # ask_confirm
         . Manage_Configs
-         restore_Lister "${CloneDir}/Configs" ;  trap 'rm -f ${config_override}' EXIT
          list_Marker
         #  cat ${config_override}
         ask_confirm "${USER}"

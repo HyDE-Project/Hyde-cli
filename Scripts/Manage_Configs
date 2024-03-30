@@ -3,6 +3,35 @@
 . GLOBAL
 
 config_override="/tmp/Hyprdots-${UID}-BAKmanage_cfg.lst"
+ctlFile="${ctlDir}/manage_cfg.lst"
+
+if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+    fi
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+    cat "${ctlFile}"
+    print_prompt -y "[Reminder] Be sure to Check the ${ctlFile} first!"
+    exit
+fi
+
+prev_restore_list() {
+cat << REVIEW 
+${1}
+"Please review the list..."
+$(barLine)
+O   Overwrite     ﬌ Move Dots to Backup then Populate dots from Source Directory (${CloneDir})
+                       Move means mving the whole Directory including all files inside.
+S   Sync          ﬌ Copy Dots to Backup > Copy to overwrite Dots from Source Directory (${CloneDir})  
+                      ﯧ Recommended to use.It will only overrwrite the CONFLICTING files if both files exist.
+P   Preserve      ﬌ Populates Dots But Preserves existing user Dots
+                      ﯧ Will skip the files/dirs if it already exists
+B   Backup        ﬌ Only Backup the selected Dots (Default)
+                      ﯧ 'Hyprdots backup clean' to do some cleanup
+$(barLine)
+$(cat "${config_override}")
+$(barLine)
+REVIEW
+}
 
 list_Backup() {
   if [ -d "$BkpDir" ] && [ "$(ls -A "$BkpDir")" ]; then
@@ -12,33 +41,6 @@ list_Backup() {
   else
     print_prompt -m "Backup: Empty"
   fi
-}
-
-list_Marker() {
-barLine
-echo "Please review the list..."
-cat << REVIEW
-O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
-S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
-P   Preserve      Populates Dots But Preserves existing user Dots
-B   Backup        Only Backup the selected Dots (Default)
-REVIEW
-
-awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
-PRESERVE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Preserve will copy files from Clone only if dots do not yet exist ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
-SYNC="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Sync will simply copy current dots to backup. Then fetch dots from Clone ' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
-OVERWRITE="$(echo -e "\n$(awk -F'|' '($1 ~ /^B/) {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | fzf -m --marker '' --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all | Overwrite moves current dots to backup then fetch the dots from Clone' --bind 'ctrl-a:select-all,ctrl-d:deselect-all')"
-awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
-barLine
-cat "${config_override}"
-barLine
-echo "Cancel if you change your mind"
 }
 
 restore_Lister() { #* Check the content of a Directory and make a restore list
@@ -71,6 +73,56 @@ fi
   done
 done < "./restore_cfg.lst"
 # echo "Done: $restore_directory"
+
+}
+
+list_Marker() {
+
+cp "${ctlFile}" "${config_override}"
+
+if [ -e ${ctlFile}  ]; then
+print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use the last selected option?"
+ ask_confirm "Yy"
+   if [ $? -eq 1 ]; then 
+    awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+   fi
+
+fi
+# trap 'rm -f ${config_override}' EXIT
+
+PRESERVE="$(echo -e "\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+ fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list"
+ )"
+
+awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+
+SYNC="$(echo -e "\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+ fzf -m --marker '' \
+  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
+ --preview "Manage_Configs prev_restore_list" 
+  )"
+
+awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+
+OVERWRITE="$(echo -e "\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list"
+ )"
+
+awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+
+print_prompt -y "Save this as your new control file?"
+ask_confirm "Yy"
+[ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
+
+prev_restore_list "Be Careful"
+print_prompt -w '[ctrl + c]' -r 'Cancel'
 
 }
 
@@ -195,7 +247,6 @@ Hyprdots reload
 
 
 Configs() {
-ctlFile="${ctlDir}/manage_cfg.lst"
 if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
     if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
     fi
@@ -232,15 +283,6 @@ if [[ -e ${custom_apps} ]] ; then
     sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-"$(id -u)"-temporary-apps
     echo -e "Optional packages loaded:"
     cat /tmp/hyprdots-ctl-"$(id -u)"-temporary-apps
-fi
-ctlFile="${ctlDir}/manage_cfg.lst"
-if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
-    fi
-    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
-    cat "${ctlFile}"
-    print_prompt -y "[Reminder] Be sure to Check the ${ctlFile} first!"
-    exit
 fi
 print_prompt -y "Please review the list..."
 print_prompt -y "Control File:" -w "${ctlDir}/manage_cfg.lst"
