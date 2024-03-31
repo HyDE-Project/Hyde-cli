@@ -1,6 +1,8 @@
 > [!Important]
-> Users getting this error ``` You are using an older version of Hyprdots! Please see upstream to adjust your configuration. ```
+> * Users getting this error ``` You are using an older version of Hyprdots! Please see upstream to adjust your configuration. ```
 >  Please follow instructions here https://github.com/prasanthrangan/hyprdots/issues/1053 \
+>
+> * This ```Hyprdots``` cmd will be changed to ``` Hyde ``` command. But Hyprdots would still work for the meantime with Warning messages.
 
 
 > [!Note]
