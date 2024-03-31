@@ -64,7 +64,6 @@ hyprctl systeminfo
 
 branch() { #? Set pref Hyprdots branch
 repo_info
-( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
 set_branch
 }
 
@@ -129,7 +128,6 @@ restore() { #? Restore Hyprdots configs
         ;;
         link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
-        ( check_Ping && print_prompt -w "Fetching updates" && git fetch )  ||  true
         set_branch            
         shift
         new_CloneDir=${1}  

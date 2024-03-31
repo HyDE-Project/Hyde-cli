@@ -189,7 +189,14 @@ do_contain() {
 }
 
 set_branch() {
+check_Ping 
+print_prompt -w "Fetching updates" 
+if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+    git remote set-branches origin '*'
+fi
+git fetch --all 
  git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
  if [[ $git_branch == *"*"* ]]; then
     print_prompt -y "Already in branch: ${git_branch}"
     return 1
