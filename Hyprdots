@@ -10,6 +10,15 @@ hyprdots_ctl_version=$(cat /etc/hyprdots-ctl/.hyprdots-ctl.ver | head -1)
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 . FUNCTIONS 
 
+current_branch=$(git branch --show-current)
+
+if [[ $current_branch == *"hyde"* ]]; then
+    print_prompt -r "[FATAL] " -w "You are on a test branch!, exiting script..."
+    notify-send  "[FATAL] You are on a test branch!, No CLI support for hyde branch yet, exiting script..."
+    exit 1
+fi
+
+
 #! +----------------------------------------------------------------|
 #? Add functions below this section.
 #? Be careful with spaces in your Function definitions.
@@ -504,6 +513,24 @@ inject() { #? Some of Scripts you might want to use.
         shift
           sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR "${@}"
          ;;
+        asus_patch)
+        # Add Keys of ASUS Repository
+        pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+
+        # Add in pacman.conf
+        echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | sudo tee -a /etc/pacman.conf
+
+        CHECK asusctl supergfxctl rog-control-center power-profiles-daemon
+
+        #Check First before enabling 
+        service_check power-profiles-daemon.service supergfxd
+        ;;
+        samp)
+        service_check sddm
+        ;;
         *)
         Parameters "$Function" 
          ;;
