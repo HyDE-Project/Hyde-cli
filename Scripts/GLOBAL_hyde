@@ -1,0 +1,342 @@
+#!/bin/env bash
+
+export PATH=${PATH}:/usr/lib/hyde-cli/
+
+handle_error() { 
+cat << HANDLE_ERROR 
+${1}
+=======================================================================================
+Please run:
+           'Hyde-install'                                 Install Hyde (default)
+For advanced usage see options below
+        --clone= /path/to/Clone/Hyde                      Clone Hyde in a Custom path then run installation.
+                                                                Default: '${HOME}/Hyde'
+        --git https://gitclone/link/                          Repository link to be cloned
+                                                                Default: 'https://github.com/prasanthrangan/hyde'
+        --link                                                Flag to transfer the link to a Clone Directory
+                                                                    Default: 'false'
+HANDLE_ERROR
+  exit 1 
+ }
+
+#Handles Transition
+CloneDir=/home/khing/GitHub/HyDE
+
+export ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+scrDir=""$(dirname $(which globalcontrol.sh))""
+export scrDir
+export hydeDir="${ConfDir}/hyde"
+export wallbashDir="${hydeDir}/wallbash"
+export themeDir="${hydeDir}/themes"
+
+. $scrDir/globalcontrol.sh
+
+export ScriptDir="${CloneDir}/Scripts"
+export BkpDir="${ConfDir}/cfg_backups"
+export cacheDir="${HOME}/.cache/hyde"
+export cacheCtl="${HOME}/.cache/hyde-cli"
+export etcDir="/etc/hyde-cli"
+export ctlDir="${ConfDir}/hyde-cli"
+
+make_dir=(
+  "${ScriptDir}"
+  "${BkpDir}"
+  "${cacheDir}"
+  "${cacheCtl}"
+  "${etcDir}"
+  "${ctlDir}"
+)
+  for dir in "${make_dir[@]}"; do
+    if [[ ! -d "${dir}" ]]; then
+      mkdir -p "${dir}"
+      echo "Hyde-cli created a directory: ${dir}"
+    fi
+  done
+
+if [ "$(ls -A "$BkpDir")" ]; then
+  last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
+fi
+
+
+export last_bak
+
+barLine() { printf '=%.0s' $(seq 3 "$(tput cols)"); echo; }
+
+
+rename_backup() {
+bak=$(ls -td -- "$BkpDir"/* | head -n 1 )
+if [[ "$last_bak" != $bak ]]; then
+mv "$bak" "$bak-$1"
+fi
+}
+
+
+print_prompt() {
+  while (( "$#" )); do
+    case "$1" in
+      -r) echo -ne "\e[31m$2\e[0m" ;;  # Red
+      -g) echo -ne "\e[32m$2\e[0m" ;;  # Green
+      -y) echo -ne "\e[33m$2\e[0m" ;;  # Yellow
+      -b) echo -ne "\e[34m$2\e[0m" ;;  # Blue
+      -m) echo -ne "\e[35m$2\e[0m" ;;  # Magenta
+      -c) echo -ne "\e[36m$2\e[0m" ;;  # Cyan
+      -w) echo -ne "\e[37m$2\e[0m" ;;  # White
+      -n) echo -ne "\e[96m$2\e[0m" ;;  # Neon
+      *) echo "Invalid option: $1" ;;
+    esac
+    shift 2
+  done
+  echo ""
+}
+
+box_me() {
+ local sender="Hyde-cli: "
+ local color=3
+
+ while (( "$#" )); do
+    case "$1" in
+      -s)
+        sender="$2"
+        shift 2
+        ;;
+      -c)
+        color="$2"
+        shift 2
+        ;;
+      *)
+        break
+        ;;
+    esac
+ done
+
+  local s="${sender}$*"
+  tput setaf ${color}
+  echo -e " ═${s//?/═}"
+  echo -e "║$s ║"
+  echo -e " ═${s//?/═}"
+  tput sgr0
+}
+
+ask_confirm() {
+  local key=$1
+if [[ "$key" == "Yy"  ]]; then
+    while true; do
+     read -n 1 -s -r -p "$(print_prompt -n "[y] " -w "yes (default) " -m "[n] " -w "no:\n")" key
+     [[ -z "$key" ]] && key=y
+     if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
+        return 0
+     elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
+        return 1
+     else
+        echo "What?"
+     fi
+    done
+else
+  while true; do
+    if [ -z "$key" ]; then
+    read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key ; [[ -z "$key" ]] && break || exit 0
+    else
+      read -p "Please type '$(print_prompt -m "$key")' to continue: " answer 
+      if [[ "$answer" == "$key" ]]; then
+        break
+      else
+        print_prompt -r "Invalid input, please try again."
+      fi
+    fi
+  done
+fi
+}
+
+case_help() {
+  OPTION="$1"
+  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+}
+
+pkg_installed()
+{
+    local PkgIn=$1
+
+    if pacman -Qi $PkgIn &> /dev/null
+    then
+        #echo "${PkgIn} is already installed..."
+        return 0
+    else
+        #echo "${PkgIn} is not installed..."
+        return 1
+    fi
+}
+
+CHECK () {
+    local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
+
+if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
+    notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
+     get_aurhlpr 
+    { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
+fi
+}
+
+service_check() {
+    for servChk in "$@"; do
+        if [[ $(systemctl list-units --all -t service --full --no-legend "${servChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${servChk}.service" ]]; then
+            echo -e "\033[0;33m[SKIP]\033[0m ${servChk} service is active..."
+        else
+            echo -e "\033[0;32m[systemctl]\033[0m starting ${servChk} system service..."
+            systemctl enable --now "${servChk}.service"
+            systemctl enable --now "${servChk}.service"
+        fi
+    done
+}
+
+do_contain() {
+    local etc_file="$1"
+    local conf_file="$2"
+    local tag_line=$(grep -i "Hyde-cli tag:" "${etc_file}")
+
+    if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}" ; then
+        cp "${etc_file}" "${conf_file}"
+        echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
+    else :
+        # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates" 
+    fi
+}
+
+set_branch() {
+check_Ping 
+print_prompt -w "Fetching updates" 
+if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+    git remote set-branches origin '*'
+fi
+git fetch --all 
+ git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
+ if [[ $git_branch == *"*"* ]]; then
+    print_prompt -y "Already in branch: ${git_branch}"
+    return 1
+ else
+# Extract the branch name without the remote prefix and trim leading whitespace
+branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+# Switch to the selected branch
+git checkout "${branch_name}"
+echo "On branch: ${branch_name}"
+ fi
+}
+
+
+repo_info() {
+print_prompt -g "CloneDirectory: " -n "${CloneDir}"
+print_prompt -g "Git URL: " -n "$( git remote get-url origin)"
+print_prompt -g "Git Branch: " -n "$(git branch --show-current)"
+}
+
+
+rofi_pos() {
+
+pkill -x rofi && exit
+CHECK rofi jq
+
+roFile="~/.config/rofi/clipboard.rasi"
+# set position
+x_offset=-15   #* Cursor spawn position on clipboard
+y_offset=210   #* To point the Cursor to the 1st and 2nd latest word
+#!base on $HOME/.config/rofi/clipboard.rasi 
+clip_h=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
+clip_w=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/clipboard.rasi" | awk '/window {/,/}/'  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
+#clip_h=55 #! Modify limits for size of the Clipboard
+#clip_w=20 #! This values are transformed per cent(100)
+#? Monitor resolution , scale and rotation 
+x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
+y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
+#? Rotated monitor? 
+monitor_rot=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .transform')
+if [ $((monitor_rot %  2)) -eq  1 ]; then  # if rotated 270 deg
+ tempmon=$x_mon
+    x_mon=$y_mon
+    y_mon=$tempmon
+    tempclip=$clip_w
+    clip_w=$clip_h
+    clip_h=$tempclip
+#! For rotated monitors
+fi
+#? Scaled monitor Size
+monitor_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
+x_mon=$((x_mon * 100 / monitor_scale ))
+y_mon=$((y_mon * 100 / monitor_scale))
+#? monitor position
+x_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .x')
+y_pos=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .y')
+#? cursor position
+x_cur=$(hyprctl -j cursorpos | jq '.x')
+y_cur=$(hyprctl -j cursorpos | jq '.y')
+# Ignore position
+ x_cur=$(( x_cur - x_pos))
+ y_cur=$(( y_cur - y_pos))
+#Limiting
+# Multiply before dividing to avoid losing precision due to integer division
+clip_w=$(( x_mon*clip_w/100 ))
+clip_h=$(( y_mon*clip_h/100 ))
+max_x=$((x_mon - clip_w - 5 )) #offset of 5 for gaps
+max_y=$((y_mon - clip_h - 15 )) #offset of 15 for gaps
+
+# best for multi monitor
+# [ $((monitor_rot %  2)) -eq  1 ] && clip_h=$(( clip_w * 175/100 )) && h_override="height: ${clip_h}px;" 
+
+x_cur=$((x_cur - x_offset))
+y_cur=$((y_cur - y_offset))
+# 
+x_cur=$(( x_cur < min_x ? min_x : ( x_cur > max_x ? max_x :  x_cur)))
+y_cur=$(( y_cur < min_y ? min_y : ( y_cur > max_y ? max_y :  y_cur)))
+
+pos="window {location: north west; x-offset: ${x_cur}px; y-offset: ${y_cur}px;}" #! I just Used the old pos function
+#pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}" 
+
+# read hypr theme border
+wind_border=$(( hypr_border * 3/2 ))
+elem_border=`[ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border`
+r_override="window {${h_override}border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+
+
+# read hypr font size
+
+fnt_override=`gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}'`
+fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
+
+}
+
+#? handle pasting 
+pasteIt() {
+ignore_paste_file=${cacheCtl}/ignore.paste
+
+if [[ ! -e "${ignore_paste_file}" ]]; then
+cat << IGNOREWTYPE > "${ignore_paste_file}"
+kitty
+org.kde.konsole
+terminator
+XTerm
+Alacritty
+xterm-256color
+IGNOREWTYPE
+fi
+
+ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
+[ -n "${ignore_class}" ] && echo "${ignore_class}" >> "${ignore_paste_file}"  && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0 
+
+# is_xwayland=false
+#  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
+class=$(hyprctl -j activewindow | jq -r '.initialClass') 
+ if ! grep -q "${class}" "${ignore_paste_file}" ; then
+     wtype -M ctrl v -m ctrl
+ fi
+}
+
+navigate_clone() {
+cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+current_branch=$(git branch --show-current)
+if [[ $current_branch != *"hyde"* ]]; then
+    print_prompt -r "[FATAL] " -w "You are not on the test branch!, exiting script..."
+    exit 1
+fi
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"

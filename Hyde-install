@@ -1,0 +1,110 @@
+#!/bin/bash
+
+#TODO: Clean This
+
+is_link=false
+    while (( "$#" )); do
+        case "$1" in
+            --clone)
+                CloneDir="$2"
+                shift  2
+                ;;
+            --link)
+                 is_link=true
+                shift  1
+                ;;
+            --git)
+                GIT="$2"
+                shift  2
+                ;;
+            *)
+cat << HANDLE_ERROR 
+Unknown option: $1
+Please run: 'Hyprdots-install'                                Install Hyprdots (Default)
+
+Advanced usage:
+        --clone /path/to/Clone/Hyprdots                       Clone Hyprdots in a Custom path then run installation.
+                                                                    Default: '${HOME}/Hyprdots'
+        --git https://gitclone/repo/link/                     Remote Repository link to be cloned
+                                                                    Default: 'https://github.com/prasanthrangan/hyprdots'
+        --link                                                Flag to transfer the link to a Clone Directory
+                                                                    Default: 'false'
+HANDLE_ERROR
+                exit  1
+                ;;
+        esac
+    done
+    
+[[ -n ${CloneDir} ]] && echo "Set Clone Directory: ${CloneDir}"
+[[ ${is_link} == true ]] && echo "Linked to Clone Directory: ${CloneDir}"
+[[ -n ${GIT} ]] &&    echo "Cloning from: ${GIT}"
+
+    # Set default values if not provided
+    CloneDir=${CloneDir:-${HOME}/Hyprdots}
+    GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
+
+
+#? One Time Set up on Terminal. 
+install_distro() {
+
+  # echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
+  # read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+  distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+
+case "${distro_ID}" in
+  "fedora")
+    echo "This is Fedora"
+     Install_Hyprdots-DNF "${CloneDir}" "${GIT}"
+    ;;
+  "arch")
+     Install_Hyprdots-PACMAN "${CloneDir}" "${GIT}"
+    ;;
+  *)
+    echo "This is neither Fedora nor Arch"
+    # Add the commands for other distributions here
+    ;;
+esac
+}
+
+export PATH=${PATH}:/usr/lib/hyprdots-ctl/
+
+#? Select Branch
+if cd "${CloneDir}"/Scripts ; then 
+
+Git_Repo="$(git remote get-url origin)"
+
+    if echo "$Git_Repo" | grep -q "/tree/"; then
+        branch=${Git_Repo#*tree/} Git_Repo=${Git_Repo%/tree/*}
+    else branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
+        if [[ ${#branches[@]} -le 1 ]]; then
+            branch=${branches[0]}
+        else echo "Select a Branch"
+            select branch in "${branches[@]}"; do [[ -n $branch ]] && break || echo "Invalid selection. Please try again." ; done
+        fi
+    fi
+
+echo "$branch"
+
+git checkout -b ${branch}
+
+git pull origin ${branch}
+
+
+  echo "Clone Directory exist: ${CloneDir}"
+  echo "Git URL: $(git remote get-url origin)"
+  echo "Git Branch: ${branch}"
+  echo "[*]Using existing directory."
+  echo "[*]Uncommited changes will be stashed"
+
+  read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0 
+  ( git reset --hard HEAD  && git clean -fd  && git pull )  || true
+      if [[ ${is_link} == true ]]; then
+          echo -e "Hyprdots-ctl will make ${CloneDir} your Clone Directory By restoring the links."
+          ./restore_lnk.sh
+      else
+        echo -e "Hyprdots-ctl will make ${CloneDir} your Clone Directory."
+      ./install.sh /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+      fi
+else 
+install_distro
+fi
