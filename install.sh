@@ -58,4 +58,4 @@ git switch "${branch_name}"
  fi
 
 echo "Continue to install ${pkgname} locally"
-sudo make 
+sudo make clean install
