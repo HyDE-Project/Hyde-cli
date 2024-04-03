@@ -39,7 +39,11 @@ Git_Repo="$(git remote get-url origin)"
         if [[ ${#branches[@]} -le 1 ]]; then
             branch=${branches[0]}
         else echo "Select a Branch"
-            select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again." ; done
+            if command -v fzf ; then 
+             git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+            else
+                select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again." ; done
+            fi
         fi
 
  [[ -z ${git_branch} ]] && echo "Operation Cancelled" && exit 0
