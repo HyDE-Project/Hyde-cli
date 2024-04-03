@@ -1,7 +1,7 @@
 #! /bin/env bash
 
 distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-clone_hyde_cli=${HOME}/.cache/hyde-cl/Hyde-cli
+clone_hyde_cli=${HOME}/.cache/hyde-cli/Hyde-cli
 
 case "${distro_ID}" in
   "fedora")
