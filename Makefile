@@ -62,19 +62,10 @@ restore:
 	cp -r $(BACKUPDIR)/scripts/* $(DESTDIR)$(libdir)
 	cp -r $(BACKUPDIR)/confs/* $(DESTDIR)$(etcdir)
 
-uninstall:
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
-	-rm -rf $(wildcard $(DESTDIR)$(prefix)/lib/hyprdots-ctl/)
-	-rm -rf $(wildcard $(DESTDIR)$(prefix)/etc/hyprdots-ctl/)
+uninstall: purge
+clean: purge 
+purge : 
 
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde)
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-install)
-
-	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
-	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
-
-clean:
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
 	-rm -rf $(wildcard $(DESTDIR)$(prefix)/lib/hyprdots-ctl/)

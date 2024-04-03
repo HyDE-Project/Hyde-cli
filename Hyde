@@ -74,13 +74,9 @@ repo_info
 get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
-# Check release
- [ ! -f /etc/arch-release ] && exit 0
- print_prompt -y "Checking Hyde CLI updates..."
-if ${aurhlpr} -Qu --devel hyde-cli-git | grep -q hyde-cli-git; then 
-${aurhlpr} -S --devel hyde-cli-git 
-else print_prompt -w "Already up to date"
-fi
+print_prompt -y "Checking Hyde CLI updates..."
+curl -L https://raw.githubusercontent.com/kRHYME7/Hyprdots-ctl/hdye-cli/install.sh | bash
+
 }
 
 upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.config/hyde-cli/manage_cfg.lst'
