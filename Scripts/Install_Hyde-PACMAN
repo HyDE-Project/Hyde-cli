@@ -11,26 +11,26 @@ cat << GREET
 WOW an Arch BTW User!
 ${barLine}
 
-$(tput setaf 2)Hello ${USER}! This is an automated installation for Hyprdots.$(tput sgr0)
+$(tput setaf 2)Hello ${USER}! This is an automated installation for Hyde.$(tput sgr0)
 
-Hyprdots-ctl is an active helper for Hyprdots. During this installation, the script will:
-1. Check if Hyprdots is already installed.
-2. If not, it will clone the Hyprdots repository from GitHub. https://github.com/prasanthrangan/hyprdots
+Hyde-cli is an active helper for Hyde. During this installation, the script will:
+1. Check if Hyde is already installed.
+2. If not, it will clone the Hyde repository from GitHub. https://github.com/prasanthrangan/hyde
 3. Optionally, you can add Chaotic AUR to your mirror list for faster package installation.
-4. Finally, it will clone the Hyprdots repository and run the installation script.
+4. Finally, it will clone the Hyde repository and run the installation script.
 
 From here on 'Dots' 'Dot Files' means Configurations.
 
-$(tput setaf 3)Hyprdots-ctl is a CLI for Hyprdots.This aims to add patches 
-for Hyprdots and address common Dots issues.
+$(tput setaf 3)Hyde-cli is a CLI for Hyde.This aims to add patches 
+for Hyde and address common Dots issues.
 Also this is a USER specific helper, includes a control file for a user to preserve the USER preferences.
 Please note that using these scripts may alter your Dot files.$(tput sgr0)
 
-$(tput setaf 6)And wait, there's more!!! Checkout 'Hyprdots man' to see how you can manage your Hyprdots setup.$(tput sgr0)
+$(tput setaf 6)And wait, there's more!!! Checkout 'Hyde man' to see how you can manage your Hyde setup.$(tput sgr0)
 
 HAVE A GOOD DAY!
 
-Visit: https://github.com/kRHYME7/Hyprdots-ctl for more information.
+Visit: https://github.com/kRHYME7/Hyde-cli for more information.
 ${barLine}
 
 Clone Directory: ${CloneDir}
@@ -42,7 +42,7 @@ GREET
 read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; echo ; [[ -z "$key" ]] || exit 0 
 
 #? Attempt to install using Chaotic AUR
- sudo /usr/lib/hyprdots-ctl/Install_ChaoticAUR --install fresh 
+ sudo /usr/lib/hyde-cli/Install_ChaoticAUR --install fresh 
 
 # rm -fr "${CloneDir}" || true
 git clone --depth 1 "${GIT}" "${CloneDir}"
@@ -81,10 +81,10 @@ echo "On branch: ${branch_name}"
 custom_apps="${CloneDir}/Scripts/custom_apps.lst"
 
 if [[ -e ${custom_apps} ]] ; then 
-sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyde-cli-$(id -u)-temporary-apps
 echo -e "Optional packages loaded:"
-cat /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+cat /tmp/hyde-cli-$(id -u)-temporary-apps
 fi
  
- 
- ./install.sh /tmp/hyprdots-ctl-$(id -u)-temporary-apps
+
+ ./install.sh /tmp/hyde-cli-$(id -u)-temporary-apps

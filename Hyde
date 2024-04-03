@@ -47,7 +47,7 @@ systeminfo() { #? System Information
 print_prompt -y "**Hyde-cli Version:**"
 cat /etc/hyde-cli/.hyde-cli.ver
 
-print_prompt -y "\n**Repository:**"
+print_prompt -y "\n**Hyde Repository:**"
 repo_info
 
 print_prompt -y "\n**GPU:** "
@@ -176,13 +176,19 @@ cache() { #? Manages Hyde' Cache
     case $1 in 
       reload) #? Reload Wallpaper Cache.
             shift
-            [[ -z ${*} ]] && print_prompt -y "NOTE: Append the 'Theme-Name' to reload specific theme"
+            # [[ -z ${*} ]] && print_prompt -y "NOTE: Append the 'Theme-Name' to reload specific theme"
              swwwallcache.sh "${@}" 
          ;;
       rebuild) #? Force rebuild cache
             read -n 1 -s -r -p "[ENTER:yes ANY:no] Force Rebuild Cache, Proceed? " key ; [[ -z "$key" ]] || exit 0 
             echo ""
             swwwallcache.sh -f
+         ;;
+         wall)
+:
+         ;;
+         theme)
+         :
          ;;
         *)
         Parameters "$Function" 
@@ -368,6 +374,7 @@ shell() { #? Shell commands
 case $1 in 
         select) #? Shell selector
 #TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
+        navigate_clone
         myShell="$(echo -e "zsh\nfish" | fzf --prompt='Select shell: ')"
         echo "${myShell}"
 
@@ -542,9 +549,9 @@ inject() { #? Some of Scripts you might want to use.
         #Check First before enabling 
         service_check power-profiles-daemon.service supergfxd
         ;;
-        # samp)
-        # service_check sddm
-        # ;;
+        test)
+        service_check sddm
+        ;;
         *)
         Parameters "$Function"
          ;;

@@ -9,23 +9,24 @@ check_Ping() {
   fi
 }
 
-# if [ ! -f "/tmp/hyde_update_check" ] || [[ $(find "/tmp/hyde_update_check" -mmin +4320) ]]; then
-#     echo "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
-#      notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
-#     if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then 
-#         git fetch > /dev/null 2>&1
-#         if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
-#             echo -e "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
-#             notify-send "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
-#         
-#         # else
-#         #     echo -e "\033[0;32mHyde Up to date\033[0m"
-#         fi
-#     # else
-#     #     echo "Please Check your Internet Connectivity"
-#     fi
-#     touch "/tmp/hyde_update_check"
-# fi
+if [ ! -f "/tmp/hyde_update_check" ] || [[ $(find "/tmp/hyde_update_check" -mmin +4320) ]]; then
+navigate_clone
+    print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+     notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then 
+        git fetch > /dev/null 2>&1
+        if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+            echo -e "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
+            notify-send "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
+        
+        # else
+        #     echo -e "\033[0;32mHyde Up to date\033[0m"
+        fi
+    # else
+    #     echo "Please Check your Internet Connectivity"
+    fi
+    touch "/tmp/hyde_update_check"
+fi
 
 #??? Handle Syntax errors
 help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }')

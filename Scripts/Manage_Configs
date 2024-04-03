@@ -2,7 +2,7 @@
 
 . GLOBAL
 
-config_override="/tmp/Hyprdots-${UID}-BAKmanage_cfg.lst"
+config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
 ctlFile="${ctlDir}/manage_cfg.lst"
 
 if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
@@ -26,7 +26,7 @@ S   Sync          ﬌ Copy Dots to Backup > Copy to overwrite Dots from Source D
 P   Preserve      ﬌ Populates Dots But Preserves existing user Dots
                       ﯧ Will skip the files/dirs if it already exists
 B   Backup        ﬌ Only Backup the selected Dots (Default)
-                      ﯧ 'Hyprdots backup clean' to do some cleanup
+                      ﯧ 'Hyde backup clean' to do some cleanup
 $(barLine)
 $(cat "${config_override}")
 $(barLine)
@@ -81,7 +81,7 @@ list_Marker() {
 cp "${ctlFile}" "${config_override}"
 
 if [ -e ${ctlFile}  ]; then
-print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use the last selected option?"
+print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last selected option?" -n "\n Please be aware it si better to check  for new configs"
  ask_confirm "Yy"
    if [ $? -eq 1 ]; then 
     awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
@@ -123,15 +123,16 @@ ask_confirm "Yy"
 
 prev_restore_list "Be Careful"
 print_prompt -w '[ctrl + c]' -r 'Cancel'
-
+print_prompt -w "Continue?"
+ask_confirm "${USER}"
 }
 
 all() {
   list_Backup
-  echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyprdots backup clean' to free up space.\e[0m" 
+  echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m" 
   ask_confirm
          awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
-      Restore_Config --only "/tmp/Hyprdots-${UID}-BAK"
+      Restore_Config --only "/tmp/Hyde-${UID}-BAK"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != "$bak" ]]; then
         echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
@@ -161,15 +162,15 @@ all() {
 # }
 
 revert() {
-print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyprdots backup all' to save the current Dots"
+print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
          awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
             
             
-            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt 'List of explicit Backup, Run by Hyprdots backup all' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | cut -d ' ' -f4) && echo "$selected_backup" 
+            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt 'List of explicit Backup, Run by Hyde backup all' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | cut -d ' ' -f4) && echo "$selected_backup" 
             
             if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
-      Restore_Config "/tmp/Hyprdots-${UID}-BAK" "$BkpDir/$selected_backup"
+      Restore_Config "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != $bak ]]; then
         rm -fr $bak
@@ -196,12 +197,12 @@ if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]] || [[ -e ${config_
         list_Marker
         ask_confirm "${USER}"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
-      Restore_Config "/tmp/Hyprdots-${UID}-BAK" "${config_source}"
-      Hyprdots reload
+      Restore_Config "/tmp/Hyde-${UID}-BAK" "${config_source}"
+      Hyde reload
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "${last_bak}" != "${bak}" ]]; then
-        mv "$bak" "$bak-_before_Hyprdots_restore_BackUp"
-        print_prompt -y "Bakckup: $bak-_before_Hyprdots_restore_BackUp"
+        mv "$bak" "$bak-_before_Hyde_restore_BackUp"
+        print_prompt -y "Bakckup: $bak-_before_Hyde_restore_BackUp"
       fi
 else
   print_prompt -y "Operation cancelled" 
@@ -229,9 +230,9 @@ fi
 Clone() {
 if [ ! -d "$1" ]; then echo "Not a directory" ; exit 1 ; fi
 custClone="$1"
-# if [ ! -f "$custClone/Configs/.config/hyprdots/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
-if [ ! -f "$custClone/Configs/.config/hyprdots/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
-  echo "Broken Hyprdots Clone!"
+# if [ ! -f "$custClone/Configs/.config/hyde/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
+if [ ! -f "$custClone/Configs/.config/hyde/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
+  echo "Broken Hyde Clone!"
   exit 1
 fi
 echo "Generating a Restore List"
@@ -241,8 +242,8 @@ restore_Lister "$custClone/Configs" ; trap 'rm -f ${config_override}' EXIT
 list_Marker
 ask_confirm "$USER"
 ./restore_fnt.sh
-Restore_Config "/tmp/Hyprdots-${UID}-BAK"
-Hyprdots reload
+Restore_Config "/tmp/Hyde-${UID}-BAK"
+Hyde reload
 }
 
 
@@ -272,7 +273,7 @@ REVIEW
         ask_confirm "${USER}"
         ./restore_fnt.sh
         Restore_Config --only
-        Hyprdots reload
+        Hyde reload
 }
 
 
@@ -280,29 +281,18 @@ REVIEW
 upgrade() {
   custom_apps="${CloneDir}/Scripts/custom_apps.lst"
 if [[ -e ${custom_apps} ]] ; then 
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyprdots-ctl-"$(id -u)"-temporary-apps
+    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyde-ctl-"$(id -u)"-temporary-apps
     echo -e "Optional packages loaded:"
-    cat /tmp/hyprdots-ctl-"$(id -u)"-temporary-apps
+    cat /tmp/hyde-ctl-"$(id -u)"-temporary-apps
 fi
-print_prompt -y "Please review the list..."
-print_prompt -y "Control File:" -w "${ctlDir}/manage_cfg.lst"
-cat << REVIEW
-O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
-S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
-P   Preserve      Copy Dots to Backup > Populates Dots But Preserves User existing Dots
-B   Backup        Only Backup the selected Dots
-I   Ignore        Skip/Ignore the Dots
-REVIEW
-        barLine
-        cat "${ctlDir}"/manage_cfg.lst
-        barLine
-        print_prompt -y "Clone Directory:" -m "${CloneDir}"
-        print_prompt -y "Is This Correct?"
-        ask_confirm "${USER}"
-      ./install.sh -i /tmp/hyprdots-ctl-"$(id -u)"-temporary-apps
+
+        list_Marker
+        # print_prompt -y "Clone Directory:" -m "${CloneDir}"
+        # print_prompt -y "Is This Correct?"
+      ./install.sh -i /tmp/hyde-ctl-"$(id -u)"-temporary-apps
         ./restore_fnt.sh
         Restore_Config
-        Hyprdots reload
+        Hyde reload
 }
 
 

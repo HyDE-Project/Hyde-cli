@@ -1,65 +1,5 @@
 #!/bin/env bash
 
-export PATH=${PATH}:/usr/lib/hyde-cli/
-
-handle_error() { 
-cat << HANDLE_ERROR 
-${1}
-=======================================================================================
-Please run:
-           'Hyde-install'                                 Install Hyde (default)
-For advanced usage see options below
-        --clone= /path/to/Clone/Hyde                      Clone Hyde in a Custom path then run installation.
-                                                                Default: '${HOME}/Hyde'
-        --git https://gitclone/link/                          Repository link to be cloned
-                                                                Default: 'https://github.com/prasanthrangan/hyde'
-        --link                                                Flag to transfer the link to a Clone Directory
-                                                                    Default: 'false'
-HANDLE_ERROR
-  exit 1 
- }
-
-#Handles Transition
-CloneDir=/home/khing/GitHub/HyDE
-
-export ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-scrDir=""$(dirname $(which globalcontrol.sh))""
-export scrDir
-export hydeDir="${ConfDir}/hyde"
-export wallbashDir="${hydeDir}/wallbash"
-export themeDir="${hydeDir}/themes"
-
-. $scrDir/globalcontrol.sh
-
-export ScriptDir="${CloneDir}/Scripts"
-export BkpDir="${ConfDir}/cfg_backups"
-export cacheDir="${HOME}/.cache/hyde"
-export cacheCtl="${HOME}/.cache/hyde-cli"
-export etcDir="/etc/hyde-cli"
-export ctlDir="${ConfDir}/hyde-cli"
-
-make_dir=(
-  "${ScriptDir}"
-  "${BkpDir}"
-  "${cacheDir}"
-  "${cacheCtl}"
-  "${etcDir}"
-  "${ctlDir}"
-)
-  for dir in "${make_dir[@]}"; do
-    if [[ ! -d "${dir}" ]]; then
-      mkdir -p "${dir}"
-      echo "Hyde-cli created a directory: ${dir}"
-    fi
-  done
-
-if [ "$(ls -A "$BkpDir")" ]; then
-  last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
-fi
-
-
-export last_bak
-
 barLine() { printf '=%.0s' $(seq 3 "$(tput cols)"); echo; }
 
 
@@ -69,7 +9,6 @@ if [[ "$last_bak" != $bak ]]; then
 mv "$bak" "$bak-$1"
 fi
 }
-
 
 print_prompt() {
   while (( "$#" )); do
@@ -147,9 +86,57 @@ else
 fi
 }
 
-case_help() {
-  OPTION="$1"
-  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+handle_error() { 
+cat << HANDLE_ERROR 
+$(print_prompt -r "${*}")
+=======================================================================================
+Please run:
+           'Hyde-install'                                 Install Hyde (default)
+For advanced usage see options below
+        -l|--link                                                Flag to transfer the link to a Clone Directory
+                                                                    ﯦ This is useful if you already have a Hyde
+                                                                    Default: 'false'
+        -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
+                                                                Default: '${cacheCtl}/Hyde'
+        -g|--git https://gitclone/link/                          Upstream repository link to be cloned
+                                                                Default: 'https://github.com/prasanthrangan/hyprdots'
+[ TIP] Looks like you already have a clone directory somewhere
+      To reuse that clone directory run 'Hyde-install -d ${HOME}/custom/Hyde/directory --link'
+      Then 'Hyde-cli' will remember this directory 
+
+HANDLE_ERROR
+  exit 1 
+ }
+
+navigate_clone() {
+if ! source "${meta_file}"; then
+    handle_error "Sourcing ${meta_file} failed.\n You might not install this using the hyde-cli\nDo not worry you can follow the instructions below to manage hyde configuration"
+fi
+export CloneDir
+export ScriptDir="${CloneDir}/Scripts"
+cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+current_branch=$(git branch --show-current)
+git_url=$( git remote get-url origin)
+# check changes on the restore lst
+restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst)"
+
+if [[ $current_branch != *"hyde"* ]]; then
+    print_prompt -r "[FATAL] " -w "You are not on the test branch!, exiting script..."
+    exit 1
+fi
+}
+
+set_metadata() {
+navigate_clone
+cat << METADATA > "${meta_file}"
+#? This is a meta file generated for hyde-cli
+#! Do not touch this
+CloneDir="$CloneDir"
+current_branch="${current_branch}"
+git_url="${git_url}"
+restore_cfg_hash="${restore_cfg_hash}"
+
+METADATA
 }
 
 pkg_installed()
@@ -225,9 +212,10 @@ echo "On branch: ${branch_name}"
 
 
 repo_info() {
+navigate_clone
 print_prompt -g "CloneDirectory: " -n "${CloneDir}"
-print_prompt -g "Git URL: " -n "$( git remote get-url origin)"
-print_prompt -g "Git Branch: " -n "$(git branch --show-current)"
+print_prompt -g "Git URL: " -n "${git_url}"
+print_prompt -g "Git Branch: " -n "${current_branch}"
 }
 
 
@@ -330,13 +318,49 @@ class=$(hyprctl -j activewindow | jq -r '.initialClass')
  fi
 }
 
-navigate_clone() {
-cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
-current_branch=$(git branch --show-current)
-if [[ $current_branch != *"hyde"* ]]; then
-    print_prompt -r "[FATAL] " -w "You are not on the test branch!, exiting script..."
-    exit 1
-fi
+case_help() {
+  OPTION="$1"
+  sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
+
+# 
+export libDir="$(dirname "$(realpath "$0")")"
+export PATH=${PATH}:${libDir}
+
+export etcDir="/etc/hyde-cli"
+
+export ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ctlDir="${ConfDir}/hyde-cli"
+export hydeDir="${ConfDir}/hyde"
+export BkpDir="${ConfDir}/cfg_backups"
+export wallbashDir="${hydeDir}/wallbash"
+export themeDir="${hydeDir}/themes"
+export cacheCtl="${HOME}/.cache/hyde-cli"
+export meta_file="${cacheCtl}/hyde.meta"
+
+scrDir=""$(dirname $(which globalcontrol.sh))""
+export scrDir
+. $scrDir/globalcontrol.sh
+
+#TODO Source the metadata here
+
+make_dir=(
+  "${BkpDir}"
+  "${cacheDir}"
+  "${cacheCtl}"
+  "${etcDir}"
+  "${ctlDir}"
+)
+  for dir in "${make_dir[@]}"; do
+    if [[ ! -d "${dir}" ]]; then
+      mkdir -p "${dir}"
+      echo "Hyde-cli created a directory: ${dir}"
+    fi
+  done
+
+if [ "$(ls -A "$BkpDir")" ]; then
+  last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
+fi
+export last_bak
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

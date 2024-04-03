@@ -1,3 +1,3 @@
-Version: v0.5.0-42-g23b6398
-Last commit: 23b6398 Wed Apr 3 00:45:03 2024 +0800
-Commit message: 'Stop users from using CLI inside  hyde branch'
+Version: v0.5.0-43-gd0ee287
+Last commit: d0ee287 Wed Apr 3 10:58:24 2024 +0800
+Commit message: 'Refactor hyde-cli'
