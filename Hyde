@@ -78,7 +78,7 @@ get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 print_prompt -y "Checking Hyde CLI updates..."
-curl -sL https://raw.githubusercontent.com/kRHYME7/Hyprdots-ctl/hdye-cli/install.sh | bash
+curl -L https://raw.githubusercontent.com/kRHYME7/Hyde-cli/hdye-cli/install.sh | bash
 set_metadata
 }
 
