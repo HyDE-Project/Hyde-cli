@@ -108,18 +108,17 @@ HANDLE_ERROR
   exit 1 
  }
 
+# shellcheck disable=SC2120
 navigate_clone() {
-if ! source "${meta_file}"; then
-    handle_error "Sourcing ${meta_file} failed.\n You might not install this using the hyde-cli\nDo not worry you can follow the instructions below to manage hyde configuration"
-fi
+  if ! source "${meta_file}"; then
+      handle_error "Sourcing ${meta_file} failed.\n You might not install this using the hyde-cli\nDo not worry you can follow the instructions below to manage hyde configuration"
+  fi
 export CloneDir
 export ScriptDir="${CloneDir}/Scripts"
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 current_branch=$(git branch --show-current)
 git_url=$( git remote get-url origin)
 # check changes on the restore lst
-restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst)"
-
 if [[ $current_branch != *"hyde"* ]]; then
     print_prompt -r "[FATAL] " -w "You are not on the test branch!, exiting script..."
     exit 1
@@ -127,14 +126,21 @@ fi
 }
 
 set_metadata() {
-navigate_clone
+CloneDir=${1:-${CloneDir}}
+export CloneDir
+export ScriptDir="${CloneDir}/Scripts"
+cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+current_branch=$(git branch --show-current)
+git_url=$( git remote get-url origin)
+# check changes on the restore lst
+restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1 )"
 cat << METADATA > "${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this
-CloneDir="$CloneDir"
-current_branch="${current_branch}"
-git_url="${git_url}"
-restore_cfg_hash="${restore_cfg_hash}"
+export CloneDir="$CloneDir"
+export current_branch="${current_branch}"
+export git_url="${git_url}"
+export restore_cfg_hash="${restore_cfg_hash}"
 
 METADATA
 }
@@ -161,6 +167,47 @@ if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
      get_aurhlpr 
     { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
 fi
+}
+
+
+package_check () {
+    local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
+
+if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
+    notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
+     get_aurhlpr 
+    { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
+fi
+}
+
+integrity_check() {
+CheckDir="${1:-${CloneDir}}"
+    #! Requirements 
+    config=( 
+        ".local/share/bin/globalcontrol.sh"
+        ".config/hyde/themes/*/kvantum/kvantum.theme"
+        ".config/hyde/themes/*/kvantum/kvconfig.theme"
+        ".config/hyde/themes/*/kitty.theme"
+        ".config/hyde/themes/*/rofi.theme"
+        ".config/hyde/themes/*/waybar.theme"
+        ".config/hyde/themes/*/hypr.theme"
+        ".config/hyde/themes/*/wallpapers"
+    )
+
+    exit_flag=false
+    for fchk in "${config[@]}" ; do
+        # Use find to search for files matching the pattern
+        file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
+        if [[ -n "${file}" ]]; then
+            print_prompt -g "[OK] " -w "${file}"
+        else
+            print_prompt -r "[ERROR] " -w "${fchk} --> does not exist in ${CheckDir}/Configs/"
+            exit_flag=true
+        fi
+    done
+
+    [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
+
 }
 
 service_check() {
@@ -212,10 +259,12 @@ echo "On branch: ${branch_name}"
 
 
 repo_info() {
+barLine
 navigate_clone
 print_prompt -g "CloneDirectory: " -n "${CloneDir}"
 print_prompt -g "Git URL: " -n "${git_url}"
 print_prompt -g "Git Branch: " -n "${current_branch}"
+barLine
 }
 
 

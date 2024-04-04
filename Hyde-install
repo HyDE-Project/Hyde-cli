@@ -52,7 +52,7 @@ fi
 
 set_metadata() {
 
-   ScriptDir="${CloneDir}/Scripts"
+ScriptDir="${CloneDir}/Scripts"
 current_branch=$(git branch --show-current)
 git_url=$( git remote get-url origin)
 # check changes on the restore lst
@@ -159,7 +159,7 @@ set_metadata
 }
 
 integrity_check() {
-CheckDir="${2:-${CloneDir}}"
+CheckDir="${1:-${CloneDir}}"
     #! Requirements 
     config=( 
         ".local/share/bin/globalcontrol.sh"

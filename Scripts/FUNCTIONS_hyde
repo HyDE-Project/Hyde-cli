@@ -72,11 +72,12 @@ ConfigCtl() {
     done
 }
 
-PreserveCloneDir() { #* Use: Not to mess up the current CloneDir If installing backup.
-if [ -f "$HOME"/.config/hypr/scripts/globalcontrol.sh ] ; then
-    sed -i "/^CloneDir=/c\CloneDir=\"$CloneDir\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
-fi
-}
+# PreserveCloneDir() { #* Use: Not to mess up the current CloneDir If installing backup. 
+#! Deprecated
+# if [ -f "$HOME"/.config/hypr/scripts/globalcontrol.sh ] ; then
+#     sed -i "/^CloneDir=/c\CloneDir=\"$CloneDir\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+# fi
+# }
 
 check_file_change() {
   file=$1

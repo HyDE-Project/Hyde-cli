@@ -86,7 +86,8 @@ upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.confi
     rename_backup "_Hyde_upgrade"
 }
 
-restore() { #? Restore Hyde configs
+restore() { #? Restore Options for Hyde
+        navigate_clone
   case $1 in 
         defaults) #? Restore Dots from '${CloneDir}'. 
         shift
@@ -98,7 +99,7 @@ restore() { #? Restore Hyde configs
         #  cat ${config_override}
         ask_confirm "${USER}"
         ./restore_fnt.sh
-        Restore_Config "/tmp/Hyde-${UID}-BAK"
+        Restore_Config "/tmp/Hyde-$(id -u)-BAK"
         rename_backup "_Hyde_restore_defaults"
         Hyde reload
         ;;
@@ -116,13 +117,13 @@ restore() { #? Restore Hyde configs
         rename_backup "_Hyde_restore_Clone"
         ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete
-            trap PreserveCloneDir EXIT
+            # trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
-        Configs) #? Resoring the Configs declared on the file \n  file: '~/.config/hyde-cli/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
-            Manage_Configs "$1"
-            rename_backup "_Hyde_restore_config"
-        ;;
+        # Configs) #? Resoring the Configs declared on the file \n  file: '~/.config/hyde-cli/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
+        #     Manage_Configs "$1"
+        #     rename_backup "_Hyde_restore_config"
+        # ;;
         link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
         set_branch            
@@ -131,19 +132,16 @@ restore() { #? Restore Hyde configs
         [[ -z "${1}" ]] && new_CloneDir=${CloneDir} && print_prompt -r "Missing /path/to/CloneDir" 
         print_prompt -y "\n[LINKING]:" -w "${CloneDir}"     
         ask_confirm
-            [[ ! -d ${new_CloneDir} ]] && { print_prompt -r "INVALID:" -w "'${new_CloneDir}' not a directory" && exit 1 ;}    
-            [[ ! -e ${new_CloneDir}/Configs/.config/hyde/scripts/globalcontrol.sh ]] && { print_prompt -r "MISSING:" -w "  ./Configs/.config/hyde/scripts/globalcontrol.sh" && exit 1 ;}
-            [[ ! -e ${new_CloneDir}/Scripts/global_fn.sh ]] && { print_prompt -r "MISSING:" -w "./Configs/global_fn.sh " && exit 1 ;}        
-            cd "${new_CloneDir}/Scripts" || { print_prompt -r "ERROR:" -w " cd ${new_CloneDir}" && exit 1 ;}    
-            ./restore_lnk.sh
-            Hyde reload
+        set_metadata "${new_CloneDir}"
+        Hyde reload
         ;;
         *)  Parameters "$Function"  ;;
   esac
 }
 
 backup() { #? Backing up commands 
-            trap PreserveCloneDir EXIT
+        navigate_clone
+            # trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
             Manage_Configs "$1"
@@ -402,13 +400,13 @@ case $1 in
                 sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
         
         elif [ "${myShell}" == "fish" ];then   
-            config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"    
+            config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"    
             CHECK fish lsd starship
             (
             echo 'S|${HOME}/.config|fish|fish'  
             echo 'S|${HOME}/.config|lsd|lsd'
             ) > ${config_override}
-            Restore_Config --only "/tmp/Hyde-${UID}-BAK"
+            Restore_Config --only "/tmp/Hyde-$(id -u)-BAK"
         fi
         # set shell
         [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
@@ -556,7 +554,7 @@ inject() { #? Some of Scripts you might want to use.
 }
 
 reload() { #? Just Reload 
-    box_me "Dots reloaded"
+    box_me "Reloading Dots"
     swwwallpaper.sh
 }
 

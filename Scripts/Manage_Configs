@@ -1,7 +1,5 @@
 #!/bin/env bash
 
-. GLOBAL
-
 config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
 ctlFile="${ctlDir}/manage_cfg.lst"
 
@@ -16,7 +14,6 @@ fi
 
 prev_restore_list() {
 cat << REVIEW 
-${1}
 "Please review the list..."
 $(barLine)
 O   Overwrite     ﬌ Move Dots to Backup then Populate dots from Source Directory (${CloneDir})
@@ -28,9 +25,78 @@ P   Preserve      ﬌ Populates Dots But Preserves existing user Dots
 B   Backup        ﬌ Only Backup the selected Dots (Default)
                       ﯧ 'Hyde backup clean' to do some cleanup
 $(barLine)
-$(cat "${config_override}")
+$(GROUP "${1}")
 $(barLine)
 REVIEW
+}
+
+
+GROUP() {
+ awk -F '|' '{
+    # Map the prefix letters to category names
+    if ($1 == "P") category = "\\\\ [Preserve/Populate] \\\\";
+    else if ($1 == "S") category = "\\\\ [Sync] \\\\";
+    else if ($1 == "O") category = "\\\\ [Overwrite] \\\\";
+    else if ($1 == "R") category = "\\\\ [Rsync] \\\\";
+    else if ($1 == "B") category = "\\\\ [Backup] \\\\";
+    else category = "\\\\ [Unknown] \\\\";
+
+    # Skip the first field and print the rest of the line
+    files[category] = files[category] ? files[category] "\n" substr($0, index($0, $2)) : substr($0, index($0, $2))
+ }
+
+ END {
+    n = asorti(files, categories)
+    for (i = 1; i <= n; i++) {
+      print categories[i] # Print the category name
+      split(files[categories[i]], lines, "\n")
+      for (j in lines) {
+        print lines[j]
+      }
+      for (j = 1; j <= 68; j++) printf "━"
+      printf "\n"
+    }
+ }' ${1}
+}
+
+
+MENU_config() {
+    while true; do
+        options=(
+          "[Confirm]"
+          "[Back Up]"
+          "[Preserve/Populate]"
+          "[Sync]" 
+          "[Overwrite]"
+          )
+
+        # Use fzf to select an option
+        selected_option=$(printf '%s\n' "${options[@]}" | fzf --prompt='▶' --pointer='→' --marker='♡' --preview "Manage_Configs prev_restore_list ${config_override}" ) 
+
+        # Call the selected function or return to the main menu
+        case $selected_option in
+            "[Overwrite]")
+                list_Marker_OVERWRITE
+                ;;
+            "[Sync]")
+                list_Marker_SYNC
+                ;;
+            "[Preserve/Populate]")
+                list_Marker_PRESERVE
+                ;;
+            "[Back Up]")
+                list_Marker_BACKUP
+                ;;
+            "[Confirm]")
+                # Add your logic here for confirmation
+                break # Exit the loop after confirmation
+                ;;
+            *)
+                # echo "Unknown option selected"
+                :
+                ;;
+        esac
+    done
 }
 
 list_Backup() {
@@ -76,55 +142,91 @@ done < "./restore_cfg.lst"
 
 }
 
-list_Marker() {
-
-cp "${ctlFile}" "${config_override}"
-
-if [ -e ${ctlFile}  ]; then
-print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last selected option?" -n "\n Please be aware it si better to check  for new configs"
- ask_confirm "Yy"
-   if [ $? -eq 1 ]; then 
-    awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-   fi
-
-fi
-# trap 'rm -f ${config_override}' EXIT
-
-PRESERVE="$(echo -e "\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
- fzf -m --marker ' '\
- --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list"
- )"
-
-awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
-SYNC="$(echo -e "\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
- fzf -m --marker '' \
-  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
- --preview "Manage_Configs prev_restore_list" 
-  )"
-
-awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-
+list_Marker_OVERWRITE() {
 OVERWRITE="$(echo -e "\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
 fzf -m --marker ' '\
  --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list"
+ --preview "Manage_Configs prev_restore_list ${config_override}"
  )"
 
 awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+}
+
+list_Marker_SYNC() {
+SYNC="$(echo -e "\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+ fzf -m --marker '' \
+  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
+ --preview "Manage_Configs prev_restore_list ${config_override}" 
+  )"
+
+awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+}
+
+
+list_Marker_PRESERVE() {
+PRESERVE="$(echo -e "\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+ fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list ${config_override}"
+ )"
+
+awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+}
+
+
+list_Marker_BACKUP() {
+BACKUP="$(echo -e "\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+ fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "BACKUP" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list ${config_override}"
+ )"
+
+awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "B"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+}
+
+
+# shellcheck disable=SC2120
+list_Marker() {
+CloneDir=${1:-${CloneDir}}
+cp "${ctlFile}" "${config_override}"
+prev_restore_list "${config_override}"
+
+if [ -e ${ctlFile}  ]; then
+now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
+    if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
+      print_prompt -y "Detected changes: $ScriptDir/restore_cfg.lst!" -w "\nI suggest to create a new control file to avoid conflicts"
+    ask_confirm "Yy"
+       if [ $? -eq 1 ]; then 
+        awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+       fi
+    else
+    print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
+    ask_confirm "Yy"
+       if [ $? -eq 1 ]; then 
+        awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+       fi
+    clear
+    prev_restore_list "${config_override}"
+    fi
+fi
+
+read
+
+MENU_config
+
+prev_restore_list "${config_override}"
 
 print_prompt -y "Save this as your new control file?"
 ask_confirm "Yy"
 [ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
 
-prev_restore_list "Be Careful"
-print_prompt -w '[ctrl + c]' -r 'Cancel'
+print_prompt -w '[ctrl + c]' -r ' Cancel'
 print_prompt -w "Continue?"
-ask_confirm "${USER}"
+# ask_confirm "${USER}"
 }
 
 all() {
@@ -180,7 +282,7 @@ ask_confirm
 
 BackUp() {
 if [[ -z ${1} ]] ; then
-  list_Backup
+list_Backup
 print_prompt -r "WARNING! " -y "Not all Dots may have been fully backed up, You might encounter errors!" ; ask_confirm
        selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf --prompt='Restoring from a Backup Directory.' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | cut -d ' ' -f4)  
 config_source="${BkpDir}/${selected_backup}"
@@ -230,22 +332,16 @@ fi
 Clone() {
 if [ ! -d "$1" ]; then echo "Not a directory" ; exit 1 ; fi
 custClone="$1"
-# if [ ! -f "$custClone/Configs/.config/hyde/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
-if [ ! -f "$custClone/Configs/.config/hyde/scripts/globalcontrol.sh" ] || [ ! -f "$custClone/Scripts/global_fn.sh" ]; then
-  echo "Broken Hyde Clone!"
-  exit 1
-fi
+integrity_check "${custClone}"
 echo "Generating a Restore List"
-cd $custClone/Scripts || exit
-ls -la
+cd $custClone/Scripts || handle_error "Cannot Change Directory to $custClone/Scripts"
 restore_Lister "$custClone/Configs" ; trap 'rm -f ${config_override}' EXIT
-list_Marker
+list_Marker "${custClone}"
 ask_confirm "$USER"
-./restore_fnt.sh
-Restore_Config "/tmp/Hyde-${UID}-BAK"
+# ./restore_fnt.sh
+Restore_Config "/tmp/Hyde-${UID}-BAK" "${custClone}/Configs" && set_metadata "${custClone}"
 Hyde reload
 }
-
 
 Configs() {
 if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 

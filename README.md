@@ -1,34 +1,29 @@
 > [!Important]
-> * Users getting this error ``` You are using an older version of Hyprdots! Please see upstream to adjust your configuration. ```
+> * Users getting this error ``` You are using an older version of Hyde! Please see upstream to adjust your configuration. ```
 >  Please follow instructions here https://github.com/prasanthrangan/hyprdots/issues/1053 \
 >
-> * This ```Hyprdots``` cmd will be changed to ``` Hyde ``` command. But Hyprdots would still work for the meantime with Warning messages.
+> * The ```Hyprdots``` cmd will be changed to ``` Hyde ``` command. But Hyprdots would still work for the meantime with Warning messages.
 
 
 > [!Note]
 > for AUR
 > hyprdots-ctl was renamed into hyprdots-ctl-git. Please install the "-git" package
+> ``` yay -Sy hyde-cli-git ``` 
 
 
-```
-  _   _                     _       _                  _   _ 
- | | | |_   _ _ __  _ __ __| | ___ | |_ ___        ___| |_| |
- | |_| | | | | '_ \| '__/ _` |/ _ \| __/ __|_____ / __| __| |
- |  _  | |_| | |_) | | | (_| | (_) | |_\__ \_____| (__| |_| |
- |_| |_|\__, | .__/|_|  \__,_|\___/ \__|___/      \___|\__|_|
-        |___/|_|                                             
-```
+# HyDE-CLI
+
 &ensp;[<kbd> <br> Read me <br> </kbd>](#read-me)&ensp;
 &ensp;[<kbd> <br> Installation <br> </kbd>](#installation)&ensp;
 &ensp;[<kbd> <br> Usage <br> </kbd>](#usage)&ensp;
-&ensp;[<kbd> <br> Wiki <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/wiki)&ensp;
-&ensp;[<kbd> <br> Discussions <br> </kbd>](https://github.com/kRHYME7/Hyprdots-ctl/discussions)&ensp;
+&ensp;[<kbd> <br> Wiki <br> </kbd>](https://github.com/kRHYME7/Hyde-cli/wiki)&ensp;
+&ensp;[<kbd> <br> Discussions <br> </kbd>](https://github.com/kRHYME7/Hyde-cli/discussions)&ensp;
 <br><br>
 # Read Me
 
-Hyprdots-ctl is a command-line interface for [Hyprdots ricing](https://github.com/prasanthrangan/hyprdots). This repository contains scripts that are currently in the WIP phase, but could potentially be useful. This CLI aims to add patches for Hyprdots and update the script to address common configuration issues and requests. Please be aware that using these scripts may alter your configurations.
+Hyde-cli is a command-line interface for [Hyde ricing](https://github.com/prasanthrangan/hyprdots). This repository contains scripts that are currently in the WIP phase, but could potentially be useful. This CLI aims to add patches for Hyde and update the script to address common configuration issues and requests. Please be aware that using these scripts may alter your configurations.
 
-Hyprdots is stable, but this CLI is designed to be an active helper to some issues or some feature requests for Hyprdots. It is important to note that these scripts may alter or mess up your configurations. Please use them at your discretion.
+Hyde is stable, but this CLI is designed to be an active helper to some issues or some feature requests for Hyde. It is important to note that these scripts may alter or mess up your configurations. Please use them at your discretion.
 
 ### Warning
 
@@ -40,19 +35,19 @@ These scripts may alter or mess up your configurations. Please use them at your 
 
 Recommended: Use your preferred AUR helper `paru` or `yay`.
 ```
-paru -Sy hyprdots-ctl-git
-yay -Sy hyprdots-ctl-git
+paru -Sy hyprdots-cli-git
+yay -Sy hyprdots-cli-git
 ```
 > [!Important]
 > Incase you did not recieve updates for a long time.
 
-![image](https://github.com/kRHYME7/Hyprdots-ctl/assets/53417443/60dd1d75-e38b-4a15-a5f6-2f002fbb4d2a)
+![image](https://github.com/kRHYME7/Hyde-cli/assets/53417443/60dd1d75-e38b-4a15-a5f6-2f002fbb4d2a)
 
 
 Manual: Use makepkg
 ```
-git clone https://aur.archlinux.org/hyprdots-ctl-git.git
-cd hyprdots-ctl
+git clone https://aur.archlinux.org/hyprdots-cli-git.git
+cd hyprdots-cli
 makepkg -si
 ```
 
@@ -64,8 +59,8 @@ Font dependencies: '[JetBrains Nerd font](https://github.com/ryanoasis/nerd-font
 
 To install: 
 ```
-git clone https://github.com/kRHYME7/Hyprdots-ctl
-cd ./Hyprdots-ctl
+git clone https://github.com/kRHYME7/Hyde-cli
+cd ./Hyde-cli
 sudo make
 ```
 
@@ -81,9 +76,9 @@ sudo make update clean install
 
 # Usage
 
-Run: `Hyprdots man`
+Run: `Hyde man`
 
- See [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyprdots-ctl/master/USAGE.md).
+ See [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE.md).
 
 
 ## Contributing
@@ -97,7 +92,7 @@ If you encounter any issues, please submit them...
 
 ## Roadmap
 
-+ This will just be an active helper to some issues or some feature requests for Hyprdots.
++ This will just be an active helper to some issues or some feature requests for Hyde.
 + Add interactive installation using fzf
 
 
