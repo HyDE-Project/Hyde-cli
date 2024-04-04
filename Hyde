@@ -178,49 +178,49 @@ cache() { #? Manages Hyde' Cache
             echo ""
             swwwallcache.sh -f
          ;;
-         wall)
-:
-         ;;
-         theme)
-         :
-         ;;
+#          wall)
+# :
+#          ;;
+        #  theme) #? Generate cache for current Theme
+        #     swwwallcache.sh -t
+        #  ;;
         *)
         Parameters "$Function" 
          ;;
     esac
 }
 
-sync() { #? Apply your Prefered Configuration \n  file: ~/.config/hyde-cli/hyde.conf" 
-if [ $# -eq 0 ]; then
-echo "Usage: Hyde sync [options]"
-Parameters "$Function"
-exit 0
-        fi
-    for arg in "$@"; do
-        case $arg in 
-            waybar_ctl) #? Restore User waybar control file
-                User_Sync "$arg"
-                ;;
-            theme_patch) #? Restore Patched custom themes
-                User_Sync "$arg"                
-                ;;
-            Code) #? Restore $USER Vscode config file
-                User_Sync "$arg"
-                ;;
-            kitty) #? Restore $USER kitty.conf file
-                User_Sync "$arg"
-                ;;
-            kdeglobals) 
-                User_Sync "$arg"
-                ;;
-            *)  
-            echo "Unknown [option]: $arg "
-            echo "Usage: Hyde sync [options]"
-                Parameters "$Function"
-                ;;
-        esac
-    done
-}
+# sync() { #? Apply your Prefered Configuration \n  file: ~/.config/hyde-cli/hyde.conf" 
+# if [ $# -eq 0 ]; then
+# echo "Usage: Hyde sync [options]"
+# Parameters "$Function"
+# exit 0
+#         fi
+#     for arg in "$@"; do
+#         case $arg in 
+#             waybar_ctl) #? Restore User waybar control file
+#                 User_Sync "$arg"
+#                 ;;
+#             theme_patch) #? Restore Patched custom themes
+#                 User_Sync "$arg"                
+#                 ;;
+#             Code) #? Restore $USER Vscode config file
+#                 User_Sync "$arg"
+#                 ;;
+#             kitty) #? Restore $USER kitty.conf file
+#                 User_Sync "$arg"
+#                 ;;
+#             kdeglobals) 
+#                 User_Sync "$arg"
+#                 ;;
+#             *)  
+#             echo "Unknown [option]: $arg "
+#             echo "Usage: Hyde sync [options]"
+#                 Parameters "$Function"
+#                 ;;
+#         esac
+#     done
+# }
 
 
 theme() { #? Theme Commands 
@@ -522,7 +522,7 @@ run() { #? Executables
 
 }
 
-inject() { #? Some of Scripts you might want to use.
+inject() { #? User/Device specific scripts that might be useful.
 
     case $1 in 
       chaotic) #? install Chaotic AUR 

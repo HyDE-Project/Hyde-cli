@@ -1,8 +1,5 @@
 #!/bin/env bash
 
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
-. GLOBAL 
-
 CHECK grimblast wl-screenrec swappy
 
 if [ -z "${XDG_PICTURES_DIR}" ] ; then
