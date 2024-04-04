@@ -39,11 +39,11 @@ echo -e "${manPage}" \
 }
 
 version() { #? Hyde-cli Version
-box_me -s "Hyde-cli Version" -c 78
+box_me -s "Hyde-cli Version" -c 77
+barLine
 cat /etc/hyde-cli/.hyde-cli.ver
-
- . "${meta_file}" 2> /dev/null  && box_me -s "Hyde Version" -c 69
-
+barLine
+. "${meta_file}" 2> /dev/null  && box_me -s "Hyde Version" -c 154 && repo_info
 }
 
 systeminfo() { #? System Information

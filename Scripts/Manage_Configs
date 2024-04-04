@@ -376,16 +376,17 @@ REVIEW
 
 upgrade() {
   custom_apps="${CloneDir}/Scripts/custom_apps.lst"
+custom_apps="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 if [[ -e ${custom_apps} ]] ; then 
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > /tmp/hyde-ctl-"$(id -u)"-temporary-apps
+    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > "${custom_apps}"
     echo -e "Optional packages loaded:"
-    cat /tmp/hyde-ctl-"$(id -u)"-temporary-apps
+    cat "${custom_apps}"
 fi
 
         list_Marker
         # print_prompt -y "Clone Directory:" -m "${CloneDir}"
         # print_prompt -y "Is This Correct?"
-      ./install.sh -i /tmp/hyde-ctl-"$(id -u)"-temporary-apps
+      ./install.sh -i "${custom_apps}"
         ./restore_fnt.sh
         Restore_Config
         Hyde reload
