@@ -24,11 +24,12 @@ case "${distro_ID}" in
     if ! pacman -Q "${aurhlpr}" &> /dev/null; then echo "Please try to rerun script!" && exit 0 ;fi
 
     if pacman -Q "${pkgname}" 2> /dev/null; then
-        if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then ${aurhlpr} -S --devel "${pkgname}" 
+        if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then 
+        ${aurhlpr} -Sy "${pkgname}" --noconfirm
         else echo "Already up to date" 
         fi
         exit 0
-    else "${aurhlpr}" -Sy "${pkgname}"
+    else "${aurhlpr}" -Sy "${pkgname}" --noconfirm
         if pacman -Q "${pkgname}" 2> /dev/null ; then exit 0 ; fi
     fi
     ;;
