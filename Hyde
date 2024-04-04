@@ -71,7 +71,7 @@ repo_info
 set_branch
 }
 
-update() { #? Pull Updates From Hyde Repository 
+update() { #? Pull Updates From Hyde Repository
 trap 'rm -f "/tmp/hyde_update_check"' EXIT
 repo_info
 get_aurhlpr
