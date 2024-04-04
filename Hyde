@@ -279,10 +279,10 @@ esac
 
 wallbash() { #? Toggle to use wallpaper accent themes .
   case $1 in 
-        toggle) #? Toggle Wallbash On/Off
+        toggle) #? Cycles Wallbash [0] off [1] auto [2] dark [3] light
             "${scrDir}/wallbashtoggle.sh"
         ;;
-        mode)
+        mode) #? 
             shift
             num_val=$1 
             declare -A actionMap=(
@@ -336,6 +336,7 @@ waybar() { #? Waybar commands
 
 
 sddm() { #? Sddm commands.
+        navigate_clone
   case $1 in 
         theme) #? Select Sddm Theme
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
@@ -354,10 +355,10 @@ sddm() { #? Sddm commands.
         sudo cp "${sddm_conf}" "${sddm_bak}"
         sudo cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
         ;;
-          set) #? Directory   Lockscreen
-        :    #  "${scrDir}"/sddmwall.sh
-        # 
-          ;;
+        #   set) #? Directory   Lockscreen
+        # :    #  "${scrDir}"/sddmwall.sh
+        # # 
+        #   ;;
         *)  Parameters "$Function"  ;;
 
 esac
@@ -528,24 +529,24 @@ inject() { #? Some of Scripts you might want to use.
         shift
           sudo /usr/lib/hyde-cli/Install_ChaoticAUR "${@}"
          ;;
-        asus_patch)
-        # Add Keys of ASUS Repository
-        pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-        pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-        pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-        pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        # asus_patch)
+        # # Add Keys of ASUS Repository
+        # pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        # pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        # pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+        # pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
 
-        # Add in pacman.conf
-        echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | sudo tee -a /etc/pacman.conf
+        # # Add in pacman.conf
+        # echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | sudo tee -a /etc/pacman.conf
 
-        CHECK asusctl supergfxctl rog-control-center power-profiles-daemon
+        # CHECK asusctl supergfxctl rog-control-center power-profiles-daemon
 
-        #Check First before enabling 
-        service_check power-profiles-daemon.service supergfxd
-        ;;
-        test)
-        service_check sddm
-        ;;
+        # #Check First before enabling 
+        # service_check power-profiles-daemon.service supergfxd
+        # ;;
+        # test)
+        # service_check sddm
+        # ;;
         *)
         Parameters "$Function"
          ;;

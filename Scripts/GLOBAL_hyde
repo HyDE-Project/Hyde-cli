@@ -388,6 +388,8 @@ export cacheCtl="${HOME}/.cache/hyde-cli"
 export meta_file="${cacheCtl}/hyde.meta"
 
 scrDir=""$(dirname $(which globalcontrol.sh))""
+[ ! -e "${scrDir}/globalcontrol.sh" ] && scrDir="$HOME/.local/share/bin/" && print_prompt -r "Scripts not on \$PATH"
+[ ! -e "${scrDir}/globalcontrol.sh" ] && handle_error "Scripts for HyDE not detected! "
 export scrDir
 . $scrDir/globalcontrol.sh
 
