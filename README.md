@@ -1,3 +1,6 @@
+> [!Caution]
+> This branch will be deprecated in favor of new naming schemes 'Hyde-cli' for HyDe. 
+
 > [!Important]
 > * Users getting this error ``` You are using an older version of Hyprdots! Please see upstream to adjust your configuration. ```
 >  Please follow instructions here https://github.com/prasanthrangan/hyprdots/issues/1053 \
