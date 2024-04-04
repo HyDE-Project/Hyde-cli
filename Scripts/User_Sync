@@ -1,6 +1,5 @@
 #!/bin/env bash
 
-. /usr/lib/hyprdots-ctl/GLOBAL
 
 # Source the user's settings, overwriting any defaults
 ctlFile="$ConfDir/hyprdots-ctl/hyprdots.conf"

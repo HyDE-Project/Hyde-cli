@@ -1,14 +1,15 @@
+pkgname := hyde-cli
 prefix := /usr
 bindir := $(prefix)/bin
-libdir := $(prefix)/lib/hyprdots-ctl
-etcdir := /etc/hyprdots-ctl
+libdir := $(prefix)/lib/$(pkgname)
+etcdir := /etc/$(pkgname)
 BACKUPDIR := $(shell mktemp -d)
 VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
 COMMIT_MESSAGE := $(shell git show -s --format='%B')
 INSTALLATION_DIRECTORY := $(shell pwd)
 
-all: check directories backup  install
+all: check directories  install
 
 check:
 	@which git >/dev/null || (echo "Error: git is not installed" && exit 1)
@@ -32,24 +33,24 @@ backup:
 	mkdir -p $(BACKUPDIR)/bin
 	mkdir -p $(BACKUPDIR)/scripts
 	mkdir -p $(BACKUPDIR)/confs
-	if [ -f $(DESTDIR)$(bindir)/Hyprdots ]; then \
-	cp $(DESTDIR)$(bindir)/Hyprdots $(BACKUPDIR)/bin; \
+	if [ -f $(DESTDIR)$(bindir)/Hyde ]; then \
+	cp $(DESTDIR)$(bindir)/Hyde $(BACKUPDIR)/bin; \
 	fi
-		if [ -f $(DESTDIR)$(bindir)/Hyprdots-install ]; then \
-	cp $(DESTDIR)$(bindir)/Hyprdots-install $(BACKUPDIR)/bin; \
+		if [ -f $(DESTDIR)$(bindir)/Hyde-install ]; then \
+	cp $(DESTDIR)$(bindir)/Hyde-install $(BACKUPDIR)/bin; \
 	fi
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true
 
 install:
-	install -m 755 ./Hyprdots $(DESTDIR)$(bindir) || make restore
-	install -m 755 ./Hyprdots-install $(DESTDIR)$(bindir) || make restore
+	install -m 755 ./Hyde $(DESTDIR)$(bindir) || make restore
+	install -m 755 ./Hyde-install $(DESTDIR)$(bindir) || make restore
 
-	@echo "Version: $(VERSION)" > .hyprdots-ctl.ver
-	@echo "Last commit: $(LAST_COMMIT)" >> .hyprdots-ctl.ver
-	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .hyprdots-ctl.ver
+	@echo "Version: $(VERSION)" > .$(pkgname).ver
+	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
+	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .$(pkgname).ver
 
-	install -m 644 ./.hyprdots-ctl.ver $(DESTDIR)$(etcdir) || make restore
+	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(etcdir) || make restore
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) || make restore
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) || make restore
@@ -61,17 +62,18 @@ restore:
 	cp -r $(BACKUPDIR)/scripts/* $(DESTDIR)$(libdir)
 	cp -r $(BACKUPDIR)/confs/* $(DESTDIR)$(etcdir)
 
-uninstall:
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
-	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
+uninstall: purge
+clean: purge 
+purge : 
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-install)
 
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
 
-clean:
+old:
+
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyprdots-install)
-
-	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
-	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
-	
+	-rm -rf $(wildcard $(DESTDIR)$(prefix)/lib/hyprdots-ctl/)
+	-rm -rf $(wildcard $(DESTDIR)$(prefix)/etc/hyprdots-ctl/)

@@ -192,7 +192,7 @@ Hyprdots-ctl is not affiliated with Chaotic AUR.
 
 CHAOS
 
-  read -p "Type 'yes' to continue: " add_chaotic
+  read -p "Type 'yes' to continue [default] No : " add_chaotic
   if [ ! "${add_chaotic}" == "yes" ]; then 
   echo -e "$(tput setaf 1) Skipping Chaotic AUR$(tput sgr0)"
   exit 0

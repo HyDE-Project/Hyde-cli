@@ -1,9 +1,4 @@
 #!/bin/env bash
-
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
-. GLOBAL
-
-
 hyprlandConf="$ConfDir/hypr/hyprland.conf"
 userPrefs="$ConfDir/hypr/userprefs.conf"
 windowRules="$ConfDir/hypr/windowrules.conf"
@@ -32,12 +27,12 @@ if [[ ! -f $PowManFile ]]; then
 touch $PowManFile  && echo "Added: $hyprlandConf" 
 fi
 if ! grep -q "source = $PowManFile" "$hyprlandConf"; then 
-echo "source = $PowManFile #! This File is modified by Hyprdots-ctl power options(To remove: 'Hyprdots power reset')" >> "$hyprlandConf" 
+echo "source = $PowManFile #! This File is modified by Hyde-cli power options(To remove: 'Hyde power reset')" >> "$hyprlandConf" 
 fi
 }
 
 print_help() {
-    echo "Usage: Hyprdots power $powerOpt [options]"
+    echo "Usage: Hyde power $powerOpt [options]"
     echo "Options:"
     sed -n "/^$powerOpt() {/,/^}/p" "$0" | 
     sed -n '/case/,/esac/p' | grep ') #?' |

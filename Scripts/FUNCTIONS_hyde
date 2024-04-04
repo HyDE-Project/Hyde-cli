@@ -1,0 +1,109 @@
+#!/bin/env bash
+
+Function="${1}"
+
+check_Ping() {
+  if ! ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+    box_me "Error: No internet connection."
+    exit 1
+  fi
+}
+
+if [ ! -f "/tmp/hyde_update_check" ] || [[ $(find "/tmp/hyde_update_check" -mmin +4320) ]]; then
+navigate_clone
+    print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+     notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then 
+        git fetch > /dev/null 2>&1
+        if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+            echo -e "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
+            notify-send "Updates available! \nRUN: \033[0;34mHyde update\033[0m"
+        
+        # else
+        #     echo -e "\033[0;32mHyde Up to date\033[0m"
+        fi
+    # else
+    #     echo "Please Check your Internet Connectivity"
+    fi
+    touch "/tmp/hyde_update_check"
+fi
+
+#??? Handle Syntax errors
+help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }')
+
+if [ -z "$1" ]; then  box_me -s "Hyde-cli $hyde_cli_version" ; print_prompt -w "$help" ;exit 1 
+elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1> /dev/null); then echo -e "[Function unknown]: '$*'\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help" ; exit 1
+fi
+
+
+Parameters() { #TODO: Add conditionals here like 'case'
+Function="${Function// /}"
+if awk "/^$Function\(\) \{/,/}/" "$0" | grep > /dev/null  'case'; then
+# Define a variable for the tab characters
+man_params=$(awk "/^$Function\(\) \{/,/esac/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
+
+echo -e "${man_params}" \
+| sed "s|\${CloneDir}|$CloneDir|g" \
+| sed -e "s|\${HOME}|${HOME}|g"
+
+else
+:
+fi
+} 
+
+SelectOption() { #! Can be improved soon using other package.:-  Used fzf. 
+    echo ""
+    IFS=$'\n' read -d '' -ra options < <(echo "$1" | grep -v "^$")
+    select selected in "${options[@]}" ; do echo "You selected: $selected" ; break ; done
+    #echo "$selected"
+}
+
+ConfigCtl() {
+    FILE="$1"
+    EDITOR="${EDITOR:-code}"  #* Use VS Code as the default editor
+    echo -e "[Editor]: $EDITOR (\"export EDITOR=pref_editor\") \n[Modifying]: $FILE \nPress Any Key if done editing"
+    #kitty -o allow_remote_control=yes -o listen_on=unix:/tmp/mykitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
+    kitty "$(which $EDITOR)" "$FILE" > /dev/null 2>&1 &
+    LAST_MD5SUM=$(md5sum "$FILE")
+    while true; do CURRENT_MD5SUM=$(md5sum "$FILE")
+        if [ "$CURRENT_MD5SUM" != "$LAST_MD5SUM" ]; then eval "$ACTION"
+            LAST_MD5SUM="$CURRENT_MD5SUM"
+        fi ; read -t 2 -n 1 > /dev/null && break #? loop every 2 seconds
+    done
+}
+
+PreserveCloneDir() { #* Use: Not to mess up the current CloneDir If installing backup.
+if [ -f "$HOME"/.config/hypr/scripts/globalcontrol.sh ] ; then
+    sed -i "/^CloneDir=/c\CloneDir=\"$CloneDir\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+fi
+}
+
+check_file_change() {
+  file=$1
+  base=$(echo "$file" | tr '/' '-')
+  hash_file="${cacheCtl}/${base}.hash"
+
+  # Calculate the current hash of the file
+  current_hash=$(md5sum "$file" | cut -d ' ' -f 1)
+
+  # If the hash file exists, read the stored hash. Otherwise, create it.
+  if [ -f "$hash_file" ]; then
+    stored_hash=$(cat "$hash_file")
+  else
+    echo "$current_hash" > "$hash_file"
+    stored_hash=$current_hash
+  fi
+
+  # Compare the current hash with the stored hash
+  if [ "$current_hash" != "$stored_hash" ]; then
+    # Update the hash file with the current hash
+    echo "$current_hash" > "$hash_file"
+    echo " Changes"
+    return 1  # Return a non-zero exit status
+  else
+  echo "Nope"
+    return 0  # Return a zero exit status
+  fi
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"

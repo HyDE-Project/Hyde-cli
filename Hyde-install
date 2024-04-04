@@ -1,0 +1,272 @@
+#!/bin/bash
+
+#TODO: Clean This
+print_prompt() {
+  while (( "$#" )); do
+    case "$1" in
+      -r) echo -ne "\e[31m$2\e[0m" ;;  # Red
+      -g) echo -ne "\e[32m$2\e[0m" ;;  # Green
+      -y) echo -ne "\e[33m$2\e[0m" ;;  # Yellow
+      -b) echo -ne "\e[34m$2\e[0m" ;;  # Blue
+      -m) echo -ne "\e[35m$2\e[0m" ;;  # Magenta
+      -c) echo -ne "\e[36m$2\e[0m" ;;  # Cyan
+      -w) echo -ne "\e[37m$2\e[0m" ;;  # White
+      -n) echo -ne "\e[96m$2\e[0m" ;;  # Neon
+      *) echo -ne "$2" ;;
+    esac
+    shift 2
+  done
+  echo ""
+}
+
+# shellcheck disable=SC2120
+ask_confirm() {
+  local key=$1
+if [[ "$key" == "Yy"  ]]; then
+    while true; do
+     read -n 1 -s -r -p "$(print_prompt -n "[y] " -w "yes (default) " -m "[n] " -w "no:\n")" key
+     [[ -z "$key" ]] && key=y
+     if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
+        return 0
+     elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
+        return 1
+     else
+        echo "What?"
+     fi
+    done
+else
+  while true; do
+    if [ -z "$key" ]; then
+    read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key ; [[ -z "$key" ]] && break || exit 0
+    else
+      read -p "Please type '$(print_prompt -m "$key")' to continue: " answer 
+      if [[ "$answer" == "$key" ]]; then
+        break
+      else
+        print_prompt -r "Invalid input, please try again."
+      fi
+    fi
+  done
+fi
+}
+
+set_metadata() {
+
+   ScriptDir="${CloneDir}/Scripts"
+current_branch=$(git branch --show-current)
+git_url=$( git remote get-url origin)
+# check changes on the restore lst
+restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst)"
+cacheCtl="${HOME}/.cache/hyde-cli"
+meta_file="${cacheCtl}/hyde.meta"
+cat << METADATA > "${meta_file}"
+#? This is a meta file generated for hyde-cli
+#! Do not touch this
+CloneDir="$CloneDir"
+current_branch="${current_branch}"
+git_url="${git_url}"
+restore_cfg_hash="${restore_cfg_hash}"
+METADATA
+
+}
+
+Install_Hyde_PACMAN() {
+
+CloneDir=${1}
+GIT=${2}
+
+if [ "${fresh}" = true ]; then
+
+clear
+cat << GREET
+WOW an Arch BTW User!
+${barLine}
+
+$(tput setaf 2)Hello ${USER}! This is an automated installation for Hyde.$(tput sgr0)
+
+Hyde-cli is an active helper for Hyde. During this installation, the script will:
+1. Check if Hyde is already installed.
+2. If not, it will clone the Hyde repository from GitHub. https://github.com/prasanthrangan/hyde
+3. Optionally, you can add Chaotic AUR to your mirror list for faster package installation.
+4. Finally, it will clone the Hyde repository and run the installation script.
+
+From here on 'Dots' 'Dot Files' means Configurations.
+
+$(tput setaf 3)Hyde-cli is a CLI for Hyde.This aims to add patches 
+for Hyde and address common Dots issues.
+Also this is a USER specific helper, includes a control file for a user to preserve the USER preferences.
+Please note that using these scripts may alter your Dot files.$(tput sgr0)
+
+$(tput setaf 6)And wait, there's more!!! Checkout 'Hyde man' to see how you can manage your Hyde setup.$(tput sgr0)
+
+HAVE A GOOD DAY!
+
+Visit: https://github.com/kRHYME7/Hyde-cli for more information.
+${barLine}
+
+Clone Directory: ${CloneDir}
+Git Repository: ${GIT}
+
+GREET
+
+ask_confirm
+git clone --depth 1 "${GIT}" "${CloneDir}"
+
+ sudo /usr/lib/hyde-cli/Install_ChaoticAUR --install fresh 
+fi
+
+cd "${CloneDir}"/Scripts || exit 0
+set_branch
+integrity_check "${CloneDir}"
+
+echo "Clone Directory: ${CloneDir}"
+echo "Git URL: $(git remote get-url origin)"
+echo "Git Branch: ${branch}"
+
+custom_apps="${CloneDir}/Scripts/custom_apps.lst"
+
+if [[ -e ${custom_apps} ]] ; then 
+sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > "${additional_packages}"
+echo -e "Optional packages loaded:"
+cat "${additional_packages}"
+fi
+
+trap 'rm -f ./install_pkg.lst' EXIT
+ ./install.sh "${additional_packages}"
+
+}
+
+#? One Time Set up on Terminal. 
+install_distro() {
+if [ "${1}" = "--fresh" ]; then fresh=true ; fi  
+  # echo -e "$(tput setaf 5)\nHyde-cli Cannot find the Hyde Directory, Will proceed to default installation!$(tput sgr0)"
+  # read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+  distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+
+case "${distro_ID}" in
+  "fedora")
+     Install_Hyde_DNF "${CloneDir}" "${GIT}"
+    ;;
+  "arch")
+     Install_Hyde_PACMAN "${CloneDir}" "${GIT}"
+    ;;
+  *)
+    echo "This is neither Fedora nor Arch"
+    # Add the commands for other distributions here
+    ;;
+esac
+set_metadata
+}
+
+integrity_check() {
+CheckDir="${2:-${CloneDir}}"
+    #! Requirements 
+    config=( 
+        ".local/share/bin/globalcontrol.sh"
+        ".config/hyde/themes/*/kvantum/kvantum.theme"
+        ".config/hyde/themes/*/kvantum/kvconfig.theme"
+        ".config/hyde/themes/*/kitty.theme"
+        ".config/hyde/themes/*/rofi.theme"
+        ".config/hyde/themes/*/waybar.theme"
+        ".config/hyde/themes/*/hypr.theme"
+        ".config/hyde/themes/*/wallpapers"
+    )
+
+    exit_flag=false
+    for fchk in "${config[@]}" ; do
+        # Use find to search for files matching the pattern
+        file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
+        if [[ -n "${file}" ]]; then
+            print_prompt -g "[OK] " -w "${file}"
+        else
+            print_prompt -r "[ERROR] " -w "${fchk} --> does not exist in ${CheckDir}/Configs/"
+            exit_flag=true
+        fi
+    done
+
+    [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
+
+}
+
+
+set_branch() {
+if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+    git remote set-branches origin '*'
+fi
+git fetch --all 
+  git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+ [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
+ if [[ $git_branch == *"*"* ]]; then
+    print_prompt -y "Already in branch: ${git_branch}"
+    return 1
+ else
+# Extract the branch name without the remote prefix and trim leading whitespace
+branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+# Switch to the selected branch
+git switch "${branch_name}"
+ fi
+ print_prompt -g "Git Branch " -w "${branch_name}"
+ask_confirm
+#( git reset --hard HEAD  && git clean -fd  && git pull )  || true
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
+
+# Variables
+additional_packages="/tmp/hyde-cli-$(id -u)-temporary-apps"
+barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+
+is_link=false
+    while (( "$#" )); do
+        case "$1" in
+            -d|--dir)
+                CloneDir="$2"
+                shift  2
+                ;;
+            -l|--link)
+                 is_link=true
+                shift  1
+                ;;
+            -g|--git)
+                GIT="$2"
+                shift  2
+                ;;
+            *)
+cat << HANDLE_ERROR 
+Unknown option: $1
+Please run: 'Hyde-install'                                Install Hyde (Defaults)
+
+Advanced usage: [Hyde-install] --[options] 
+        -d|--dir /path/to/Clone/Hyde                       Clone Hyde in a Custom path then run installation.
+                                                                    Default: '${HOME}/.cache/hyde-cli/Hyde'
+        -g|--git https://gitclone/repo/link/                     Remote Repository link to be cloned
+                                                                    Default: 'https://github.com/prasanthrangan/hyde'
+        -l|--link                                                Flag to transfer the link to a Clone Directory
+                                                                    Default: 'false'
+HANDLE_ERROR
+                exit  1
+                ;;
+        esac
+    done
+    
+[[ -n ${CloneDir} ]] && print_prompt -y "Custom Clone Directory: ${CloneDir}"
+[[ ${is_link} == true ]] && print_prompt - "Linked to Custom Clone Directory: ${CloneDir}"
+[[ -n ${GIT} ]] && print_prompt -"Custom repository from: ${GIT}"
+
+    # Set default values if not provided
+    CloneDir=${CloneDir:-${HOME}/.cache/hyde-cli/Hyde}
+#TODO Change this to the upstream
+    # GIT=${GIT:-"https://github.com/prasanthrangan/hyde"}
+    GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
+
+if cd "${CloneDir}"/Scripts ; then 
+print_prompt -m "[*] " -y "Using existing directory."
+      if [[ ${is_link} == true ]]; then
+        echo -e "Hyde-cli will make ${CloneDir} your Clone Directory By restoring the links."
+        set_branch
+      else
+        install_distro
+      fi
+else 
+install_distro --fresh
+fi

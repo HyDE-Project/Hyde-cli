@@ -1,9 +1,5 @@
 #!/bin/env bash
 
-pkill -x rofi && exit
-. /usr/lib/hyprdots-ctl/GLOBAL
-
-
 rofi_pos
 
 CHECK wtype noto-fonts-emoji
