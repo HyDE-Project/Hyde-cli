@@ -139,7 +139,7 @@ fi
   done
 done < "./restore_cfg.lst"
 # echo "Done: $restore_directory"
-
+trap 'rm -f ${config_override}' EXIT
 }
 
 list_Marker_OVERWRITE() {
@@ -192,37 +192,40 @@ awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BE
 # shellcheck disable=SC2120
 list_Marker() {
 CloneDir=${1:-${CloneDir}}
-cp "${ctlFile}" "${config_override}"
-prev_restore_list "${config_override}"
+if [ -e "${ctlFile}"  ] && [[ $* != *"--custom"* ]] ; then
+prev_restore_list "${ctlFile}"
 
-if [ -e ${ctlFile}  ]; then
 now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
     if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
-      print_prompt -y "Detected changes: $ScriptDir/restore_cfg.lst!" -w "\nI suggest to create a new control file to avoid conflicts"
-    ask_confirm "Yy"
-       if [ $? -eq 1 ]; then 
-        awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-       fi
+      print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
+    # ask_confirm "Yy"
+      #  if [ $? -eq 1 ]; then 
+        # awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+        restore_Lister "${CloneDir}/Configs"
+      #  fi
     else
     print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
     ask_confirm "Yy"
        if [ $? -eq 1 ]; then 
-        awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-       fi
+        # awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
+        restore_Lister "${CloneDir}/Configs"    
+       else
+        cp "${ctlFile}" "${config_override}"
+       fi       
     clear
     prev_restore_list "${config_override}"
     fi
+elif [[ $* == *"--custom"* ]] ;then
+prev_restore_list "${config_override}"
+:
 fi
-
 read
 
 MENU_config
 
 prev_restore_list "${config_override}"
 
-print_prompt -y "Save this as your new control file?"
-ask_confirm "Yy"
-[ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
+[[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
 
 print_prompt -w '[ctrl + c]' -r ' Cancel'
 print_prompt -w "Continue?"
@@ -233,7 +236,7 @@ all() {
   list_Backup
   echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m" 
   ask_confirm
-         awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
+         awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override}
       Restore_Config --only "/tmp/Hyde-${UID}-BAK"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != "$bak" ]]; then
@@ -253,7 +256,6 @@ all() {
 # cat ${config_override}
 
 #         exit 0
-#         trap 'rm -f ${config_override}' EXIT
 #         ./restore_cfg.sh "BAK" "" 
 #       bak=$(ls -td -- $BkpDir/* | head -n 1 )
 #       if [[ "$last_bak" != $bak ]]; then
@@ -266,13 +268,13 @@ all() {
 revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
-         awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} ; trap 'rm -f ${config_override}' EXIT
+         awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} 
             
             
             selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt 'List of explicit Backup, Run by Hyde backup all' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | cut -d ' ' -f4) && echo "$selected_backup" 
             
             if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
-      Restore_Config "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
+      Restore_Config --only "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
       if [[ "$last_bak" != $bak ]]; then
         rm -fr $bak
@@ -295,8 +297,7 @@ if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]] || [[ -e ${config_
       print_prompt -y "Restoring from:" -w "${config_source}"     
       echo "Please Review files to be re-populated to your Dots" 
         restore_Lister "${config_source}"
-         trap 'rm -f ${config_override}' EXIT
-        list_Marker
+        list_Marker "" --custom
         ask_confirm "${USER}"
        if [[ -z $selected_backup ]]; then echo "Nothing Selected" ; exit 0 ;fi
       Restore_Config "/tmp/Hyde-${UID}-BAK" "${config_source}"
@@ -335,7 +336,7 @@ custClone="$1"
 integrity_check "${custClone}"
 echo "Generating a Restore List"
 cd $custClone/Scripts || handle_error "Cannot Change Directory to $custClone/Scripts"
-restore_Lister "$custClone/Configs" ; trap 'rm -f ${config_override}' EXIT
+#! restore_Lister "$custClone/Configs"
 list_Marker "${custClone}"
 ask_confirm "$USER"
 # ./restore_fnt.sh

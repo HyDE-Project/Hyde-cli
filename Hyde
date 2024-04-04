@@ -119,7 +119,7 @@ restore() { #? Restore Options for Hyde
         Manage_Configs "$1" "$2"
         rename_backup "_Hyde_restore_Clone"
         ;;
-        BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete
+        BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherrt pick a file/dir from a backup
             # trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
@@ -152,7 +152,7 @@ backup() { #? Backing up commands
         # custom)
         #     Manage_Configs "$1"
         # ;;
-        revert) #? Revert to a Previous Backup run by 'Hyde backup all'.
+        revert) #? Revert to a Previous Backup run by 'Hyde backup all'. \n ﯦ Different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
         barLine
             Manage_Configs "$1"
         barLine
