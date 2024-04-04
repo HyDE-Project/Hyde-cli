@@ -131,9 +131,10 @@ export CloneDir
 export ScriptDir="${CloneDir}/Scripts"
 cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
 current_branch=$(git branch --show-current)
-git_url=$( git remote get-url origin)
+git_url=$(git remote get-url origin)
 # check changes on the restore lst
 restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1 )"
+hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
 cat << METADATA > "${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this
@@ -141,6 +142,7 @@ export CloneDir="$CloneDir"
 export current_branch="${current_branch}"
 export git_url="${git_url}"
 export restore_cfg_hash="${restore_cfg_hash}"
+export hyde_version="${hyde_version}"
 
 METADATA
 }

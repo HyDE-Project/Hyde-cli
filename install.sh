@@ -2,27 +2,37 @@
 
 distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
 clone_hyde_cli=${HOME}/.cache/hyde-cli/Hyde-cli
-
+mkdir -p "${clone_hyde_cli}"
 case "${distro_ID}" in
   "fedora")
         :
+        #Yes posible! But I'm Lazy
     ;;
   "arch")
     pkgname=hyde-cli-git
     if pacman -Q yay &> /dev/null ; then aurhlpr="yay"
     elif pacman -Q paru &> /dev/null ; then aurhlpr="paru"
+    else
+        select opt in "yay" "paru"; do if [[ -n $opt ]]; then aurhlpr=$opt ; break ; fi ;done
+        sudo pacman -S --needed git base-devel
+        rm -fr ${clone_hyde_cli}/${aurhlpr}
+        git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
+        cd ${clone_hyde_cli}/${aurhlpr}
+        makepkg -si --noconfirm 
     fi
-    if pacman -Q "${pkgname}" &> /dev/null; then
+
+    if ! pacman -Q "${aurhlpr}" &> /dev/null; then echo "Please try to rerun script!" && exit 0 ;fi
+
+    if pacman -Q "${pkgname}" 2> /dev/null; then
         if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then ${aurhlpr} -S --devel "${pkgname}" 
         else echo "Already up to date" 
         fi
         exit 0
-    else "${aurhlpr}" -S "${pkgname}" &> /dev/null
+    else "${aurhlpr}" -Sy "${pkgname}"
         if pacman -Q "${pkgname}" 2> /dev/null ; then exit 0 ; fi
     fi
     ;;
 esac
-
 
 mkdir -p "${clone_hyde_cli}"
 rm -fr "${clone_hyde_cli}"

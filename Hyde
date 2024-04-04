@@ -39,8 +39,11 @@ echo -e "${manPage}" \
 }
 
 version() { #? Hyde-cli Version
-box_me -s "Hyde-cli Version" -c 77
+box_me -s "Hyde-cli Version" -c 78
 cat /etc/hyde-cli/.hyde-cli.ver
+
+ . "${meta_file}" 2> /dev/null  && box_me -s "Hyde Version" -c 69
+
 }
 
 systeminfo() { #? System Information
@@ -75,8 +78,8 @@ get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
 print_prompt -y "Checking Hyde CLI updates..."
-curl -L https://raw.githubusercontent.com/kRHYME7/Hyprdots-ctl/hdye-cli/install.sh | bash
-
+curl -sL https://raw.githubusercontent.com/kRHYME7/Hyprdots-ctl/hdye-cli/install.sh | bash
+set_metadata
 }
 
 upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.config/hyde-cli/manage_cfg.lst'
@@ -479,13 +482,12 @@ show() { #? Some Hypr GUI you might want to use.
             # Keybinds_Hint #! Moved to .extra 
             "${scrDir}"/keybinds_hint.sh
         ;;
-        emoji) #? Emoji Selector \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
+        emoji) #? Emoji Selector \n ﯧ pass (only once) '--ignore=initialclass' to disable autopaste
             [[ $* == *"--ignore"* ]] && pasteIt "${*}"
             Launch_Emoji
         ;;
-        pastebin) #? Pastebin manager \n ﯧ pass '--ignore=initialclass' to disable autopaste [only once]
+        pastebin) #? Pastebin manager \n ﯧ pass (only once) '--ignore=initialclass' to disable autopaste
         [[ $* == *"--ignore"* ]] && pasteIt "${*}"
-    
             shift
             Launch_Pastebin "$@"
         ;;
