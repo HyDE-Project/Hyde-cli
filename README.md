@@ -7,7 +7,7 @@
 
 > [!Note]
 > for AUR
-> hyprdots-ctl was renamed into hyprdots-ctl-git. Please install the "-git" package
+> hyprdote-ctl was renamed into hyde-cli-git. Please install the "-git" package
 > ``` yay -Sy hyde-cli-git ``` 
 
 
@@ -35,8 +35,8 @@ These scripts may alter or mess up your configurations. Please use them at your 
 
 Recommended: Use your preferred AUR helper `paru` or `yay`.
 ```
-paru -Sy hyprdots-cli-git
-yay -Sy hyprdots-cli-git
+paru -Sy hyde-cli-git
+yay -Sy hyde-cli-git
 ```
 > [!Important]
 > Incase you did not recieve updates for a long time.
@@ -46,8 +46,8 @@ yay -Sy hyprdots-cli-git
 
 Manual: Use makepkg
 ```
-git clone https://aur.archlinux.org/hyprdots-cli-git.git
-cd hyprdots-cli
+git clone https://aur.archlinux.org/hyde-cli-git.git
+cd hyde-cli
 makepkg -si
 ```
 
