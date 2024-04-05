@@ -7,7 +7,7 @@ export PATH="$libDir:$PATH"
 
 #? One Time Set up on Terminal.
 install_distro() {
-    if [ "${1}" = "--fresh" ]; then fresh=true; fi
+    if [ "${1}" = "--fresh" ]; then export fresh=true; fi
     distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
     
     case "${distro_ID}" in

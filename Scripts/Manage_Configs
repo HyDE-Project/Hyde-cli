@@ -217,11 +217,11 @@ now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' '
     # clear
     # prev_restore_list "${config_override}"
     fi
+read
 elif [[ $* == *"--custom"* ]] ;then
 # prev_restore_list "${config_override}"
 :
 fi
-read
 
 MENU_config
 
