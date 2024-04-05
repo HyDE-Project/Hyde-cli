@@ -1,127 +1,130 @@
 #!/bin/env bash
 
 restore_only=false
-if [ "$1" == "--only" ]; then restore_only=true
-shift
+if [ "$1" == "--only" ]; then
+    restore_only=true
+    shift
 fi
 
-FileOverride="${1:-${ctlDir}/}"              #override default config list with custom theme list [param 1]
+FileOverride="${1:-${ctlDir}/}" #override default config list with custom theme list [param 1]
 ctlFile="${FileOverride}manage_cfg.lst"
-CfgDir="${2:-${CloneDir}/Configs}"  #override default config path with custom theme path [param 2]
+CfgDir="${2:-${CloneDir}/Configs}" #override default config path with custom theme path [param 2]
 
-if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+if [ ! -f "${ctlFile}" ]; then
+    print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir"
+    if [ ! -f ${ScriptDir}/restore_cfg.lst ]; then
+        print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"
+        exit 1
     fi
-    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst >${ctlFile}
     cat "${ctlFile}"
     print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile}! "
     exit
 fi
 
-if [ ! -d "${CfgDir}" ] ; then
+if [ ! -d "${CfgDir}" ]; then
     echo "ERROR : '${CfgDir}' does not exist..."
     exit 1
 fi
 
 BkpDir="${HOME}/.config/cfg_backups/$(date +'%y%m%d_%Hh%Mm%Ss')"
 
-        if [ -d "${BkpDir}" ] ; then
+if [ -d "${BkpDir}" ]; then
     echo "ERROR : ${BkpDir} exists!"
     exit 1
 else
     mkdir -p "${BkpDir}"
 fi
 
-while read lst
-do
-
+while read lst; do
+    
     ctlFlag=$(echo "${lst}" | awk -F '|' '{print $1}')
     pth=$(echo "${lst}" | awk -F '|' '{print $2}')
     pth=$(eval echo "${pth}")
     cfg=$(echo "${lst}" | awk -F '|' '{print $3}')
     pkg=$(echo "${lst}" | awk -F '|' '{print $4}')
-
-# Check if ctlFlag is not one of the values 'O', 'R', 'B', 'S', or 'P'
-if [[ "${ctlFlag}" = "I" ]]; then
-echo "[IGNORE] ${pth}/${cfg}"
-    continue 2
-fi
-
-# Start a loop that reads each line from the output of the command enclosed within the process substitution '< <(...)'
-while read -r pkg_chk
-do
-
-    # Call the function pkg_installed with the argument pkg_chk. If the function returns false (the package is not installed), then...
-    if ! pkg_installed ${pkg_chk} 
-        then
-        # Print a message stating that the current configuration is being skipped because a dependency is not installed
-        echo "[SKIP] '${pkg_chk}' as dependency  ${pth}/${cfg}"
-        # Skip the rest of the current loop iteration and proceed to the next iteration
+    
+    # Check if ctlFlag is not one of the values 'O', 'R', 'B', 'S', or 'P'
+    if [[ "${ctlFlag}" = "I" ]]; then
+        echo "[IGNORE] ${pth}/${cfg}"
         continue 2
     fi
-done < <( echo "${pkg}" | xargs -n 1 )
-
-# Pipe the value of cfg to xargs, which splits it into separate arguments based on spaces, and then pipe the output to a while loop
-echo "${cfg}" | xargs -n 1 | while read -r cfg_chk
-do
-
+    
+    # Start a loop that reads each line from the output of the command enclosed within the process substitution '< <(...)'
+    while read -r pkg_chk; do
+        
+        # Call the function pkg_installed with the argument pkg_chk. If the function returns false (the package is not installed), then...
+        if ! pkg_installed ${pkg_chk}; then
+            # Print a message stating that the current configuration is being skipped because a dependency is not installed
+            echo "[SKIP] '${pkg_chk}' as dependency  ${pth}/${cfg}"
+            # Skip the rest of the current loop iteration and proceed to the next iteration
+            continue 2
+        fi
+    done < <(echo "${pkg}" | xargs -n 1)
+    
+    # Pipe the value of cfg to xargs, which splits it into separate arguments based on spaces, and then pipe the output to a while loop
+    echo "${cfg}" | xargs -n 1 | while read -r cfg_chk; do
+        
         # Check if the variable pth is empty, if it is, skip the current iteration
         if [[ -z "${pth}" ]]; then continue; fi
-
-# Remove the HOME directory from the beginning of the path stored in pth and store the result in tgt
-tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
-crnt_cfg="${pth}/${cfg_chk}"
-
-    if [ ! -e "${CfgDir}$tgt/${cfg_chk}" ] && [ "${ctlFlag}" != "B" ]; then
-        echo "Source: ${CfgDir}$tgt/${cfg_chk} does not exist, skipping..."
-        continue
-    fi
-
-        [[ ! -d "${pth}" ]] && mkdir -p "${pth}" 
-
+        
+        # Remove the HOME directory from the beginning of the path stored in pth and store the result in tgt
+        tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
+        crnt_cfg="${pth}/${cfg_chk}"
+        
+        if [ ! -e "${CfgDir}$tgt/${cfg_chk}" ] && [ "${ctlFlag}" != "B" ]; then
+            echo "Source: ${CfgDir}$tgt/${cfg_chk} does not exist, skipping..."
+            continue
+        fi
+        
+        [[ ! -d "${pth}" ]] && mkdir -p "${pth}"
+        
         if [ -e "${crnt_cfg}" ]; then
-        # echo "Files exist: ${crnt_cfg}"
+            # echo "Files exist: ${crnt_cfg}"
             # Check if the directory specified by BkpDir and tgt exists, if it doesn't, create it
             [[ ! -d "${BkpDir}${tgt}" ]] && mkdir -p "${BkpDir}${tgt}"
-
+            
             case "${ctlFlag}" in
                 "B")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
-                    ;;
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+                    print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
+                ;;
                 "O")
-                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -n "[MOVED TO BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..." 
+                    mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+                    print_prompt -n "[MOVED TO BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
                     cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
                     print_prompt -m "[OVERWRITE]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
-                    ;;
+                ;;
                 "S")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
-                    cp -rf "${CfgDir}$tgt/${cfg_chk}" "${pth}"    
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+                    print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
+                    cp -rf "${CfgDir}$tgt/${cfg_chk}" "${pth}"
                     print_prompt -y "[Sync]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
-                    ;;
+                ;;
                 "P")
-                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}" ; print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."                                                          
-                    if ! cp -rn "${CfgDir}$tgt/${cfg_chk}" "${pth}" 2>/dev/null ; then
+                    cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+                    print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
+                    if ! cp -rn "${CfgDir}$tgt/${cfg_chk}" "${pth}" 2>/dev/null; then
                         print_prompt -g "[PRESERVED]" -w "${pth}${tgt}/${cfg_chk}"
                     else
                         print_prompt -g "[POPULATE]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     fi
-                    ;;
+                ;;
             esac
         else
-                if [ "${ctlFlag}" != "B" ]; then cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                        print_prompt -g "[*POPULATE*]" -w "${pth} <-- ${CfgDir}$tgt/${cfg_chk}"    
-                fi         
+            if [ "${ctlFlag}" != "B" ]; then
+                cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
+                print_prompt -g "[*POPULATE*]" -w "${pth} <-- ${CfgDir}$tgt/${cfg_chk}"
+            fi
         fi
-
+        
     done
+    
+done <"${ctlFile}"
 
-done < "${ctlFile}"
-
-
-
-if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia |  wc -l )" -gt 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ] ; then
+if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia | wc -l)" -gt 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ]; then
     echo -e 'source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia
-' >> ${HOME}/.config/hypr/hyprland.conf
+    ' >>${HOME}/.config/hypr/hyprland.conf
 fi
 
 if [ "$restore_only" != "true" ]; then

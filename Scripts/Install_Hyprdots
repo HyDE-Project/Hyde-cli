@@ -1,71 +1,71 @@
 #!/bin/env bash
 
 is_link=false
-    while (( "$#" )); do
-        case "$1" in
-            --CLONE)
-                CloneDir="$2"
-                shift  2
-                ;;
-            --LINK)
-                 CloneDir=${2}
-                 is_link=true
-                shift  2
-                ;;
-            --GIT)
-                GIT="$2"
-                shift  2
-                ;;
-            *)
-                echo "Unknown option: $1"
-                exit  1
-                ;;
-        esac
-    done
+while (( "$#" )); do
+    case "$1" in
+        --CLONE)
+            CloneDir="$2"
+            shift  2
+        ;;
+        --LINK)
+            CloneDir=${2}
+            is_link=true
+            shift  2
+        ;;
+        --GIT)
+            GIT="$2"
+            shift  2
+        ;;
+        *)
+            echo "Unknown option: $1"
+            exit  1
+        ;;
+    esac
+done
 [[ -n ${CloneDir} ]] && echo "Set Clone Directory: ${CloneDir}"
 [[ ${is_link} == true ]] && echo "Linked to Clone Directory: ${CloneDir}"
 [[ -n ${GIT} ]] &&    echo "Cloning from: ${GIT}"
 
-    # Set default values if not provided
-    CloneDir=${CloneDir:-${HOME}/Hyprdots}
-    GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
+# Set default values if not provided
+CloneDir=${CloneDir:-${HOME}/Hyprdots}
+GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
 
 
-#? One Time Set up on Terminal. 
+#? One Time Set up on Terminal.
 install_distro() {
-
-  # echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
-  # read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
-  distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-
-case "${distro_ID}" in
-  "fedora")
-    echo "This is Fedora"
-     Install_Hyprdots-DNF "${CloneDir}" "${GIT}"
-    ;;
-  "arch")
-     Install_Hyprdots-PACMAN "${CloneDir}" "${GIT}"
-    ;;
-  *)
-    echo "This is neither Fedora nor Arch"
-    # Add the commands for other distributions here
-    ;;
-esac
+    
+    # echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
+    # read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0
+    distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+    
+    case "${distro_ID}" in
+        "fedora")
+            echo "This is Fedora"
+            Install_Hyprdots-DNF "${CloneDir}" "${GIT}"
+        ;;
+        "arch")
+            Install_Hyprdots-PACMAN "${CloneDir}" "${GIT}"
+        ;;
+        *)
+            echo "This is neither Fedora nor Arch"
+            # Add the commands for other distributions here
+        ;;
+    esac
 }
 
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
-if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then 
-  cd "${CloneDir}"/Scripts || exit 0
-  echo -e "\nDirectory exist: ${CloneDir}\n[*]Using existing directory.\n[*]Changes will be stashed\n"
-  read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0 
-  git reset --hard HEAD  && git clean -fd  && git pull  || true
-      if [[ ${is_link} == true ]]; then
-          echo -e "Hyprdots-ctl will make ${CloneDir} your Clone Directory By restoring the links."
-          ./restore_lnk.sh
-      else
-      install_distro
-      fi
-else 
-install_distro
+if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then
+    cd "${CloneDir}"/Scripts || exit 0
+    echo -e "\nDirectory exist: ${CloneDir}\n[*]Using existing directory.\n[*]Changes will be stashed\n"
+    read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0
+    git reset --hard HEAD  && git clean -fd  && git pull  || true
+    if [[ ${is_link} == true ]]; then
+        echo -e "Hyprdots-ctl will make ${CloneDir} your Clone Directory By restoring the links."
+        ./restore_lnk.sh
+    else
+        install_distro
+    fi
+else
+    install_distro
 fi

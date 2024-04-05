@@ -17,15 +17,15 @@ move_lines_to_bottom() {
     local lines=("$@")
     local file="${lines[-1]}"
     unset 'lines[${#lines[@]}-1]'
-
+    
     for line in "${lines[@]}"; do
         # Remove the line if it exists
         sed -i "\|$line|d" "$file"
     done
-
+    
     # Append a newline to the file if it does not end with one
     [[ $(tail -c1 "$file" | wc -l) -eq 0 ]] && echo "" >> "$file"
-
+    
     # Append the lines to the end of the file
     for line in "${lines[@]}"; do
         echo "$line" >> "$file"
@@ -48,15 +48,15 @@ fi
 touch /tmp/hyprdots-monitors-$pid
 # If any /tmp/hyprdots-monitors* files exist, kill the processes with those PIDs
 for file in /tmp/hyprdots-monitors*; do
-  # Extract the PID from the filename
-  pid_to_kill=$(basename $file | cut -d '-' -f 3)
-  
-  # If this is not the current process and the process exists, kill it and its subprocesses
-  if [ "$pid_to_kill" != "$pid" ] && kill -0 $pid_to_kill 2>/dev/null; then
-    pkill -9 -P $pid_to_kill
-    kill -9 $pid_to_kill
-    exit 0
-  fi
+    # Extract the PID from the filename
+    pid_to_kill=$(basename $file | cut -d '-' -f 3)
+    
+    # If this is not the current process and the process exists, kill it and its subprocesses
+    if [ "$pid_to_kill" != "$pid" ] && kill -0 $pid_to_kill 2>/dev/null; then
+        pkill -9 -P $pid_to_kill
+        kill -9 $pid_to_kill
+        exit 0
+    fi
 done
 
 currMon=$(hyprctl monitors all -j | jq -r '.[] | .description ' | sed 's/ (.*//')

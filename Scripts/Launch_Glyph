@@ -12,22 +12,22 @@ CHECK wtype
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`
 #* I don't own anything of it
 #TODO:   Needed a way to fetch the glyph from the NerdFonts source.
-#TODO:    find a way make the  DB update 
+#TODO:    find a way make the  DB update
 #TODO:    make the Script run on User space
 
 glyphDATA="${etcDir}/glyph.db"
 recentData="${cacheCtl}/show_glyph_recent.db"
 
 save_recent() {
-#? Prepend the selected glyph to the top of the recentData file
+    #? Prepend the selected glyph to the top of the recentData file
     # sed -i "1i\\$selGlyph" "${recentData}"
-awk -v var="$dataGlyph" 'BEGIN{print var} {print}' "${recentData}" > temp && mv temp "${recentData}"
-#?  Use awk to remove duplicates and empty lines, moving the most recent glyph to the top
+    awk -v var="$dataGlyph" 'BEGIN{print var} {print}' "${recentData}" > temp && mv temp "${recentData}"
+    #?  Use awk to remove duplicates and empty lines, moving the most recent glyph to the top
     awk 'NF' "${recentData}" | awk '!seen[$0]++' > temp && mv temp "${recentData}"
 }
 
 if [[ ! -f "${recentData}" ]]; then
-   echo "  Arch linux I use Arch BTW" > "${recentData}"
+    echo "  Arch linux I use Arch BTW" > "${recentData}"
 fi
 #? Read the contents of recent.db and main.db separately
 recent_entries=$(cat "${recentData}")

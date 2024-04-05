@@ -128,8 +128,10 @@ while IFS= read -r line ; do IFS='|' read -r -a array <<< "$line"
   # Iterate over each file or directory in the 4th column
   for file in "${files_array[@]}"; do
 
-if [ "$restore_directory" = "CUSTOM" ]; then
+if [ "$restore_directory" = "BACKUP" ]; then
   echo "B|$dir|$file|$pkg" >> "${config_override}"
+elif [ "$restore_directory" = "OVERWRITE" ]; then
+  echo "O|$dir|$file|$pkg" >> "${config_override}"
 else
  if [ -e "$restore_directory$curr/$file" ]; then
     #  echo -e "$curr/$file"
@@ -139,7 +141,7 @@ fi
   done
 done < "./restore_cfg.lst"
 # echo "Done: $restore_directory"
-trap 'rm -f ${config_override}' EXIT
+# trap 'rm -f ${config_override}' EXIT
 }
 
 list_Marker_OVERWRITE() {
@@ -248,7 +250,7 @@ all() {
 
 # custom() {
 #   list_Backup
-# #       restore_Lister "CUSTOM"
+# #       restore_Lister "BACKUP"
 # # cat ${config_override} | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
 # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
 # #echo "$selected_line"
@@ -377,17 +379,18 @@ REVIEW
 
 upgrade() {
   custom_apps="${CloneDir}/Scripts/custom_apps.lst"
-custom_apps="/tmp/hyde-ctl-$(id -u)-temporary-apps"
+install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 if [[ -e ${custom_apps} ]] ; then 
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > "${custom_apps}"
+
+    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' > "${install_packages_list}"
     echo -e "Optional packages loaded:"
-    cat "${custom_apps}"
+    cat "${install_packages_list}"
 fi
 
         list_Marker
         # print_prompt -y "Clone Directory:" -m "${CloneDir}"
         # print_prompt -y "Is This Correct?"
-      ./install.sh -i "${custom_apps}"
+      ./install.sh -i "${install_packages_list}"
         ./restore_fnt.sh
         Restore_Config
         Hyde reload

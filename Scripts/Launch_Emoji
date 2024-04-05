@@ -9,15 +9,15 @@ emojiData="${etcDir}/emoji.db"
 recentData="${cacheCtl}/show_emoji_recent.db"
 
 save_recent() {
-#? Prepend the selected emoji to the top of the recentData file
+    #? Prepend the selected emoji to the top of the recentData file
     # sed -i "1i\\$selEmoji" "${recentData}"
-awk -v var="$dataEmoji" 'BEGIN{print var} {print}' "${recentData}" > temp && mv temp "${recentData}"
-#?  Use awk to remove duplicates and empty lines, moving the most recent emoji to the top
+    awk -v var="$dataEmoji" 'BEGIN{print var} {print}' "${recentData}" > temp && mv temp "${recentData}"
+    #?  Use awk to remove duplicates and empty lines, moving the most recent emoji to the top
     awk 'NF' "${recentData}" | awk '!seen[$0]++' > temp && mv temp "${recentData}"
 }
 
 if [[ ! -f "${recentData}" ]]; then
-   echo "    Arch linux I use Arch BTW" > "${recentData}"
+    echo "    Arch linux I use Arch BTW" > "${recentData}"
 fi
 #? Read the contents of recent.db and main.db separately
 recent_entries=$(cat "${recentData}")

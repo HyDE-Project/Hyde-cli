@@ -23,110 +23,110 @@ remove() {
 }
 
 source_files() {
-if [[ ! -f $PowManFile ]]; then 
-touch $PowManFile  && echo "Added: $hyprlandConf" 
-fi
-if ! grep -q "source = $PowManFile" "$hyprlandConf"; then 
-echo "source = $PowManFile #! This File is modified by Hyde-cli power options(To remove: 'Hyde power reset')" >> "$hyprlandConf" 
-fi
+    if [[ ! -f $PowManFile ]]; then
+        touch $PowManFile  && echo "Added: $hyprlandConf"
+    fi
+    if ! grep -q "source = $PowManFile" "$hyprlandConf"; then
+        echo "source = $PowManFile #! This File is modified by Hyde-cli power options(To remove: 'Hyde power reset')" >> "$hyprlandConf"
+    fi
 }
 
 print_help() {
     echo "Usage: Hyde power $powerOpt [options]"
     echo "Options:"
-    sed -n "/^$powerOpt() {/,/^}/p" "$0" | 
+    sed -n "/^$powerOpt() {/,/^}/p" "$0" |
     sed -n '/case/,/esac/p' | grep ') #?' |
-    awk '{gsub(/^[ \t]+/, ""); gsub(/\)/, "]"); gsub(/\|/, "] ["); print}' | 
+    awk '{gsub(/^[ \t]+/, ""); gsub(/\)/, "]"); gsub(/\|/, "] ["); print}' |
     awk '{print "["$0}' | awk -F '#?' '{sub("\\?", "", $2); printf "%-30s %s\n", $1, $2}'
 }
 
 reset() {
-: > "$PowManFile"
-if grep -q "source = $PowManFile" "$hyprlandConf"; then
-    sed -i "\#source = $PowManFile#d" "$hyprlandConf"
-fi
-sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
-sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
-hyprctl reload
+    : > "$PowManFile"
+    if grep -q "source = $PowManFile" "$hyprlandConf"; then
+        sed -i "\#source = $PowManFile#d" "$hyprlandConf"
+    fi
+    sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
+    sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
+    hyprctl reload
 }
 
-save() { 
-if [[ -z "$@" ]]; then print_help ; fi
-source_files
-declare -A processed_flags
-for arg in "$@"; do
-    if [ "${processed_flags[$arg]}" != "true" ]; then
-        case $arg in
-            -a|--animations) #? Disable Animations
-            append "animations:enabled = 0" "DISABLE Animations"     
-            ;;
-            -ba|--borderangle) #? Disable border angle Animation.
-            append "animation = borderangle, 0" "DISABLE Border angle animation"           
-            ;;
-            -b|--blur) #? Disable Blur
-            append "decoration:blur:enabled = 0" "DISABLE Blur"
-            ;;
-            -o|--opacity) #? Disable Tranparency
-            append 'windowrule=opacity 1 override 1 override,title:(.*)' "DISABLE Transparent opacity"
-                #! DEPRECATED if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
-                #! DEPRECATED     sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
-                #! DEPRECATED fi
-            ;;
-            *) echo "Unknown flag: $arg"; print_help; exit 1;;
-        esac
-        processed_flags[$arg]="true"
-    fi
-done
+save() {
+    if [[ -z "$@" ]]; then print_help ; fi
+    source_files
+    declare -A processed_flags
+    for arg in "$@"; do
+        if [ "${processed_flags[$arg]}" != "true" ]; then
+            case $arg in
+                -a|--animations) #? Disable Animations
+                    append "animations:enabled = 0" "DISABLE Animations"
+                ;;
+                -ba|--borderangle) #? Disable border angle Animation.
+                    append "animation = borderangle, 0" "DISABLE Border angle animation"
+                ;;
+                -b|--blur) #? Disable Blur
+                    append "decoration:blur:enabled = 0" "DISABLE Blur"
+                ;;
+                -o|--opacity) #? Disable Tranparency
+                    append 'windowrule=opacity 1 override 1 override,title:(.*)' "DISABLE Transparent opacity"
+                    #! DEPRECATED if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
+                    #! DEPRECATED     sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
+                    #! DEPRECATED fi
+                ;;
+                *) echo "Unknown flag: $arg"; print_help; exit 1;;
+            esac
+            processed_flags[$arg]="true"
+        fi
+    done
 }
 
 unset() {
-if [[ -z "$@" ]]; then print_help ; fi
-source_files
-declare -A processed_flags
-for arg in "$@"; do
-    if [ "${processed_flags[$arg]}" != "true" ]; then
-        case $arg in
-            -a|--animations) #? Default Animations
-            remove "animations:enabled = 0" "ENABLE Animations"   
-            ;;
-            -ba|--borderangle) #? Default border angle Animation.
-            remove "animation = borderangle, 0" "ENABLE Border angle animation"       
-            sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
-            ;;
-            -b|--blur) #? Default Blur
-            remove "decoration:blur:enabled = 0" "ENABLE Blur"
-            ;;
-            -o|--opacity) #? Default Tranparency
-            remove "windowrule=opacity 1 override 1 override,title:(.*)" "ENABLE Tranparency"
-            #! DEPRECATED sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
-            ;;
-            *) echo "Unknown flag: $arg"; print_help; exit 1;;
-        esac
-        processed_flags[$arg]="true"
-    fi
-done
-hyprctl reload
+    if [[ -z "$@" ]]; then print_help ; fi
+    source_files
+    declare -A processed_flags
+    for arg in "$@"; do
+        if [ "${processed_flags[$arg]}" != "true" ]; then
+            case $arg in
+                -a|--animations) #? Default Animations
+                    remove "animations:enabled = 0" "ENABLE Animations"
+                ;;
+                -ba|--borderangle) #? Default border angle Animation.
+                    remove "animation = borderangle, 0" "ENABLE Border angle animation"
+                    sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
+                ;;
+                -b|--blur) #? Default Blur
+                    remove "decoration:blur:enabled = 0" "ENABLE Blur"
+                ;;
+                -o|--opacity) #? Default Tranparency
+                    remove "windowrule=opacity 1 override 1 override,title:(.*)" "ENABLE Tranparency"
+                    #! DEPRECATED sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
+                ;;
+                *) echo "Unknown flag: $arg"; print_help; exit 1;;
+            esac
+            processed_flags[$arg]="true"
+        fi
+    done
+    hyprctl reload
 }
 
-game() { 
+game() {
     $ConfDir/hypr/scripts/gamemode.sh
 }
 
 max() { #? Power Saving Options
-for arg in "$@"; do
-    case $arg in
-        -a|--animation) #? Animation Optionsss
-        echo "Animation flag set"
-        ;;
-        -b|--blur) #? Disable Blur
-        echo "Blur flag set"
-        ;;
-        -o|--opacity) #? Solid Opacity
-        echo "Opacity flag set"
-        ;;
-        *) echo "Unknown flag: $arg"; print_help; exit 1;;
-    esac
-done
+    for arg in "$@"; do
+        case $arg in
+            -a|--animation) #? Animation Optionsss
+                echo "Animation flag set"
+            ;;
+            -b|--blur) #? Disable Blur
+                echo "Blur flag set"
+            ;;
+            -o|--opacity) #? Solid Opacity
+                echo "Opacity flag set"
+            ;;
+            *) echo "Unknown flag: $arg"; print_help; exit 1;;
+        esac
+    done
 }
 
 

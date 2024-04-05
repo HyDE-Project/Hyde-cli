@@ -9,17 +9,17 @@ varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"
 
 # Pass arguments here
 if [[ -n ${*} ]]; then
-print_prompt -y "Command:" -w "${@}"
-variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}" "${@}"
-exit 0
+    print_prompt -y "Command:" -w "${@}"
+    variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}" "${@}"
+    exit 0
 fi
 
 # This will loop forever
-if [[ -e "${varietyScript}" ]] ; then 
-print_prompt -y "Starting as Daemon"
-[[ -z "${*}" ]] && print_prompt -y "'Hyprdots wallpaper variety [ -h | --help ]' for options"
-variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}"
-exit 0
+if [[ -e "${varietyScript}" ]] ; then
+    print_prompt -y "Starting as Daemon"
+    [[ -z "${*}" ]] && print_prompt -y "'Hyprdots wallpaper variety [ -h | --help ]' for options"
+    variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}"
+    exit 0
 fi
 
 # One time Setup
@@ -49,10 +49,10 @@ VARIETY="$(eval realpath "${CurrThemeDir}")/${varBase}"
 
 cp -f "${WP}" "${VARIETY}"
 
-PID=$(pgrep swww-daemon) 
-if [[ -n ${PID} ]] && [[ -e ${VARIETY} ]]; then 
-find ~/.cache/hyprdots/ -type f -name "${varBase}*" -delete && Hyprdots wallpaper set "${VARIETY}" 
-   notify-send -a "Hyprdots" "${VARIETY}" -i "${VARIETY}" -e
+PID=$(pgrep swww-daemon)
+if [[ -n ${PID} ]] && [[ -e ${VARIETY} ]]; then
+    find ~/.cache/hyprdots/ -type f -name "${varBase}*" -delete && Hyprdots wallpaper set "${VARIETY}"
+    notify-send -a "Hyprdots" "${VARIETY}" -i "${VARIETY}" -e
 fi
 
 ### endVARIETY ###

@@ -1,37 +1,37 @@
 #!/bin/env bash
 
 if [ "$1" != "--devel" ]; then
-return 0 || exit 0
+    return 0 || exit 0
 fi
 echo -e "\033[35mYou are on Development mode, I assume you know what you are doing.\033[0m"
-read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0 
+read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0
 
 
 
-case $2 in 
-
-set-clone) #? Set a new Clone directory
-newClone=$3
-if [ -d "$newClone" ]; then
-    echo "Setting new clone directory!"
-    sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
-else
-    echo "Directory [ $newClone] does not exist" 
-    # ; read -t 3
-    # cd $HOME || exit
-    # newClone=$(fzf)
-    # sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
-    exit 0
-fi
-cd "$newClone/Scripts" || exit
-./restore_lnk.sh
-
-
-exit 0
-;;
-
-
-
+case $2 in
+    
+    set-clone) #? Set a new Clone directory
+        newClone=$3
+        if [ -d "$newClone" ]; then
+            echo "Setting new clone directory!"
+            sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+        else
+            echo "Directory [ $newClone] does not exist"
+            # ; read -t 3
+            # cd $HOME || exit
+            # newClone=$(fzf)
+            # sed -i "/^CloneDir=/c\CloneDir=\"$newClone\"" "$HOME"/.config/hypr/scripts/globalcontrol.sh
+            exit 0
+        fi
+        cd "$newClone/Scripts" || exit
+        ./restore_lnk.sh
+        
+        
+        exit 0
+    ;;
+    
+    
+    
 esac
 
 
