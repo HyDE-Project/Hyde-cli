@@ -99,17 +99,16 @@ curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | 
 if [[ $latest_hyde_version != $hyde_version ]]; then
 cat << WARN
 
-░██╗░░░░░░░██╗░█████╗░██████╗░███╗░░██╗██╗███╗░░██╗░██████╗░██╗
-░██║░░██╗░░██║██╔══██╗██╔══██╗████╗░██║██║████╗░██║██╔════╝░██║
-░╚██╗████╗██╔╝███████║██████╔╝██╔██╗██║██║██╔██╗██║██║░░██╗░██║
-░░████╔═████║░██╔══██║██╔══██╗██║╚████║██║██║╚████║██║░░╚██╗╚═╝
-░░╚██╔╝░╚██╔╝░██║░░██║██║░░██║██║░╚███║██║██║░╚███║╚██████╔╝██╗
-░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░╚══╝░╚═════╝░╚═╝
+
+█░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀ █▀   ▄▀█ █░█ ▄▀█ █ █░░ ▄▀█ █▄▄ █░░ █▀▀
+█▄█ █▀▀ █▄▀ █▀█ ░█░ ██▄ ▄█   █▀█ ▀▄▀ █▀█ █ █▄▄ █▀█ █▄█ █▄▄ ██▄
+
+Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
 
 WARN
 
  print_prompt -r "Your Local Hyde version is outdated!"
- print_prompt -y "Exec: 'Hyde upgrade' to populate from upstream dots"
+ print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
 
 fi
 }
@@ -319,7 +318,7 @@ wallbash() { #? Toggle to use wallpaper accent themes .
         toggle) #? Cycles Wallbash [0] off [1] auto [2] dark [3] light
             "${scrDir}/wallbashtoggle.sh"
         ;;
-        mode) #? 
+        mode) #? Set wallbash mode. [0] [1] [2] [3] 
             shift
             num_val=$1 
             declare -A actionMap=(
