@@ -375,8 +375,6 @@ REVIEW
         Hyde reload
 }
 
-
-
 upgrade() {
   custom_apps="${CloneDir}/Scripts/custom_apps.lst"
 install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"

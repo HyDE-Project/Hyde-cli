@@ -151,10 +151,10 @@ restore() { #? Restore Options for Hyde
         # ;;
         Clone) #? Restores Dots from a Clone Repository. \n ﯧ Provide ~/path/to/clone/directory
         Manage_Configs "$1" "$2"
-        set_metadata
+        #? Meta is added inside Clone function
         rename_backup "_Hyde_restore_Clone"
         ;;
-        BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherrt pick a file/dir from a backup
+        BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
             # trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
