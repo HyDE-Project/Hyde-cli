@@ -390,7 +390,7 @@ fi
         # print_prompt -y "Is This Correct?"
       ./install.sh -i "${install_packages_list}"
         ./restore_fnt.sh
-        Restore_Config
+        Restore_Config && set_metadata
         Hyde reload
 }
 

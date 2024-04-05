@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 Function="${1}"
-if [ ! -f "/tmp/hyde_update_check" ] || [[ $(find "/tmp/hyde_update_check" -mmin +4320) ]]; then
+if [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(find "${cacheCtl}/hyde_update_check" -mmin +4320) ]]; then
     navigate_clone
     print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
     notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
@@ -16,7 +16,7 @@ if [ ! -f "/tmp/hyde_update_check" ] || [[ $(find "/tmp/hyde_update_check" -mmin
         # else
         #     echo "Please Check your Internet Connectivity"
     fi
-    touch "/tmp/hyde_update_check"
+    touch "${cacheCtl}/hyde_update_check"
 fi
 
 #??? Handle Syntax errors

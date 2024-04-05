@@ -87,7 +87,7 @@ set_branch
 }
 
 update() { #? Pull Updates From Hyde Repository
-trap 'rm -f "/tmp/hyde_update_check"' EXIT
+trap 'rm -f "${cacheCtl}/hyde_update_check"' EXIT
 repo_info
 get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
@@ -118,14 +118,13 @@ upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.confi
     repo_info
     ask_confirm
     Manage_Configs "upgrade"
-    set_metadata
     rename_backup "_Hyde_upgrade"
 }
 
-restore() { #? Restore Options for Hyde
+restore() { #? Restore Dots 
         navigate_clone
   case $1 in 
-        defaults) #? Restore Dots from '${CloneDir}'. 
+        Config) #? Restore Dots from default '${CloneDir}/Configs'. \n ﯦ  Only restores Configs
         shift
         box_me "Restoring Dots"
             repo_info
@@ -135,7 +134,7 @@ restore() { #? Restore Options for Hyde
         #  cat ${config_override}
         ask_confirm "${USER}"
         ./restore_fnt.sh
-        Restore_Config "/tmp/Hyde-$(id -u)-BAK"
+        Restore_Config --only "/tmp/Hyde-$(id -u)-BAK"
         set_metadata
         rename_backup "_Hyde_restore_defaults"
         Hyde reload
@@ -162,7 +161,7 @@ restore() { #? Restore Options for Hyde
         #     Manage_Configs "$1"
         #     rename_backup "_Hyde_restore_config"
         # ;;
-        link) #? Links a Clone Directory. Useful if you want to change your CloneDir
+        Link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
         set_branch            
         shift
@@ -595,9 +594,6 @@ reload() { #? Just Reload
     box_me "Reloading Dots"
     swwwallpaper.sh
 }
-
-
-
 
 
 
