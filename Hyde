@@ -327,7 +327,8 @@ wallbash() { #? Toggle to use wallpaper accent themes .
                 [2]="wallbash dark mode"
                 [3]="wallbash light mode"
             )
-            TgtScr="$scrDir/globalcontrol.sh"
+            # TgtScr="$scrDir/globalcontrol.sh"
+            TgtScr="${hydeConfDir}/hyde.conf"
 
             if [[ -n "${actionMap[$num_val]}" ]]; then
             sed -i "/^enableWallDcol/c\enableWallDcol=${num_val:-${enableWallDcol}}" "${TgtScr}"
