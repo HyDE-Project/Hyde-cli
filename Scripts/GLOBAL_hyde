@@ -265,7 +265,6 @@ echo "On branch: ${branch_name}"
 
 
 repo_info() {
-barLine
 navigate_clone
 print_prompt -g "CloneDirectory: " -n "${CloneDir}"
 print_prompt -g "Git URL: " -n "${git_url}"
@@ -273,7 +272,6 @@ print_prompt -g "Git Branch: " -n "${current_branch}"
 print_prompt -g "Hyde version: " -n "${hyde_version}"
 print_prompt -g "Modified: " -n "${modify_date}"
 print_prompt -g "Commit message: " -n "${commit_message}"
-barLine
 }
 
 
