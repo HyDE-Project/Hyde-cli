@@ -214,11 +214,11 @@ now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' '
        else
         cp "${ctlFile}" "${config_override}"
        fi       
-    clear
-    prev_restore_list "${config_override}"
+    # clear
+    # prev_restore_list "${config_override}"
     fi
 elif [[ $* == *"--custom"* ]] ;then
-prev_restore_list "${config_override}"
+# prev_restore_list "${config_override}"
 :
 fi
 read

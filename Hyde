@@ -23,6 +23,7 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 #! +----------------------------------------------------------------|
 
 man() { #? Show Manual 
+. "${meta_file}" 2> /dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
   manPage=$(
     echo -e "Hyde-cli: ${hyde_cli_version}\nHyde Clone Directory: ${CloneDir}\nUsage: Hyde [Function] [options]\n"
     grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
@@ -39,6 +40,20 @@ echo -e "${manPage}" \
 }
 
 version() { #? Hyde-cli Version
+
+cat << EOF
+       ░▒▒▒▒▒▒▒░░░
+     ░░▒▒▒▒▒▒░░░░▓▓          ____________
+    ░░▒▒▒▒▒░░░░░▓▓        //____________/
+   ░░░▒▒▒░░░░░░▓▓     _   _ _     _ ______
+   ░░░▒▒▒░░░░░▓▓▓▓▓▓ | | | | |   | |  ___/
+    ░░░▒▒░░░░▓▓   ▓▓ | |_| | |__/ /| |_____
+     ░░░▒▒░░▓▓   ▓▓   \__  |_____/ |______/
+       ░░▒▒▓▓   ▓▓  //____/
+EOF
+
+
+
 box_me -s "Hyde-cli Version" -c 77
 barLine
 cat /etc/hyde-cli/.hyde-cli.ver
@@ -77,15 +92,33 @@ repo_info
 get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
+latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
 print_prompt -y "Checking Hyde CLI updates..."
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
-set_metadata
+
+if [[ $latest_hyde_version != $hyde_version ]]; then
+cat << WARN
+
+░██╗░░░░░░░██╗░█████╗░██████╗░███╗░░██╗██╗███╗░░██╗░██████╗░██╗
+░██║░░██╗░░██║██╔══██╗██╔══██╗████╗░██║██║████╗░██║██╔════╝░██║
+░╚██╗████╗██╔╝███████║██████╔╝██╔██╗██║██║██╔██╗██║██║░░██╗░██║
+░░████╔═████║░██╔══██║██╔══██╗██║╚████║██║██║╚████║██║░░╚██╗╚═╝
+░░╚██╔╝░╚██╔╝░██║░░██║██║░░██║██║░╚███║██║██║░╚███║╚██████╔╝██╗
+░░░╚═╝░░░╚═╝░░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝╚═╝░░╚══╝░╚═════╝░╚═╝
+
+WARN
+
+ print_prompt -r "Your Local Hyde version is outdated!"
+ print_prompt -y "Exec: 'Hyde upgrade' to populate from upstream dots"
+
+fi
 }
 
 upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.config/hyde-cli/manage_cfg.lst'
     repo_info
     ask_confirm
     Manage_Configs "upgrade"
+    set_metadata
     rename_backup "_Hyde_upgrade"
 }
 
@@ -103,6 +136,7 @@ restore() { #? Restore Options for Hyde
         ask_confirm "${USER}"
         ./restore_fnt.sh
         Restore_Config "/tmp/Hyde-$(id -u)-BAK"
+        set_metadata
         rename_backup "_Hyde_restore_defaults"
         Hyde reload
         ;;
@@ -117,6 +151,7 @@ restore() { #? Restore Options for Hyde
         # ;;
         Clone) #? Restores Dots from a Clone Repository. \n ﯧ Provide ~/path/to/clone/directory
         Manage_Configs "$1" "$2"
+        set_metadata
         rename_backup "_Hyde_restore_Clone"
         ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherrt pick a file/dir from a backup

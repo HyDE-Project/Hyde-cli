@@ -144,7 +144,6 @@ set_metadata() {
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
     commit_message="$(git show -s --format='%B')"
-    
 cat << METADATA > "${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this
@@ -270,6 +269,8 @@ set_branch() {
 
 
 repo_info() {
+  [[ $* != *"--local"* ]] && 
+
     navigate_clone
     print_prompt -g "CloneDirectory: " -n "${CloneDir}"
     print_prompt -g "Git URL: " -n "${git_url}"
