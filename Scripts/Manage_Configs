@@ -248,25 +248,6 @@ all() {
       fi
 }
 
-# custom() {
-#   list_Backup
-# #       restore_Lister "BACKUP"
-# # cat ${config_override} | awk -F '|' '{printf "%s/%s    %s\n", $3, $4, $5 }' | fzf
-# selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
-# #echo "$selected_line"
-# awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ${config_override}
-# cat ${config_override}
-
-#         exit 0
-#         ./restore_cfg.sh "BAK" "" 
-#       bak=$(ls -td -- $BkpDir/* | head -n 1 )
-#       if [[ "$last_bak" != $bak ]]; then
-#         echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
-#         read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
-#         mv "$bak" "$bak--$note"
-#       fi
-# }
-
 revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
@@ -351,14 +332,6 @@ Hyde reload
 }
 
 Configs() {
-# if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-#     if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
-#     fi
-#     awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
-#     cat "${ctlFile}"
-#     print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile} first!"
-#     exit
-# fi
 print_prompt -y "Please review the list..."
 print_prompt -y "Control File:" -w "${ctlFile}"
 cat << REVIEW

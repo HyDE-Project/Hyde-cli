@@ -135,8 +135,13 @@ navigate_clone() {
 }
 
 set_metadata() {
-    CloneDir=${1:-${CloneDir}}
-    export CloneDir
+    if [[ -v CloneDir ]] && [[ "$(declare -p CloneDir)" == "declare -r"* ]]; then
+        echo "CloneDir is read-only and cannot be modified."
+    else
+        # Proceed with modifying CloneDir or setting it if it's not set
+        CloneDir=${1:-${CloneDir}}
+    fi
+    export CloneDir 
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
     current_branch=$(git branch --show-current)
