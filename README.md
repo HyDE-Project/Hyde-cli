@@ -70,9 +70,47 @@ sudo make update clean install
 
 # Usage
 
-Run: `Hyde man`
+Run: `Hyde man` for Usage.
 
- See [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE.md).
+---
+
+**Installation Instructions for Hyde**
+
+1. **Basic Installation**
+
+> [!Note]
+   > To achieve the best experience, I encourage you to perform a fresh install of Hyde.
+
+   - To install Hyde with default settings, simply run the following command in your terminal:
+     ```
+     Hyde-install
+     ```
+
+3. **Advanced Usage and if you installed Hyde first ** 
+   - For more control over the installation process, you can use the following options:
+
+     - **Custom Directory**
+       - To clone Hyde into a custom directory and then run the installation, use the `-d` or `--dir` option followed by the path to your desired directory. The default path is `/home/khing/.cache/hyde-cli/Hyde`.
+         ```
+         Hyde-install --dir /path/to/Clone/Hyde
+         ```
+
+     - **Specify Remote Repository**
+       - If you wish to clone Hyde from a different remote repository, use the `-g` or `--git` option followed by the URL of the repository. The default repository is `https://github.com/prasanthrangan/hyde`.
+         ```
+         Hyde-install --git https://gitclone/repo/link/
+         ```
+
+     - **Transfer Link to Clone Directory**
+       - To transfer the link to a clone directory, use the `-l` or `--link` option. By default, this option is set to `false`.
+         ```
+         Hyde-install --link
+         ```
+ > [!Important]
+>   If you have previously installed Hyde without using the CLI, you can still use the CLI to manage your installation. To do this, you can combine the --dir and -l options. The --dir option specifies the directory where Hyde is installed, and the -l option allows Hyde-CLI to remember this directory for future commands. This is particularly useful if you want Hyde-CLI to recognize your existing Hyde installation and manage it accordingly.
+
+``` Hyde-install --dir /path/to/existing/Hyde --link ```
+
 
 
 ## Contributing
