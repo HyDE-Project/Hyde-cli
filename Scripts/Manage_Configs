@@ -366,7 +366,7 @@ fi
         # print_prompt -y "Is This Correct?"
       ./install.sh -i "${install_packages_list}"
         ./restore_fnt.sh
-        Restore_Config && set_metadata
+        Restore_Config "/tmp/Hyde-$(id -u)-BAK"  && set_metadata
         Hyde reload
 }
 
