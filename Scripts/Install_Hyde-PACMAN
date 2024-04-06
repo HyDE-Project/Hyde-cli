@@ -3,8 +3,8 @@
 libDir=/usr/lib/hyde-cli
 # export PATH="$libDir:$PATH"
 
-readonly CloneDir=${1}
-export GIT=${2}
+# readonly CloneDir=${1}
+# export GIT=${2}
 
 if [ "${fresh}" = true ]; then
     
