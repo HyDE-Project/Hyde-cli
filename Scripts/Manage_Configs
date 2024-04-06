@@ -3,9 +3,9 @@
 . GLOBAL_hyde
 
 if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+    if [ ! -f ${CloneDir}/Scripts/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
     fi
-    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${CloneDir}/Scripts/restore_cfg.lst > ${ctlFile}
     cat "${ctlFile}"
     print_prompt -y "[Reminder] Be sure to Check the ${ctlFile} first!"
     exit
@@ -351,14 +351,14 @@ Hyde reload
 }
 
 Configs() {
-if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-    if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
-    fi
-    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
-    cat "${ctlFile}"
-    print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile} first!"
-    exit
-fi
+# if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+#     if [ ! -f ${ScriptDir}/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+#     fi
+#     awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${ScriptDir}/restore_cfg.lst > ${ctlFile}
+#     cat "${ctlFile}"
+#     print_prompt -y "[Reminder] Be sure to Modify the ${ctlFile} first!"
+#     exit
+# fi
 print_prompt -y "Please review the list..."
 print_prompt -y "Control File:" -w "${ctlFile}"
 cat << REVIEW
