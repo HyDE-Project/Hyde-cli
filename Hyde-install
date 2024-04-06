@@ -69,7 +69,7 @@ done
 [[ -n ${GIT} ]] && print_prompt -"Custom repository from: ${GIT}"
 
 # Set default values if not provided
-CloneDir=${CloneDir:-${HOME}/.cache/hyde-cli/Hyde}
+CloneDir=${CloneDir:-${HOME}/.cache/hyde/Hyde-Clone}
 #TODO Change this to the upstream
 # GIT=${GIT:-"https://github.com/prasanthrangan/hyde"}
 GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
