@@ -86,11 +86,12 @@ Run: `Hyde man` for Usage.
      Hyde-install
      ```
 
-3. **Advanced Usage and if you installed Hyde first ** 
+
+2. **Advanced Usage and if you installed Hyde first** 
    - For more control over the installation process, you can use the following options:
 
      - **Custom Directory**
-       - To clone Hyde into a custom directory and then run the installation, use the `-d` or `--dir` option followed by the path to your desired directory. The default path is `/home/khing/.cache/hyde-cli/Hyde`.
+       - To clone Hyde into a custom directory and then run the installation, use the `-d` or `--dir` option followed by the path to your desired directory. The default path is `$HOME/.cache/hyde-cli/Hyde`.
          ```
          Hyde-install --dir /path/to/Clone/Hyde
          ```
@@ -107,7 +108,7 @@ Run: `Hyde man` for Usage.
          Hyde-install --link
          ```
  > [!Important]
->   If you have previously installed Hyde without using the CLI, you can still use the CLI to manage your installation. To do this, you can combine the --dir and -l options. The --dir option specifies the directory where Hyde is installed, and the -l option allows Hyde-CLI to remember this directory for future commands. This is particularly useful if you want Hyde-CLI to recognize your existing Hyde installation and manage it accordingly.
+>   If you have previously installed Hyde without using the CLI, you can still use the CLI to manage your installation. To do this, you can combine the --dir and --link options. The --dir option specifies the directory where Hyde is installed, and the -l option allows Hyde-CLI to remember this directory for future commands. This is particularly useful if you want Hyde-CLI to recognize your existing Hyde installation and manage it accordingly.
 
 ``` Hyde-install --dir /path/to/existing/Hyde --link ```
 
