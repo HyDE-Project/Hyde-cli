@@ -85,7 +85,7 @@ if cd "${CloneDir}"/Scripts; then
     if [[ ${is_link} == true ]]; then
         echo -e "Hyde-cli will make ${CloneDir} your Clone Directory By restoring the links."
         set_branch
-
+        integrity_check
         set_metadata
     else
         install_distro
