@@ -127,6 +127,7 @@ if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia | wc -l)" -gt 0 ] &&
     ' >>${HOME}/.config/hypr/hyprland.conf
 fi
 
+cp -f "${hydeConfDir}/hyde.conf" "${BkpDir}/" 
 cp -f "$ctlFile" "$BkpDir/manage_cfg.lst"
 
 if [ "$restore_only" != "true" ]; then
