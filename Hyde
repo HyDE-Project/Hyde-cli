@@ -34,7 +34,10 @@ man() { #? Show Manual
     done 
   ) 
   box_me "Manual Page"
-echo -e "${manPage}" 
+echo -e "${manPage}" |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"        
 
 }
 
@@ -112,7 +115,7 @@ WARN
 fi
 }
 
-upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: ${ctlFile}
+upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '${ctlFile}'
     repo_info
     ask_confirm
     Manage_Configs "upgrade"

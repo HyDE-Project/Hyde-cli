@@ -20,7 +20,11 @@ if [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(find "${cacheCtl}/hyde_updat
 fi
 
 #??? Handle Syntax errors
-help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }')
+help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }'| \
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"        
+)
 
 if [ -z "$1" ]; then
     box_me -s "Hyde-cli $hyde_cli_version"
@@ -36,13 +40,7 @@ Parameters() { #TODO: Add conditionals here like 'case'
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case'; then
         # Define a variable for the tab characters
         man_params=$(awk "/^$Function\(\) \{/,/esac/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
-        
-        echo -e "${man_params}" |
-        sed "s|\${CloneDir}|$CloneDir|g" |
-        sed -e "s|\${HOME}|${HOME}|g" |
-        sed -e "s|\${ctlFile}|$ctlFile|g"
-
-        
+        echo -e "${man_params}"
     else
         :
     fi
