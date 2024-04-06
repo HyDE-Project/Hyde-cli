@@ -180,3 +180,5 @@ while read servChk; do
     fi
     
 done <"${scrDir}/system_ctl.lst"
+
+Hyde reload

@@ -144,9 +144,9 @@ done < "./restore_cfg.lst"
 }
 
 list_Marker_OVERWRITE() {
-OVERWRITE="$(echo -e "\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+OVERWRITE="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
 fzf -m --marker ' '\
- --prompt '[TAB] MARK to "OVERWRITE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
  --preview "Manage_Configs prev_restore_list ${config_override}"
  )"
@@ -155,9 +155,9 @@ awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 
 }
 
 list_Marker_SYNC() {
-SYNC="$(echo -e "\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+SYNC="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
  fzf -m --marker '' \
-  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
  --preview "Manage_Configs prev_restore_list ${config_override}" 
   )"
@@ -167,9 +167,9 @@ awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGI
 
 
 list_Marker_PRESERVE() {
-PRESERVE="$(echo -e "\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+PRESERVE="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
  fzf -m --marker ' '\
- --prompt '[TAB] MARK to "PRESERVE" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
  --preview "Manage_Configs prev_restore_list ${config_override}"
  )"
@@ -179,9 +179,9 @@ awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' '
 
 
 list_Marker_BACKUP() {
-BACKUP="$(echo -e "\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
+BACKUP="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
  fzf -m --marker ' '\
- --prompt '[TAB] MARK to "BACKUP" [Esc] Continue | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
  --preview "Manage_Configs prev_restore_list ${config_override}"
  )"
