@@ -1,16 +1,3 @@
-> [!Important]
-> * Users getting this error ``` You are using an older version of Hyde! Please see upstream to adjust your configuration. ```
->  Please follow instructions here https://github.com/prasanthrangan/hyprdots/issues/1053 \
->
-> * The ```Hyprdots``` cmd will be changed to ``` Hyde ``` command. But Hyprdots would still work for the meantime with Warning messages.
-
-
-> [!Note]
-> for AUR
-> hyprdote-ctl was renamed into hyde-cli-git. Please install the "-git" package
-> ``` yay -Sy hyde-cli-git ``` 
-
-
 # HyDE-CLI
 
 &ensp;[<kbd> <br> Read me <br> </kbd>](#read-me)&ensp;
@@ -30,6 +17,13 @@ Hyde is stable, but this CLI is designed to be an active helper to some issues o
 These scripts may alter or mess up your configurations. Please use them at your discretion.
 
 # Installation
+
+You can install the package by running this command.
+
+```
+curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
+```
+See below, other ways to install ``` Hyde-cli```
 
 ### Arch Linux
 
