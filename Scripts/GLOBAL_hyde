@@ -8,8 +8,8 @@ rename_backup() {
     if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-$1"
     fi
-cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
-
+    print_prompt -y "Backup Directory: " -w "$bak-$1"
+    [ -e "$install_packages_list" ] && cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
 }
 
 print_prompt() {
@@ -411,7 +411,7 @@ export meta_file="${cacheCtl}/hyde.meta"
 
 install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 export install_packages_list
-export ctlFile="${ctlDir}/manage_cfg.lst"
+export ctlFile="${cacheCtl}/manage_cfg.lst" #! Will use cacheDir
 config_override="/tmp/Hyde-${UID}-BAK$(basename "${ctlFile}")"
 export config_override
 

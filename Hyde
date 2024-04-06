@@ -60,7 +60,7 @@ box_me -s "Hyde-cli Version" -c 77
 barLine
 cat /etc/hyde-cli/.hyde-cli.ver
 barLine
-{ . "${meta_file}" 2> /dev/null  && box_me -s "Hyde Version" -c 154 && barLine ; repo_info ; barLine ;} || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+{ . "${meta_file}" 2> /dev/null  && box_me -s "Hyde Version" -c 154 && barLine ; repo_info ; barLine ; inform_updates ;} || print_prompt -r "Looks like you did not run 'Hyde-install'! "
 }
 
 systeminfo() { #? System Information
@@ -94,25 +94,10 @@ repo_info
 get_aurhlpr
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
-latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
 print_prompt -y "Checking Hyde CLI updates..."
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
 
-if [[ $latest_hyde_version != $hyde_version ]]; then
-cat << WARN
-
-
-█░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀ █▀   ▄▀█ █░█ ▄▀█ █ █░░ ▄▀█ █▄▄ █░░ █▀▀
-█▄█ █▀▀ █▄▀ █▀█ ░█░ ██▄ ▄█   █▀█ ▀▄▀ █▀█ █ █▄▄ █▀█ █▄█ █▄▄ ██▄
-
-Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
-
-WARN
-
- print_prompt -r "Your Local Hyde version is outdated!"
- print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
-
-fi
+inform_updates
 }
 
 upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '${ctlFile}'
@@ -158,7 +143,7 @@ restore() { #? Restore Dots
             # trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
-        # Configs) #? Resoring the Configs declared on the file \n  file: '~/.config/hyde-cli/manage_cfg.lst' \n+restores font \n+restores configs \n+restore links 
+        # Configs) #? Restoring the Configs declared on the file \n  file: '${ctlFile}' \n+restores font \n+restores configs \n+restore links 
         #     Manage_Configs "$1"
         #     rename_backup "_Hyde_restore_config"
         # ;;

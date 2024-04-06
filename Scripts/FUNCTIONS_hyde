@@ -108,4 +108,23 @@ check_file_change() {
     fi
 }
 
+inform_updates(){
+latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
+if [[ $latest_hyde_version != $hyde_version ]]; then
+cat << WARN
+
+
+█░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀ █▀   ▄▀█ █░█ ▄▀█ █ █░░ ▄▀█ █▄▄ █░░ █▀▀
+█▄█ █▀▀ █▄▀ █▀█ ░█░ ██▄ ▄█   █▀█ ▀▄▀ █▀█ █ █▄▄ █▀█ █▄█ █▄▄ ██▄
+
+Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
+
+WARN
+
+ print_prompt -r "Your Local Hyde version is outdated!"
+ print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
+
+fi
+}
+
 eval "$(declare -F | sed -e 's/-f /-fx /')"
