@@ -34,9 +34,8 @@ man() { #? Show Manual
     done 
   ) 
   box_me "Manual Page"
-echo -e "${manPage}" \
-| sed "s|\${CloneDir}|$CloneDir|g" \
-| sed -e "s|\${HOME}|${HOME}|g"
+echo -e "${manPage}" 
+
 }
 
 version() { #? Hyde-cli Version
@@ -113,7 +112,7 @@ WARN
 fi
 }
 
-upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '~/.config/hyde-cli/manage_cfg.lst'
+upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: ${ctlFile}
     repo_info
     ask_confirm
     Manage_Configs "upgrade"

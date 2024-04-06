@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-CHECK grimblast wl-screenrec swappy
+package_check grimblast swappy
 
 if [ -z "${XDG_PICTURES_DIR}" ] ; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
@@ -21,7 +21,7 @@ STOP() {
 OPTION="${1}"
 PASS="${@:2}"
 logFile="/tmp/hyprdots-${UID}-screencap.log"
-cacheFile="${ctlDir}/run_screencap"
+cacheFile="${cacheCtl}/screecap.meta"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
@@ -38,7 +38,7 @@ focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
 first_setup() {
     if [ ! -f "${cacheFile}" ]; then
-        
+    package_check wl-screenrec
         if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then CHECK libva-intel-driver intel-media-driver ; fi
         if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then CHECK libva-mesa-driver ; fi
         
@@ -72,17 +72,19 @@ first_setup() {
                 echo "${vaMsg}"
                 echo "screen_recorder=\"wf-recorder\""
             } >> "${cacheFile}"
-            CHECK wf-recorder
+            package_check wf-recorder
         fi
         sleep 3
         # Restart the script
-        exec "${0}" "${*}"
+        # exec "${0}" "${*}"
+        exit
     else
         . "${cacheFile}"
     fi
 }
 
 warn_dup() {
+    first_setup
     instance=$(pgrep "${screen_recorder}" | wc -l)
     if [ "${instance}" -ne  0 ]; then
         notify-send -a "Screencap Warning! ${instance} instances running!" " ${screen_recorder} recording at ${focus_monitor}" -i "${temp_screenshot}" -t 900
@@ -119,7 +121,7 @@ cleaNotify () {
     fi
 }
 
-first_setup "${*}"
+# first_setup "${*}"
 
 if [ "${OPTION}" = "--stop" ]; then
     STOP
@@ -164,7 +166,7 @@ case ${OPTION} in
         :
     ;;
     --reset) #?  Reinitialize screencap
-        rm "${cacheFile}"
+        rm -f "${cacheFile}"
     ;;
     GUI) : ;;
     *)  # invalid option

@@ -39,7 +39,9 @@ Parameters() { #TODO: Add conditionals here like 'case'
         
         echo -e "${man_params}" |
         sed "s|\${CloneDir}|$CloneDir|g" |
-        sed -e "s|\${HOME}|${HOME}|g"
+        sed -e "s|\${HOME}|${HOME}|g" |
+        sed -e "s|\${ctlFile}|$ctlFile|g"
+
         
     else
         :

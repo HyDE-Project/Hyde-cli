@@ -8,7 +8,7 @@ rename_backup() {
     if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-$1"
     fi
-echo "$install_packages_list" "$bak-$1/install_packages_list"
+cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
 
 }
 
@@ -387,20 +387,33 @@ case_help() {
     sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
 
-#
+# PATH
 export libDir="$(dirname "$(realpath "$0")")"
 export PATH=${PATH}:${libDir}
 
+#
 export etcDir="/etc/hyde-cli"
 
+# Config
 export ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-export ctlDir="${ConfDir}/hyde-cli"
+export ctlDir="${ConfDir}/hyde"
 export hydeDir="${ConfDir}/hyde"
 export BkpDir="${ConfDir}/cfg_backups"
 export wallbashDir="${hydeDir}/wallbash"
 export themeDir="${hydeDir}/themes"
-export cacheCtl="${HOME}/.cache/hyde-cli"
+
+# Cache-dir
+export cacheCtl="${HOME}/.cache/hyde"
 export meta_file="${cacheCtl}/hyde.meta"
+
+#! Temporary
+[ -e "${HOME}/.cache/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
+
+install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
+export install_packages_list
+export ctlFile="${ctlDir}/manage_cfg.lst"
+config_override="/tmp/Hyde-${UID}-BAK$(basename "${ctlFile}")"
+export config_override
 
 scrDir=""$(dirname $(which globalcontrol.sh 2> /dev/null ) 2> /dev/null )""
 [ ! -e "${scrDir}/globalcontrol.sh" ] && export scrDir="$HOME/.local/share/bin/"
