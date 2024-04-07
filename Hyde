@@ -110,7 +110,7 @@ upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '${ctlFil
 restore() { #? Restore Dots 
         navigate_clone
   case $1 in 
-        Config) #? Restore Dots from default '${CloneDir}/Configs'. \n ﯦ  Only restores Configs
+        Config) #? Only restores Dots from default '${CloneDir}/Configs'. 
         shift
         box_me "Restoring Dots"
             repo_info
@@ -122,7 +122,7 @@ restore() { #? Restore Dots
         ./restore_fnt.sh
         Restore_Config --only "/tmp/Hyde-$(id -u)-BAK"
         set_metadata
-        rename_backup "_Hyde_restore_defaults"
+        rename_backup "_Hyde_restore_Configs"
         Hyde reload
         ;;
         # custom)
@@ -153,6 +153,7 @@ restore() { #? Restore Dots
         shift
         new_CloneDir=${1}  
         [[ -z "${1}" ]] && new_CloneDir=${CloneDir} && print_prompt -r "Missing /path/to/CloneDir" 
+        integrity_check
         print_prompt -y "\n[LINKING]:" -w "${CloneDir}"     
         ask_confirm
         set_metadata "${new_CloneDir}"

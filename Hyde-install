@@ -3,6 +3,8 @@
 libDir=/usr/lib/hyde-cli
 export PATH="$libDir:$PATH"
 
+export is_fresh_install=true
+
 . GLOBAL_hyde
 
 #? One Time Set up on Terminal.
@@ -53,7 +55,7 @@ Please run: 'Hyde-install'                                Install Hyde (Defaults
 
 Advanced usage: [Hyde-install] --[options]
         -d|--dir /path/to/Clone/Hyde                       Clone Hyde in a Custom path then run installation.
-                                                                    Default: '${HOME}/.cache/hyde-cli/Hyde'
+                                                                    Default: '${HOME}/.cache/hyde/Hyde'
         -g|--git https://gitclone/repo/link/                     Remote Repository link to be cloned
                                                                     Default: 'https://github.com/prasanthrangan/hyde'
         -l|--link                                                Flag to transfer the link to a Clone Directory
