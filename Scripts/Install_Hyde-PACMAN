@@ -158,8 +158,8 @@ rm "${install_packages_list}"
 # "${scrDir}/restore_fnt.sh"
 # "${scrDir}/restore_cfg.sh"
 # cat ./restore_cfg.lst
-./restore_fnt.sh
-Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${new_CloneDir}/Configs
+./restore_fnt.sh || true
+Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
 #---------------------#
 # post-install script #
@@ -182,5 +182,3 @@ while read servChk; do
     fi
     
 done <"${scrDir}/system_ctl.lst"
-
-Hyde reload

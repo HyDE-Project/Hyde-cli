@@ -580,7 +580,8 @@ inject() { #? User/Device specific scripts that might be useful.
 
 reload() { #? Just Reload 
     box_me "Reloading Dots"
-    swwwallpaper.sh
+        "${scrDir}/swwwallcache.sh"
+    "${scrDir}/swwwallpaper.sh"
 }
 
 

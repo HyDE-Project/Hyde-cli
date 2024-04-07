@@ -24,13 +24,12 @@ install_distro() {
             # Add the commands for other distributions here
         ;;
     esac
-    [ $? -eq 0 ] && set_metadata "${newCloneDir}"
 }
 
 # Variables
 export install_packages_list="/tmp/hyde-cli-$(id -u)-temporary-apps"
 export barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
-export cacheCtl="${HOME}/.cache/hyde-cli"
+export cacheCtl="${HOME}/.cache/hyde"
 export meta_file="${cacheCtl}/hyde.meta"
 
 is_link=false
@@ -86,7 +85,6 @@ if cd "${newCloneDir}"/Scripts; then
         echo -e "Hyde-cli will make ${newCloneDir} your Clone Directory By restoring the links."
         set_branch
         integrity_check 
-        set_metadata "${newCloneDir}"
         print_prompt -y "Successfully Migrated the Clone Directory: ${newCloneDir}"
     else
         install_distro 
@@ -94,3 +92,7 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
+export CloneDir=${newCloneDir}
+set_metadata "${CloneDir}"
+systemctl restart sddm
+Hyde reload

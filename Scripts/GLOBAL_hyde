@@ -181,6 +181,7 @@ set_metadata() {
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
     commit_message="$(git show -s --format='%B')"
+touch "${meta_file}"
 cat << METADATA > "${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this
@@ -407,7 +408,7 @@ export cacheCtl="${HOME}/.cache/hyde"
 export meta_file="${cacheCtl}/hyde.meta"
 
 #! Temporary
-[ -e "${HOME}/.cache/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
+[ -e "${HOME}/.cache/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde/hyde.meta" "${meta_file}"
 
 install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 export install_packages_list
