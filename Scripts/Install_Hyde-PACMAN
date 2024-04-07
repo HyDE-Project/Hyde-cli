@@ -163,7 +163,7 @@ Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
 
     # If it's not true, execute the following commands
-    ${scrDir}/swwwallcache.sh -f
+    $HOME/.local/share/bin/swwwallcache.sh -f
     ./restore_lnk.sh
 #---------------------#
 # post-install script #
