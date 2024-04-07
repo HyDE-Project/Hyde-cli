@@ -69,7 +69,7 @@ ask_confirm() {
                 elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
                 return 1
             else
-                echo "What?"
+                echo "[Y]es or [N]o?"
             fi
         done
     else
@@ -117,6 +117,40 @@ check_Ping() {
     fi
 }
 
+set_branch() {
+    check_Ping
+    print_prompt -w "Fetching Upstream"
+    if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+        git remote set-branches origin '*'
+    fi
+    git fetch --all
+    git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+    [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
+    if [[ $git_branch == *"*"* ]]; then
+    export current_branch="${git_branch//\* /}"
+        print_prompt -y "Already in branch: ${current_branch}"
+        return 1
+    else
+        # Extract the branch name without the remote prefix and trim leading whitespace
+    export current_branch=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        # Switch to the selected branch
+        git checkout "${current_branch}"
+        echo "On branch: ${current_branch}"
+    fi
+}
+
+repo_info() {
+  [[ $* != *"--local"* ]] && 
+
+    navigate_clone
+    print_prompt -g "CloneDirectory: " -n "${CloneDir}"
+    print_prompt -g "Git URL: " -n "${git_url}"
+    print_prompt -g "Git Branch: " -n "${current_branch}"
+    print_prompt -g "Hyde version: " -n "${hyde_version}"
+    print_prompt -g "Modified: " -n "${modify_date}"
+    print_prompt -g "Commit message: " -n "${commit_message}"
+}
+
 # shellcheck disable=SC2120
 navigate_clone() {
     if ! source "${meta_file}"; then
@@ -135,12 +169,8 @@ navigate_clone() {
 }
 
 set_metadata() {
-    if [[ -v CloneDir ]] && [[ "$(declare -p CloneDir)" == "declare -r"* ]]; then
-        echo "CloneDir is read-only and cannot be modified."
-    else
-        # Proceed with modifying CloneDir or setting it if it's not set
-        CloneDir=${1:-${CloneDir}}
-    fi
+    print_prompt -y "Setting metadata"
+    CloneDir=${1:-${CloneDir}}
     export CloneDir 
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
@@ -252,41 +282,6 @@ do_contain() {
         print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates"
     fi
 }
-
-set_branch() {
-    check_Ping
-    print_prompt -w "Fetching updates"
-    if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
-        git remote set-branches origin '*'
-    fi
-    git fetch --all
-    git_branch=$(git branch -a | fzf --prompt='Choose a branch')
-    [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
-    if [[ $git_branch == *"*"* ]]; then
-        print_prompt -y "Already in branch: ${git_branch}"
-        return 1
-    else
-        # Extract the branch name without the remote prefix and trim leading whitespace
-        branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
-        # Switch to the selected branch
-        git checkout "${branch_name}"
-        echo "On branch: ${branch_name}"
-    fi
-}
-
-
-repo_info() {
-  [[ $* != *"--local"* ]] && 
-
-    navigate_clone
-    print_prompt -g "CloneDirectory: " -n "${CloneDir}"
-    print_prompt -g "Git URL: " -n "${git_url}"
-    print_prompt -g "Git Branch: " -n "${current_branch}"
-    print_prompt -g "Hyde version: " -n "${hyde_version}"
-    print_prompt -g "Modified: " -n "${modify_date}"
-    print_prompt -g "Commit message: " -n "${commit_message}"
-}
-
 
 rofi_pos() {
     

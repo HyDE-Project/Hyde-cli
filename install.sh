@@ -37,7 +37,7 @@ esac
 
 mkdir -p "${clone_hyde_cli}"
 rm -fr "${clone_hyde_cli}"
-git clone https://github.com/kRHYME7/Hyprdots-ctl "${clone_hyde_cli}"
+git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
 cd "${clone_hyde_cli}" || exit
 
 if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then

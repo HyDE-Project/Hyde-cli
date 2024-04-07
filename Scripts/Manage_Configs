@@ -2,15 +2,6 @@
 
 . GLOBAL_hyde
 
-if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
-    if [ ! -f ${CloneDir}/Scripts/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
-    fi
-    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${CloneDir}/Scripts/restore_cfg.lst > ${ctlFile}
-    cat "${ctlFile}"
-    print_prompt -y "[Reminder] Be sure to Check the ${ctlFile} first!"
-    exit
-fi
-
 prev_restore_list() {
 cat << REVIEW 
 "Please review the list..."
@@ -110,7 +101,7 @@ list_Backup() {
 
 restore_Lister() { #* Check the content of a Directory and make a restore list
 # Define the backup directory
-restore_directory="$1"
+restore_directory="${1:-${CloneDir}/Configs}"
 # echo "$restore_directory"
 : > "${config_override}"
 # Read the file line by line
@@ -138,7 +129,7 @@ else
  fi
 fi
   done
-done < "./restore_cfg.lst"
+done < "$(dirname ${restore_directory})/Scripts/restore_cfg.lst"
 # echo "Done: $restore_directory"
 # trap 'rm -f ${config_override}' EXIT
 }
@@ -218,6 +209,7 @@ now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' '
     fi
 read
 elif [[ $* == *"--custom"* ]] && [ -e "${config_override}" ];then
+#? --custom will always asume that config_override is already present
 prev_restore_list "${config_override}"
 fi
 
@@ -370,5 +362,12 @@ fi
         Hyde reload
 }
 
+if [ ! -f "${ctlFile}" ] ; then print_prompt -r "ERROR : '${ctlFile}' does not exist..." -y "\nFetching from $CloneDir" 
+    if [ ! -f ${CloneDir}/Scripts/restore_cfg.lst ] ; then  print_prompt -r "[ERROR] ${CloneDir} did not contain any ./restore_cfg.lst File!"  ; exit 1
+    fi
+    awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${CloneDir}/Scripts/restore_cfg.lst > ${ctlFile}
+    restore_Lister "${CloneDir}/Configs"
+    cat "${ctlFile}"
+fi
 
 "$@"

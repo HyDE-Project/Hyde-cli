@@ -14,17 +14,17 @@ install_distro() {
     
     case "${distro_ID}" in
         "fedora")
-            Install_Hyde-DNF "${CloneDir}" "${GIT}"
+            Install_Hyde-DNF "${newCloneDir}" "${GIT}"
         ;;
         "arch")
-            Install_Hyde-PACMAN "${CloneDir}" "${GIT}"
+            Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
         ;;
         *)
             echo "This is neither Fedora nor Arch"
             # Add the commands for other distributions here
         ;;
     esac
-    set_metadata
+    [ $? -eq 0 ] && set_metadata "${newCloneDir}"
 }
 
 # Variables
@@ -37,7 +37,7 @@ is_link=false
 while (("$#")); do
     case "$1" in
         -d | --dir)
-            CloneDir="$2"
+            newCloneDir="$2"
             shift 2
         ;;
         -l | --link)
@@ -66,32 +66,30 @@ HANDLE_ERROR
     esac
 done
 
-[[ -n ${CloneDir} ]] && print_prompt -y "Custom Clone Directory: ${CloneDir}"
-[[ ${is_link} == true ]] && print_prompt - "Linked to Custom Clone Directory: ${CloneDir}"
+[[ -n ${newCloneDir} ]] && print_prompt -y "Custom Clone Directory: ${newCloneDir}"
+[[ ${is_link} == true ]] && print_prompt - "Linked to Custom Clone Directory: ${newCloneDir}"
 [[ -n ${GIT} ]] && print_prompt -"Custom repository from: ${GIT}"
 
 # Set default values if not provided
-CloneDir=${CloneDir:-${HOME}/.cache/hyde/Hyde-Clone}
+newCloneDir=${newCloneDir:-${HOME}/.cache/hyde/Hyde-Clone}
 #TODO Change this to the upstream
 # GIT=${GIT:-"https://github.com/prasanthrangan/hyde"}
 GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
 
-readonly CloneDir
-readonly GIT
-export CloneDir
+export newCloneDir
 export GIT
 
 
-if cd "${CloneDir}"/Scripts; then
+if cd "${newCloneDir}"/Scripts; then
     print_prompt -m "[*] " -y "Using existing directory."
     if [[ ${is_link} == true ]]; then
-        echo -e "Hyde-cli will make ${CloneDir} your Clone Directory By restoring the links."
+        echo -e "Hyde-cli will make ${newCloneDir} your Clone Directory By restoring the links."
         set_branch
         integrity_check 
-        set_metadata
-        print_prompt -y "Successfully Migrated the Clone Directory: ${CloneDir}"
+        set_metadata "${newCloneDir}"
+        print_prompt -y "Successfully Migrated the Clone Directory: ${newCloneDir}"
     else
-        install_distro
+        install_distro 
     fi
 else
     install_distro --fresh

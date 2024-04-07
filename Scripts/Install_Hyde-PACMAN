@@ -29,61 +29,64 @@ HAVE A GOOD DAY!
 Visit: https://github.com/kRHYME7/Hyde-cli for more information.
 ${barLine}
 
-Clone Directory: ${CloneDir}
+Clone Directory: ${newCloneDir}
 Git Repository: ${GIT}
 
 GREET
-    
     ask_confirm
-    git clone --depth 1 "${GIT}" "${CloneDir}"
-    
+    git clone --depth 1 "${GIT}" "${newCloneDir}"
 fi
 
 if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf ; then
     sudo ${libDir}/Install_ChaoticAUR --install fresh
 fi
 
-cd "${CloneDir}"/Scripts || exit 0
+{ [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 0
 set_branch
-integrity_check "${CloneDir}"
-
-echo "Clone Directory: ${CloneDir}"
-echo "Git URL: $(git remote get-url origin)"
-echo "Git Branch: ${branch}"
-
-custom_apps="${CloneDir}/Scripts/custom_apps.lst"
-
-if [[ -e ${custom_apps} ]]; then
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
-    echo -e "Optional packages loaded:"
-    cat "${install_packages_list}"
-fi
+integrity_check "${newCloneDir}"
 
 export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
 export ctlFile="${cacheCtl}/manage_cfg.lst"
-[ -e $ctlFile ] && cp $ctlFile $config_override
-[ ! -e $ctlFile ] && Manage_Configs restore_Lister "OVERWRITE"
-Manage_Configs list_Marker "${CloneDir}" --custom
-ask_confirm "${USER}"
-# trap 'rm -f ./install_pkg.lst' EXIT
-#  ./install.sh "${install_packages_list}"
 
-#--------------------------------#
-# import variables and functions #
-#--------------------------------#
-scrDir="${CloneDir}/Scripts"
-source "${scrDir}/global_fn.sh" || true
+echo "Clone Directory: ${newCloneDir}"
+echo "Git URL: $(git remote get-url origin)"
+echo "Git Branch: '${current_branch}'"
+
+#? Source Fn 
+scrDir="${newCloneDir}/Scripts"
+source "${scrDir}/global_fn.sh"
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
+export CloneDir=${newCloneDir}
+
+#? Nvidia
+fix_nvidia=false
+print_prompt -y "Would you like Hyde to pre-configure your nvidia drivers?"
+if nvidia_detect && ask_confirm "Yy" ;then export fix_nvidia=true ; fi 
+
+#? Add Custom Apps
+custom_apps="${scrDir}/custom_apps.lst"
+cust_pkg="/tmp/hyde-ctl-$(id -u)-custom-app-list"
+if [[ -e ${custom_apps} ]]; then
+    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
+    echo -e "Optional packages loaded:"
+    cat "${cust_pkg}"
+fi
+
+#? Manage Configs
+[ -e $ctlFile ] && cp $ctlFile $config_override
+[ ! -e $ctlFile ] && Manage_Configs restore_Lister
+Manage_Configs list_Marker --custom
+ask_confirm "${USER}"
+
 "${scrDir}/install_pre.sh"
 
 #----------------------#
 # prepare package list #
 #----------------------#
-shift $((OPTIND - 1))
-cust_pkg=$1
+# shift $((OPTIND - 1))
 cp "${scrDir}/custom_hypr.lst" "${install_packages_list}"
 
 if [ -f "${cust_pkg}" ] && [ ! -z "${cust_pkg}" ]; then
@@ -93,7 +96,9 @@ fi
 #--------------------------------#
 # add nvidia drivers to the list #
 #--------------------------------#
-if nvidia_detect; then
+
+if [ ${fix_nvidia} = true ]; then
+    print_prompt -g "[nvidia]" -w "Configuring nvidia drivers"
     cat /usr/lib/modules/*/pkgbase | while read krnl; do
         echo "${krnl}-headers" >>"${install_packages_list}"
     done
@@ -137,9 +142,12 @@ if ! chk_list "myShell" "${shlList[@]}"; then
     echo "${myShell}" >>"${install_packages_list}"
 fi
 
+
 #--------------------------------#
 # install packages from the list #
 #--------------------------------#
+
+# cat  "${install_packages_list}"
 "${scrDir}/install_pkg.sh" "${install_packages_list}"
 rm "${install_packages_list}"
 
@@ -151,7 +159,7 @@ rm "${install_packages_list}"
 # "${scrDir}/restore_cfg.sh"
 # cat ./restore_cfg.lst
 ./restore_fnt.sh
-Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
+Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${new_CloneDir}/Configs
 
 #---------------------#
 # post-install script #
