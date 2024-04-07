@@ -96,3 +96,4 @@ export CloneDir=${newCloneDir}
 set_metadata "${CloneDir}"
 systemctl restart sddm
 Hyde reload
+
