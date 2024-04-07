@@ -425,7 +425,7 @@ scrDir=""$(dirname $(which globalcontrol.sh 2> /dev/null ) 2> /dev/null )""
 [ ! -e "${scrDir}/globalcontrol.sh" ] && [[ ${is_fresh_install} != true ]] && handle_error "Scripts for HyDE not detected at ${scrDir}"
 
 export scrDir
-. $scrDir/globalcontrol.sh
+[[ ${is_fresh_install} != true ]] && . $scrDir/globalcontrol.sh
 
 #TODO Source the metadata here
 
@@ -437,7 +437,7 @@ make_dir=(
     "${ctlDir}"
 )
 for dir in "${make_dir[@]}"; do
-    if [[ ! -d "${dir}" ]]; then
+    if [[ ! -d "${dir}" ]] && [[ -n "${dir}" ]]; then
         mkdir -p "${dir}"
         echo "Hyde-cli created a directory: ${dir}"
     fi
