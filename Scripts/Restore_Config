@@ -122,7 +122,7 @@ while read lst; do
     
 done <"${ctlFile}"
 
-if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia | wc -l)" -gt 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ]; then
+if [ "$(lspci -k | grep -A 2 -E "(VGA|3D)" | grep -i nvidia | wc -l)" -ne 0 ] && [ $(grep '^source = ~/.config/hypr/nvidia.conf' ${HOME}/.config/hypr/hyprland.conf | wc -l) -eq 0 ]; then
     echo -e 'source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia
     ' >>${HOME}/.config/hypr/hyprland.conf
 fi

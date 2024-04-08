@@ -517,8 +517,7 @@ inject() { #? User/Device specific scripts that might be useful.
 
 reload() { #? Just Reload 
     box_me "Reloading Dots"
-        "${scrDir}/swwwallcache.sh"
-    "${scrDir}/swwwallpaper.sh"
+{   [ -n "$hydeTheme" ] && "${scrDir}/themeswitch.sh" -s "$hydeTheme" ;} || "${scrDir}/swwwallcache.sh"
 }
 
 
