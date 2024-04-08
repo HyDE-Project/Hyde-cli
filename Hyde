@@ -9,7 +9,7 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 # . DEVEL
 . GLOBAL_hyde 
 . FUNCTIONS_hyde 
-
+initiate_hyde_command
 
 #! +----------------------------------------------------------------|
 #? Add functions below this section.
@@ -125,28 +125,14 @@ restore() { #? Restore Dots
         rename_backup "_Hyde_restore_Configs"
         Hyde reload
         ;;
-        # custom)
-        # selected_line=$(cat ./restore_cfg.lst | awk -F '|' '{printf "%s|%s\n", $3, $4 }' | fzf -m --marker='Y' )
-        # awk -F'|' -v lines="$selected_line" 'BEGIN{split(lines, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "Y"; print; next} {$1 = "N"; print}}' ./restore_cfg.lst > ${config_override}
-        # trap 'rm -f ${config_override}' EXIT
-        # ./restore_cfg.lst.sh "BAK" "" ; bak=$(ls -td -- $BkpDir/* | head -n 1 )
-        # echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
-        # read user_note; user_note=$(echo "$user_note" | tr ' ' '_'); note=${user_note:-"All"}
-        # mv "$bak" "$bak--$note"
-        # ;;
         Clone) #? Restores Dots from a Clone Repository. \n ﯧ Provide ~/path/to/clone/directory
         Manage_Configs "$1" "$2"
         #? Meta is added inside Clone function
         rename_backup "_Hyde_restore_Clone"
         ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
-            # trap PreserveCloneDir EXIT
             Manage_Configs "${@}"
         ;;
-        # Configs) #? Restoring the Configs declared on the file \n  file: '${ctlFile}' \n+restores font \n+restores configs \n+restore links 
-        #     Manage_Configs "$1"
-        #     rename_backup "_Hyde_restore_config"
-        # ;;
         Link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
         set_branch            
@@ -165,7 +151,6 @@ restore() { #? Restore Dots
 
 backup() { #? Backing up commands 
         navigate_clone
-            # trap PreserveCloneDir EXIT
     case $1 in 
         all) #? Backs up the current configuration.
             Manage_Configs "$1"
@@ -393,55 +378,7 @@ shell() { #? Shell commands
 
 case $1 in 
         select) #? Shell selector
-#TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
-        navigate_clone
-        myShell="$(echo -e "zsh\nfish" | fzf --prompt='Select shell: ')"
-        echo "${myShell}"
-
-        if [ "${myShell}" == "zsh" ];then       
-            CHECK zsh oh-my-zsh-git 
-            # add zsh plugins            
-                # set variables
-                Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
-                Zsh_Path="/usr/share/oh-my-zsh"
-                Zsh_Plugins="$Zsh_Path/custom/plugins"
-                Fix_Completion=""
-            
-                # generate plugins from list
-                while read r_plugin
-                do
-                    z_plugin=$(echo $r_plugin | awk -F '/' '{print $NF}')
-                    if [ "${r_plugin:0:4}" == "http" ] && [ ! -d $Zsh_Plugins/$z_plugin ] ; then
-                        sudo git clone $r_plugin $Zsh_Plugins/$z_plugin
-                    fi
-                    if [ "$z_plugin" == "zsh-completions" ] && [ `grep 'fpath+=.*plugins/zsh-completions/src' $Zsh_rc | wc -l` -eq 0 ]; then
-                        Fix_Completion='\nfpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
-                    else
-                        w_plugin=$(echo ${w_plugin} ${z_plugin})
-                    fi
-                done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
-            
-                # update plugin array in zshrc
-                print_prompt -y "[SHELL]" -w " intalling plugins (${w_plugin})"
-                sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
-        
-        elif [ "${myShell}" == "fish" ];then   
-            config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"    
-            CHECK fish lsd starship
-            (
-            echo 'S|${HOME}/.config|fish|fish'  
-            echo 'S|${HOME}/.config|lsd|lsd'
-            ) > ${config_override}
-            Restore_Config --only "/tmp/Hyde-$(id -u)-BAK"
-        fi
-        # set shell
-        [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
-        if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]] ; then
-            print_prompt -y "[SHELL] " -w "changing shell to ${myShell}..."
-            chsh -s "$(which ${myShell})"
-        else
-            print_prompt -g "[SKIP]" -w "${myShell} is already set as shell..."
-        fi            
+        shell_select
         ;;
 
         *)Parameters "$Function" 

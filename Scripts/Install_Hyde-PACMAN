@@ -45,16 +45,16 @@ fi
 set_branch
 integrity_check "${newCloneDir}"
 
-export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
-export ctlFile="${cacheCtl}/manage_cfg.lst"
+# export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
+# export ctlFile="${cacheCtl}/manage_cfg.lst"
 
 echo "Clone Directory: ${newCloneDir}"
 echo "Git URL: $(git remote get-url origin)"
 echo "Git Branch: '${current_branch}'"
 
-#? Source Fn 
-scrDir="${newCloneDir}/Scripts"
-source "${scrDir}/global_fn.sh"
+#? Source Fn
+scriptDir="${newCloneDir}/Scripts"
+source "${scriptDir}/global_fn.sh"
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
@@ -64,10 +64,10 @@ export CloneDir=${newCloneDir}
 #? Nvidia
 fix_nvidia=false
 print_prompt -y "Would you like Hyde to pre-configure your nvidia drivers?"
-if nvidia_detect && ask_confirm "Yy" ;then export fix_nvidia=true ; fi 
+if nvidia_detect && ask_confirm "Yy" ;then export fix_nvidia=true ; fi
 
 #? Add Custom Apps
-custom_apps="${scrDir}/custom_apps.lst"
+custom_apps="${scriptDir}/custom_apps.lst"
 cust_pkg="/tmp/hyde-ctl-$(id -u)-custom-app-list"
 if [[ -e ${custom_apps} ]]; then
     sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
@@ -81,21 +81,17 @@ fi
 Manage_Configs list_Marker --custom
 ask_confirm "${USER}"
 
-"${scrDir}/install_pre.sh"
+"${scriptDir}/install_pre.sh"
 
-#----------------------#
-# prepare package list #
-#----------------------#
-# shift $((OPTIND - 1))
-cp "${scrDir}/custom_hypr.lst" "${install_packages_list}"
+
+#? Prepare package list
+cp "${scriptDir}/custom_hypr.lst" "${install_packages_list}"
 
 if [ -f "${cust_pkg}" ] && [ ! -z "${cust_pkg}" ]; then
     cat "${cust_pkg}" >>"${install_packages_list}"
 fi
 
-#--------------------------------#
-# add nvidia drivers to the list #
-#--------------------------------#
+#? add nvidia drivers to the list
 
 if [ ${fix_nvidia} = true ]; then
     print_prompt -g "[nvidia]" -w "Configuring nvidia drivers"
@@ -104,7 +100,7 @@ if [ ${fix_nvidia} = true ]; then
     done
     IFS=$' ' read -r -d '' -a nvga < <(lspci -k | grep -E "(VGA|3D)" | grep -i nvidia | awk -F ':' '{print $NF}' | tr -d '[]()' && printf '\0')
     for nvcode in "${nvga[@]}"; do
-        awk -F '|' -v nvc="${nvcode}" '{if ($3 == nvc) {split(FILENAME,driver,"/"); print driver[length(driver)],"\nnvidia-utils"}}' "${scrDir}"/.nvidia/nvidia*dkms >>"${install_packages_list}"
+        awk -F '|' -v nvc="${nvcode}" '{if ($3 == nvc) {split(FILENAME,driver,"/"); print driver[length(driver)],"\nnvidia-utils"}}' "${scriptDir}"/.nvidia/nvidia*dkms >>"${install_packages_list}"
     done
 fi
 
@@ -113,6 +109,7 @@ echo -e "\033[0;32m[GPU]\033[0m detected // $dGPU"
 #----------------#
 # get user prefs #
 #----------------#
+
 if ! chk_list "aurhlpr" "${aurList[@]}"; then
     echo -e "Available aur helpers:\n[1] yay\n[2] paru"
     prompt_timer 120 "Enter option number"
@@ -143,33 +140,26 @@ if ! chk_list "myShell" "${shlList[@]}"; then
 fi
 
 
-#--------------------------------#
-# install packages from the list #
-#--------------------------------#
+#? install packages from the list 
 
 # cat  "${install_packages_list}"
-"${scrDir}/install_pkg.sh" "${install_packages_list}"
+"${scriptDir}/install_pkg.sh" "${install_packages_list}"
 rm "${install_packages_list}"
 
-#---------------------------#
-# restore my custom configs #
-#---------------------------#
+#? restore custom configs
 
-# "${scrDir}/restore_fnt.sh"
-# "${scrDir}/restore_cfg.sh"
-# cat ./restore_cfg.lst
 ./restore_fnt.sh || true
 Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
+$HOME/.local/share/bin/swwwallcache.sh -f
 
-    # If it's not true, execute the following commands
-    $HOME/.local/share/bin/swwwallcache.sh -f
-    ./restore_lnk.sh
+./restore_lnk.sh
+
 #---------------------#
 # post-install script #
 #---------------------#
 
-"${scrDir}/install_pst.sh"
+"${scriptDir}/install_pst.sh"
 
 #------------------------#
 # enable system services #
@@ -185,4 +175,4 @@ while read servChk; do
         sudo systemctl start "${servChk}.service"
     fi
     
-done <"${scrDir}/system_ctl.lst"
+done <"${scriptDir}/system_ctl.lst"

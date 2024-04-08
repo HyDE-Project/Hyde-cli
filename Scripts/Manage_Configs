@@ -49,7 +49,6 @@ GROUP() {
  }' ${1}
 }
 
-
 MENU_config() {
     while true; do
         options=(
@@ -130,8 +129,41 @@ else
 fi
   done
 done < "$(dirname ${restore_directory})/Scripts/restore_cfg.lst"
-# echo "Done: $restore_directory"
-# trap 'rm -f ${config_override}' EXIT
+}
+
+# shellcheck disable=SC2120
+list_Marker() {
+CloneDir=${1:-${CloneDir}}
+if [ -e "${ctlFile}"  ] && [[ $* != *"--custom"* ]] ; then
+prev_restore_list "${ctlFile}"
+
+now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
+    if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
+      print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
+        restore_Lister "${CloneDir}/Configs"
+    else
+    print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
+    ask_confirm "Yy"
+       if [ $? -eq 1 ]; then 
+        restore_Lister "${CloneDir}/Configs"    
+       else
+        cp "${ctlFile}" "${config_override}"
+       fi       
+    fi
+read
+elif [[ $* == *"--custom"* ]] && [ -e "${config_override}" ];then
+#? --custom will always asume that config_override is already present
+prev_restore_list "${config_override}"
+fi
+
+MENU_config
+
+prev_restore_list "${config_override}"
+
+[[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
+
+print_prompt -w '[ctrl + c]' -r ' Cancel'
+print_prompt -w "Continue?"
 }
 
 list_Marker_OVERWRITE() {
@@ -181,51 +213,6 @@ awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BE
 }
 
 
-# shellcheck disable=SC2120
-list_Marker() {
-CloneDir=${1:-${CloneDir}}
-if [ -e "${ctlFile}"  ] && [[ $* != *"--custom"* ]] ; then
-prev_restore_list "${ctlFile}"
-
-now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
-    if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
-      print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
-    # ask_confirm "Yy"
-      #  if [ $? -eq 1 ]; then 
-        # awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-        restore_Lister "${CloneDir}/Configs"
-      #  fi
-    else
-    print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
-    ask_confirm "Yy"
-       if [ $? -eq 1 ]; then 
-        # awk -F'|' -v OFS='|' '{$1 = "B"; print}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
-        restore_Lister "${CloneDir}/Configs"    
-       else
-        cp "${ctlFile}" "${config_override}"
-       fi       
-    # clear
-    # prev_restore_list "${config_override}"
-    fi
-read
-elif [[ $* == *"--custom"* ]] && [ -e "${config_override}" ];then
-#? --custom will always asume that config_override is already present
-prev_restore_list "${config_override}"
-fi
-
-
-
-MENU_config
-
-prev_restore_list "${config_override}"
-
-[[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
-
-print_prompt -w '[ctrl + c]' -r ' Cancel'
-print_prompt -w "Continue?"
-# ask_confirm "${USER}"
-}
-
 all() {
   list_Backup
   echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m" 
@@ -244,10 +231,10 @@ revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
          awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} 
-            
-            
-            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf --prompt 'List of explicit Backup, Run by Hyde backup all' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | cut -d ' ' -f4) && echo "$selected_backup" 
-            
+            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf \
+            --prompt 'List of explicit Backup, Run by Hyde backup all' \
+            --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | \
+            cut -d ' ' -f4) && echo "$selected_backup" 
             if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
       Restore_Config --only "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
       bak=$(ls -td -- $BkpDir/* | head -n 1 )
@@ -261,7 +248,10 @@ BackUp() {
 if [[ -z ${1} ]] ; then
 list_Backup
 print_prompt -r "WARNING! " -y "Not all Dots may have been fully backed up, You might encounter errors!" ; ask_confirm
-       selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf --prompt='Restoring from a Backup Directory.' --preview 'tree -aL 3 -d '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | cut -d ' ' -f4)  
+       selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf \
+       --prompt='Restoring from a Backup Directory.' \
+       --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | \
+       cut -d ' ' -f4)  
 config_source="${BkpDir}/${selected_backup}"
 else
 config_source="${1}"
@@ -292,7 +282,6 @@ else
 fi
 }
 
-
 clean() {
   list_Backup
 selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf -m --marker='X' --prompt 'Select files to be Removed!' )
@@ -321,27 +310,6 @@ ask_confirm "$USER"
 # ./restore_fnt.sh
 Restore_Config "/tmp/Hyde-${UID}-BAK" "${custClone}/Configs" && set_metadata "${custClone}"
 Hyde reload
-}
-
-Configs() {
-print_prompt -y "Please review the list..."
-print_prompt -y "Control File:" -w "${ctlFile}"
-cat << REVIEW
-O   Overwrite     Move Dots to Backup > Populate dots from Source Directory
-S   Sync          Copy Dots to Backup > Copy to overwrite Dots from Source Directory      
-P   Preserve      Populates Dots But Preserves User existing Dots
-B   Backup        Only Backup the selected Dots
-I   Ignore        Skip/Ignore the Dots
-REVIEW
-        barLine
-        cat "${ctlFile}"
-        barLine
-        print_prompt -y "Clone Directory:" -m "${CloneDir}"
-        print_prompt -y "Is This Correct?"
-        ask_confirm "${USER}"
-        ./restore_fnt.sh
-        Restore_Config --only
-        Hyde reload
 }
 
 upgrade() {
