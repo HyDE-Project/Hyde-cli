@@ -1,5 +1,16 @@
 #! /bin/env bash
 
+SUPER() {
+    local command="$*"
+    echo -ne "\e[33m[ROOT]\e[0m ${command}"
+    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ] ; then
+        doas sh -c "$command"
+    else
+        sudo sh -c "$command"
+    fi
+}
+export -f SUPER
+
 distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
 clone_hyde_cli=${HOME}/.cache/hyde-cli/Hyde-cli
 mkdir -p "${clone_hyde_cli}"
@@ -14,7 +25,7 @@ case "${distro_ID}" in
             elif pacman -Q paru &> /dev/null ; then aurhlpr="paru"
         else
             select opt in "yay" "paru"; do if [[ -n $opt ]]; then aurhlpr=$opt ; break ; fi ;done
-            sudo pacman -S --needed git base-devel
+            SUPER pacman -S --needed git base-devel
             rm -fr ${clone_hyde_cli}/${aurhlpr}
             git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
             cd ${clone_hyde_cli}/${aurhlpr}
@@ -69,4 +80,4 @@ else
 fi
 
 echo "Continue to install ${pkgname} locally"
-sudo make clean install
+SUPER make clean install
