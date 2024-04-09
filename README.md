@@ -53,19 +53,19 @@ Font dependencies: '[JetBrains Nerd font](https://github.com/ryanoasis/nerd-font
 
 To install: 
 ```
-git clone https://github.com/kRHYME7/Hyde-cli
-cd ./Hyde-cli
-sudo make
+$git clone https://github.com/kRHYME7/Hyde-cli
+$cd ./Hyde-cli
+# make
 ```
 
 To uninstall: 
 ```
-sudo make uninstall
+# make uninstall
 ```
 
 To update: 
 ```
-sudo make update clean install
+# make update clean install
 ```
 
 # Usage

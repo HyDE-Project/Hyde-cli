@@ -100,7 +100,7 @@ check_and_install
 # Install the packages
 if [ -f ./install_pkg.lst ]; then
  echo "Installing packages..."
- sudo dnf install $(cat ./install_pkg.lst)
+ SUPER dnf install $(cat ./install_pkg.lst)
 else
  echo "No packages to install."
 fi

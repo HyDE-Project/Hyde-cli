@@ -359,11 +359,11 @@ sddm() { #? Sddm commands.
         [ -z "${sddm_theme}" ] && print_prompt -r  "Operation Cancelled" && exit 0
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"
-        [ -f "${sddm_bak}" ] && sudo rm "${sddm_bak}"  
-        sudo tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C /usr/share/sddm/themes/
-        sudo touch "${sddm_conf}"
-        sudo cp "${sddm_conf}" "${sddm_bak}"
-        sudo cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
+        [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"  
+        SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C /usr/share/sddm/themes/
+        SUPER touch "${sddm_conf}"
+        SUPER cp "${sddm_conf}" "${sddm_bak}"
+        SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
         ;;
         #   set) #? Directory   Lockscreen
         # :    #  "${scrDir}"/sddmwall.sh
@@ -488,7 +488,7 @@ inject() { #? User/Device specific scripts that might be useful.
     case $1 in 
       chaotic) #? install Chaotic AUR 
         shift
-          sudo /usr/lib/hyde-cli/Install_ChaoticAUR "${@}"
+          SUPER /usr/lib/hyde-cli/Install_ChaoticAUR "${@}"
          ;;
         # asus_patch)
         # # Add Keys of ASUS Repository
@@ -498,7 +498,7 @@ inject() { #? User/Device specific scripts that might be useful.
         # pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
 
         # # Add in pacman.conf
-        # echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | sudo tee -a /etc/pacman.conf
+        # echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | SUPER tee -a /etc/pacman.conf
 
         # CHECK asusctl supergfxctl rog-control-center power-profiles-daemon
 

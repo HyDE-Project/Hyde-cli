@@ -105,9 +105,9 @@ while read lst; do
                     cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     print_prompt -g "[COPY BACK-UP]" -w "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
                     if ! cp -rn "${CfgDir}$tgt/${cfg_chk}" "${pth}" 2>/dev/null; then
-                        print_prompt -g "[PRESERVED]" -w "${pth}${tgt}/${cfg_chk}"
+                        print_prompt -g "[POPULATE]" -w "${pth}${tgt}/${cfg_chk}"
                     else
-                        print_prompt -g "[POPULATE]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
+                        print_prompt -g "[PRESERVED]" -w "${pth} <-- ${CfgDir}${tgt}/${cfg_chk}"
                     fi
                 ;;
             esac

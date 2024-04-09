@@ -243,7 +243,7 @@ shell_select() {
                 do
                     z_plugin=$(echo $r_plugin | awk -F '/' '{print $NF}')
                     if [ "${r_plugin:0:4}" == "http" ] && [ ! -d $Zsh_Plugins/$z_plugin ] ; then
-                        sudo git clone $r_plugin $Zsh_Plugins/$z_plugin
+                        SUPER git clone $r_plugin $Zsh_Plugins/$z_plugin
                     fi
                     if [ "$z_plugin" == "zsh-completions" ] && [ `grep 'fpath+=.*plugins/zsh-completions/src' $Zsh_rc | wc -l` -eq 0 ]; then
                         Fix_Completion='\nfpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
@@ -258,10 +258,10 @@ shell_select() {
         
         elif [ "${myShell}" == "fish" ];then   
             config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"    
-            CHECK fish lsd starship
+            package_check fish lsd starship
             (
-            echo 'S|${HOME}/.config|fish|fish'  
-            echo 'S|${HOME}/.config|lsd|lsd'
+            echo 'P|${HOME}/.config|fish|fish'  
+            echo 'P|${HOME}/.config|lsd|lsd'
             ) > ${config_override}
 
             Restore_Config --only "/tmp/Hyde-$(id -u)-BAK"

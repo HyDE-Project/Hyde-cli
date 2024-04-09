@@ -1,21 +1,33 @@
-#!/bin/env bash
+#! /bin/env bash
+
+# Function to execute a command with elevated privileges
+SUPER() {
+    local command="$*"
+    print_prompt -y "[ROOT] " "${command}"
+    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ] ; then
+        doas sh -c "$command"
+    else
+        sudo sh -c "$command"
+    fi
+}
+
+export -f SUPER
 
 barLine() { printf '=%.0s' $(seq 3 "$(tput cols)"); echo; }
 
 print_prompt() {
     while (( "$#" )); do
         case "$1" in
-            -r) echo -ne "\e[31m$2\e[0m" ;;  # Red
-            -g) echo -ne "\e[32m$2\e[0m" ;;  # Green
-            -y) echo -ne "\e[33m$2\e[0m" ;;  # Yellow
-            -b) echo -ne "\e[34m$2\e[0m" ;;  # Blue
-            -m) echo -ne "\e[35m$2\e[0m" ;;  # Magenta
-            -c) echo -ne "\e[36m$2\e[0m" ;;  # Cyan
-            -w) echo -ne "\e[37m$2\e[0m" ;;  # White
-            -n) echo -ne "\e[96m$2\e[0m" ;;  # Neon
-            *) echo "Invalid option: $1" ;;
+            -r) echo -ne "\e[31m$2\e[0m"; shift 2 ;; # Red
+            -g) echo -ne "\e[32m$2\e[0m"; shift 2 ;; # Green
+            -y) echo -ne "\e[33m$2\e[0m"; shift 2 ;; # Yellow
+            -b) echo -ne "\e[34m$2\e[0m"; shift 2 ;; # Blue
+            -m) echo -ne "\e[35m$2\e[0m"; shift 2 ;; # Magenta
+            -c) echo -ne "\e[36m$2\e[0m"; shift 2 ;; # Cyan
+            -w) echo -ne "\e[37m$2\e[0m"; shift 2 ;; # White
+            -n) echo -ne "\e[96m$2\e[0m"; shift 2 ;; # Neon
+            *) echo -ne "$1"; shift ;;
         esac
-        shift 2
     done
     echo ""
 }
