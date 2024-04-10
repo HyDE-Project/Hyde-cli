@@ -151,7 +151,16 @@ rm "${install_packages_list}"
 ./restore_fnt.sh || true
 Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
-$HOME/.local/share/bin/swwwallcache.sh -f
+    echo -e "\033[0;32m[THEMEPATCHER]\033[0m Patching themes..."
+    while IFS='"' read -r null1 themeName null2 themeRepo
+    do
+        themeName="${themeName//\"/}"
+        themeRepo="${themeRepo//\"/}"
+        "${scriptDir}/themepatcher.sh" "${themeName}" "${themeRepo}"
+    done < "${scriptDir}/themepatcher.lst"
+
+
+# $HOME/.local/share/bin/swwwallcache.sh -f
 
 ./restore_lnk.sh
 
