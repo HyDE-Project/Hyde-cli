@@ -78,7 +78,7 @@ GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
 export newCloneDir
 export GIT
 
-
+export CloneDir=${newCloneDir}
 if cd "${newCloneDir}"/Scripts; then
     print_prompt -m "[*] " -y "Using existing directory."
     if [[ ${is_link} == true ]]; then
@@ -92,7 +92,6 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
-export CloneDir=${newCloneDir}
 set_metadata "${CloneDir}"
 Hyde reload
 systemctl restart sddm
