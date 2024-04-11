@@ -42,7 +42,9 @@ if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf ; then
 fi
 
 { [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 0
-set_branch
+print_prompt -y "Pulling Hyde repo..."
+git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
+
 integrity_check "${newCloneDir}"
 
 # export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"

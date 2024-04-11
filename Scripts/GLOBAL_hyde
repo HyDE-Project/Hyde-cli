@@ -164,10 +164,6 @@ navigate_clone() {
     current_branch=$(git branch --show-current)
     git_url=$( git remote get-url origin)
     # check changes on the restore lst
-    if [[ $current_branch != *"hyde"* ]]; then
-        print_prompt -r "[FATAL] " -w "You are not on the test branch!, exiting script..."
-        exit 1
-    fi
 }
 
 set_metadata() {
@@ -233,31 +229,31 @@ package_check () {
 }
 
 integrity_check() {
-    CheckDir="${1:-${CloneDir}}"
-    #! Requirements
-    config=(
-        ".local/share/bin/globalcontrol.sh"
-        ".config/hyde/themes/*/kvantum/kvantum.theme"
-        ".config/hyde/themes/*/kvantum/kvconfig.theme"
-        ".config/hyde/themes/*/kitty.theme"
-        ".config/hyde/themes/*/rofi.theme"
-        ".config/hyde/themes/*/waybar.theme"
-        ".config/hyde/themes/*/hypr.theme"
-        ".config/hyde/themes/*/wallpapers"
-    )
+    # CheckDir="${1:-${CloneDir}}"
+    # #! Requirements
+    # config=(
+    #     ".local/share/bin/globalcontrol.sh"
+    #     ".config/hyde/themes/*/kvantum/kvantum.theme"
+    #     ".config/hyde/themes/*/kvantum/kvconfig.theme"
+    #     ".config/hyde/themes/*/kitty.theme"
+    #     ".config/hyde/themes/*/rofi.theme"
+    #     ".config/hyde/themes/*/waybar.theme"
+    #     ".config/hyde/themes/*/hypr.theme"
+    #     ".config/hyde/themes/*/wallpapers"
+    # )
     
-    exit_flag=false
-    for fchk in "${config[@]}" ; do
-        # Use find to search for files matching the pattern
-        file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
-        if [[ -z "${file}" ]]; then
-            print_prompt -r "[ERROR] " -w "${fchk} --> does not exist in ${CheckDir}/Configs/"
-            exit_flag=true
-        fi
-    done
+    # exit_flag=false
+    # for fchk in "${config[@]}" ; do
+    #     # Use find to search for files matching the pattern
+    #     file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
+    #     if [[ -z "${file}" ]]; then
+    #         print_prompt -r "[ERROR] " -w "${fchk} --> does not exist in ${CheckDir}/Configs/"
+    #         exit_flag=true
+    #     fi
+    # done
     
-    [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
-    
+    # [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
+    :
 }
 
 service_check() {
@@ -297,10 +293,10 @@ eval "$(declare -F | sed -e 's/-f /-fx /')"
 
 
 # PATH
-export libDir="$(dirname "$(realpath "$0")")"
+export libDir=/usr/lib/hyde-cli
 export PATH=${PATH}:${libDir}
 
-#
+# CONFIGS
 export etcDir="/etc/hyde-cli"
 
 # Config

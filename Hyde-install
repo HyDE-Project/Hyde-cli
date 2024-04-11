@@ -59,7 +59,7 @@ Advanced usage: [Hyde-install] --[options]
         -d|--dir /path/to/Clone/Hyde                       Clone Hyde in a Custom path then run installation.
                                                                     Default: '${HOME}/.cache/hyde/Hyde'
         -g|--git https://gitclone/repo/link/                     Remote Repository link to be cloned
-                                                                    Default: 'https://github.com/prasanthrangan/hyde'
+                                                                    Default: 'https://github.com/prasanthrangan/hyprdots'
         -l|--link                                                Flag to transfer the link to a Clone Directory
                                                                     Default: 'false'
 HANDLE_ERROR
@@ -95,7 +95,9 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
+[ $? -ne 0 ] && exit 1
 set_metadata "${CloneDir}"
 Hyde reload
-systemctl restart sddm
-
+if pkg_installed -v sddm &> /dev/null ; then
+ systemctl restart sddm
+fi
