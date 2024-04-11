@@ -124,7 +124,7 @@ elif [ "$restore_directory" = "OVERWRITE" ]; then
 else
  if [ -e "$restore_directory$curr/$file" ]; then
     #  echo -e "$curr/$file"
-     echo "P|$dir|$file|$pkg" >> "${config_override}"
+     echo "S|$dir|$file|$pkg" >> "${config_override}"
  fi
 fi
   done
