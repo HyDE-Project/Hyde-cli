@@ -20,8 +20,8 @@ install_distro() {
             Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
         ;;
         *)
-            print_prompt -r "Can't recognize your disto: '${ID}'  "
-
+            # print_prompt -r "Can't recognize your disto: '${ID}'  "
+            Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
             # Add the commands for other distributions here
             echo ""
 
