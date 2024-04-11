@@ -10,9 +10,9 @@ export is_fresh_install=true
 #? One Time Set up on Terminal.
 install_distro() {
     if [ "${1}" = "--fresh" ]; then export fresh=true; fi
-    distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-    
-    case "${distro_ID}" in
+    . /etc/os-release
+
+    case "${ID}" in
         "fedora")
             Install_Hyde-DNF "${newCloneDir}" "${GIT}"
         ;;
@@ -20,8 +20,11 @@ install_distro() {
             Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
         ;;
         *)
-            echo "This is neither Fedora nor Arch"
+            print_prompt -r "Can't recognize your disto: '${ID}'  "
+
             # Add the commands for other distributions here
+            echo ""
+
         ;;
     esac
 }
