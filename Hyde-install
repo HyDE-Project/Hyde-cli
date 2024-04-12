@@ -95,7 +95,7 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
-[ $? -ne 0 ] && exit 1
+# [ $? -ne 0 ] && exit 1
 set_metadata "${CloneDir}"
 Hyde reload
 if pkg_installed -v sddm &> /dev/null ; then
