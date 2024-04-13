@@ -131,9 +131,6 @@ restore() { #? Restore Dots
         rename_backup "_Hyde_restore_Clone"
         ;;
 
-        Theme) #? Restore themes from upstream DB
-        Manage_Themes theme_patcher
-        ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
         Manage_Configs "${@}"
         ;;
@@ -255,8 +252,12 @@ case $1 in
         ;;
         patch) #? Patch A Theme from different repository.
            shift
-            navigate_clone
+        navigate_clone
+        if [ -z  $* ]; then
+            Manage_Themes theme_patcher
+        else
             ./themepatcher.sh "$@"
+        fi
         ;;
         *)  Parameters "$Function"  ;;
 

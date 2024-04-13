@@ -94,6 +94,7 @@ patchList=$( list_themes | fzf \
     --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all  | CTRL D : unmark all: ' \
     --bind 'ctrl-a:select-all,ctrl-d:deselect-all' )
 
+[ -z "${patchList}" ] && exit 1
 readonly patchList
 export patchList
 
