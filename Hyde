@@ -130,6 +130,12 @@ restore() { #? Restore Dots
         #? Meta is added inside Clone function
         rename_backup "_Hyde_restore_Clone"
         ;;
+
+        Theme) #? Restore themes from upstream DB
+        print_prompt "Testing phase...\nDo NOT Proceed"
+        ask_confirm "$USER"
+        Manage_Theme
+        ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
             Manage_Configs "${@}"
         ;;
