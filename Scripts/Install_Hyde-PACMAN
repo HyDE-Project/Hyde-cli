@@ -41,10 +41,10 @@ if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf ; then
     SUPER ${libDir}/Install_ChaoticAUR --install fresh
 fi
 
-{ [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 0
+{ [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 1
 print_prompt -y "Pulling Hyde repo..."
 git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
-
+set_branch
 integrity_check "${newCloneDir}"
 
 # export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
