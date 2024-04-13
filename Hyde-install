@@ -96,8 +96,6 @@ else
     install_distro --fresh
 fi
 set_metadata "${newCloneDir}"
-# [ $? -ne 0 ] && exit 1
-Hyde reload
 print_prompt -c "\nContinue to Re-login now?"
 if ask_confirm "Yy" && pkg_installed sddm &> /dev/null ; then
  systemctl restart sddm

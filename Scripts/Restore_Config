@@ -133,6 +133,4 @@ fi
 if [ "$restore_only" != "true" ]; then
     # If it's not true, execute the following commands
     ${scrDir}/swwwallcache.sh
-    ./restore_lnk.sh
-    ./install_pst.sh
 fi
