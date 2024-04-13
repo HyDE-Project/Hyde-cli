@@ -125,8 +125,13 @@ If you encounter any issues, please submit them...
 
 ## Roadmap
 
-+ This will just be an active helper to some issues or some feature requests for Hyde.
-+ Add interactive installation using fzf
-
+📔 This will just be an active helper to some issues or some feature requests for Hyde.
+🔳 Add interactive installation using fzf
+✅ interactive restore config
+🔳 interactive package installation
+🔳 interactive theme selection
+🔳  shell selection
+🔳 Separate TUI from CLI command 
+🔳 More to come...
 
 
