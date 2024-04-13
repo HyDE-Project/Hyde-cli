@@ -95,9 +95,10 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
+set_metadata "${newCloneDir}"
 # [ $? -ne 0 ] && exit 1
-set_metadata "${CloneDir}"
 Hyde reload
-if pkg_installed -v sddm &> /dev/null ; then
+print_prompt -c "\nContinue to Re-login now?"
+if ask_confirm "Yy" && pkg_installed sddm &> /dev/null ; then
  systemctl restart sddm
 fi
