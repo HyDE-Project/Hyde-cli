@@ -134,10 +134,10 @@ restore() { #? Restore Dots
         Theme) #? Restore themes from upstream DB
         print_prompt "Testing phase...\nDo NOT Proceed"
         ask_confirm "$USER"
-        Manage_Theme
+        Manage_Themes
         ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
-            Manage_Configs "${@}"
+        Manage_Configs "${@}"
         ;;
         Link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
