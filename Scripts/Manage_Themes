@@ -1,8 +1,7 @@
 #!/bin/env bash
 
 #? This is a CLI and a TUI for Theme management using fzf,kitty's icat, and jp2a 
-
-    package_check "jp2a"
+#? This will serve a fn modules in the future
 
 db_url="https://raw.githubusercontent.com/kRHYME7/hyde-gallery/hyde-gallery/hyde-themes.db"
 file_DB="/tmp/hyde-$(id -u)-themes.db"
@@ -55,7 +54,21 @@ image_url="${1}"
 if [ -n "$KITTY_WINDOW_ID" ]; then
 kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@20x1 "$image_url" 
 else
+    if command -v jp2a &> /dev/null ; then
     jp2a --colors --color-depth=24 --chars=' .:-=+*#%@' --fill --term-fit --background=dark "${image_url}" 
+    else 
+    cat << EOF
+      ░▒▒▒░░░░░▓▓          ___________
+    ░░▒▒▒░░░░░▓▓        //___________/
+   ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
+   ░░▒▒░░░░░▓▓▓▓▓▓ | | | | |  | |  __/
+    ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
+     ░▒▒░░▓▓   ▓▓   \__  |____/ |____/
+       ░▒▓▓   ▓▓  //____/
+
+EOF
+    print_prompt -y "Install 'jp2a' to preview in ASCII format"
+    fi
 fi
 }
 
@@ -89,7 +102,9 @@ export patchList
 theme_patcher() {
 generate_list
  [ ! -f "${themepatcher_lst}" ] && return 
-    print_prompt -g "[themepatcher]"  " Patching themes..."
+    print_prompt -g "[themepatcher]"  " Patching the following themes..."
+    print_prompt "${patchList}"
+    ask_confirm
 
     while IFS='"' read -r null1 themeName null2 themeRepo
     do
@@ -105,7 +120,6 @@ generate_list
     if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
         "${scrDir}/themeswitch.sh" &> /dev/null
     fi
-
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

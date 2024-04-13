@@ -132,8 +132,6 @@ restore() { #? Restore Dots
         ;;
 
         Theme) #? Restore themes from upstream DB
-        print_prompt "Testing phase...\nDo NOT Proceed"
-        ask_confirm
         Manage_Themes theme_patcher
         ;;
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
