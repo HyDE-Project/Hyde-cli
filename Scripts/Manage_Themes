@@ -1,2 +1,113 @@
-#! /bin/env bash
+#!/bin/env bash
 
+#? This is a CLI and a TUI for Theme management using fzf,kitty's icat, and jp2a 
+
+    package_check "jp2a"
+
+db_url="https://raw.githubusercontent.com/kRHYME7/hyde-gallery/hyde-gallery/hyde-themes.db"
+file_DB="/tmp/hyde-$(id -u)-themes.db"
+themepatcher_lst="${cacheCtl}/themepatcher.lst"
+
+
+parse_ini() {
+    local section="$1"
+    local in_section=false
+    local key=""
+    local value=""
+
+    while IFS= read -r line; do
+        # Check if the line is a section header
+        if [[ $line =~ ^\[([^\]]+)\]$ ]]; then
+            # If the section matches, set in_section to true
+            if [[ "${BASH_REMATCH[1]}" == "$section" ]]; then
+                in_section=true
+            else
+                in_section=false
+            fi
+        elif $in_section && [[ $line =~ ^([^=]+)=(.*)$ ]]; then
+            # If in the correct section, extract key and value
+            key="${BASH_REMATCH[1]}"
+            value="${BASH_REMATCH[2]}"
+            # Remove quotes from the value if present
+            value="${value#\"}"
+            value="${value%\"}"
+            # Export the variable
+            export "$key=$value"
+        fi
+    done < "${file_DB}"
+}
+
+generate_list() {
+theme_menu
+# echo -e "${patchList}"
+: > "${themepatcher_lst}"
+while IFS= read -r selected_theme; do
+    parse_ini "${selected_theme}"
+    echo -e "\"$selected_theme\"" "\"$LINK\"" >> "${themepatcher_lst}"
+done <<< "$patchList"
+
+}
+
+get_preview() {
+if  [[ $(tput colors) -lt "256" ]] ;then return ;fi
+image_url="${1}"
+    [ -z "${image_url}" ] && return 1
+if [ -n "$KITTY_WINDOW_ID" ]; then
+kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@20x1 "$image_url" 
+else
+    jp2a --colors --color-depth=24 --chars=' .:-=+*#%@' --fill --term-fit --background=dark "${image_url}" 
+fi
+}
+
+list_themes() {
+sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}"
+}
+
+
+preview_theme() {
+export THEME="$1"
+parse_ini "${THEME}"
+print_prompt -c " \\\ $THEME \\\ " -g "\nLink: " "$LINK" -y "\nOwner: " "${OWNER}\n"
+get_preview "${PREVIEW}"
+}
+
+
+theme_menu() {
+curl -sL ${db_url} -o "${file_DB}"
+patchList=$( list_themes | fzf \
+    --preview 'Manage_Themes preview_theme {}' \
+    -m \
+    --marker ' '\
+    --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all  | CTRL D : unmark all: ' \
+    --bind 'ctrl-a:select-all,ctrl-d:deselect-all' )
+
+readonly patchList
+export patchList
+
+}
+
+theme_patcher() {
+generate_list
+ [ ! -f "${themepatcher_lst}" ] && return 
+    print_prompt -g "[themepatcher]"  " Patching themes..."
+
+    while IFS='"' read -r null1 themeName null2 themeRepo
+    do
+        themeNameQ+=("${themeName//\"/}")
+        themeRepoQ+=("${themeRepo//\"/}")
+        themePath="${confDir}/hyde/themes/${themeName}"
+        [ -d "${themePath}" ] || mkdir -p "${themePath}"
+        [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
+    done < "${themepatcher_lst}"
+    parallel --bar --link "${CloneDir}/Scripts/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+    print_prompt -g "\n[cache]" " generating cache files..."
+    "${scrDir}/swwwallcache.sh" -t ""
+    if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
+        "${scrDir}/themeswitch.sh" &> /dev/null
+    fi
+
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
+
+"${@}"
