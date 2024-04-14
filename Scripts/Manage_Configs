@@ -49,7 +49,7 @@ GROUP() {
  }' ${1}
 }
 
-MENU_config() {
+main_config_menu() {
     while true; do
         options=(
           "[Confirm]"
@@ -60,7 +60,7 @@ MENU_config() {
           )
 
         # Use fzf to select an option
-        selected_option=$(printf '%s\n' "${options[@]}" | fzf --prompt='▶' --pointer='→' --marker='♡' --preview "Manage_Configs prev_restore_list ${config_override}" ) 
+        selected_option=$(printf '%s\n' "${options[@]}" | fzf-menu "${FUNCNAME[0]}" ) 
 
         # Call the selected function or return to the main menu
         case $selected_option in
@@ -157,7 +157,7 @@ elif [[ $* == *"--custom"* ]] && [ -e "${config_override}" ];then
 prev_restore_list "${config_override}"
 fi
 
-MENU_config
+main_config_menu
 
 prev_restore_list "${config_override}"
 
@@ -169,10 +169,7 @@ print_prompt -w "Continue?"
 
 list_Marker_OVERWRITE() {
 OVERWRITE="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
-fzf -m --marker ' '\
- --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+fzf-menu "${FUNCNAME[0]}"
  )"
 
 awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
@@ -180,10 +177,7 @@ awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 
 
 list_Marker_SYNC() {
 SYNC="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
- fzf -m --marker '' \
-  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
- --preview "Manage_Configs prev_restore_list ${config_override}" 
+fzf-menu "${FUNCNAME[0]}"
   )"
 
 awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
@@ -192,10 +186,7 @@ awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGI
 
 list_Marker_PRESERVE() {
 PRESERVE="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
- fzf -m --marker ' '\
- --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+fzf-menu "${FUNCNAME[0]}"
  )"
 
 awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
@@ -204,10 +195,7 @@ awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' '
 
 list_Marker_BACKUP() {
 BACKUP="$(echo -e "[CONFIRM]\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" | \
- fzf -m --marker ' '\
- --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+fzf-menu "${FUNCNAME[0]}"
  )"
 
 awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "B"; print; next} {print}}' "${config_override}" > ./temp.lst && mv ./temp.lst "${config_override}"
@@ -232,9 +220,7 @@ revert() {
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
          awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} 
-            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf \
-            --prompt 'List of explicit Backup, Run by Hyde backup all' \
-            --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'  | \
+            selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | fzf-menu "${FUNCNAME[0]}" | \
             cut -d ' ' -f4) && echo "$selected_backup" 
             if [[ -z $selected_backup ]]; then echo "Operation Cancelled" ; exit 0 ;fi
       Restore_Config --only "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
@@ -249,10 +235,11 @@ BackUp() {
 if [[ -z ${1} ]] ; then
 list_Backup
 print_prompt -r "WARNING! " -y "Not all Dots may have been fully backed up, You might encounter errors!" ; ask_confirm
-       selected_backup=$(ls -l -r $BkpDir | awk '{print $6,$7,$8,$9}' | grep -v '^[[:space:]]*$' | fzf \
-       --prompt='Restoring from a Backup Directory.' \
-       --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")' | \
-       cut -d ' ' -f4)  
+       selected_backup=$(ls -l -r $BkpDir |\
+        awk '{print $6,$7,$8,$9}' | \
+         grep -v '^[[:space:]]*$' | \
+          fzf-menu "${FUNCNAME[0]}" | \
+            cut -d ' ' -f4 )  
 config_source="${BkpDir}/${selected_backup}"
 else
 config_source="${1}"
@@ -285,7 +272,7 @@ fi
 
 clean() {
   list_Backup
-selected_backup=$(ls -l -r $BkpDir | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | grep -v '^[[:space:]]*$' | fzf -m --marker='X' --prompt 'Select files to be Removed!' )
+selected_backup=$(ls -l -r $BkpDir | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | grep -v '^[[:space:]]*$' | fzf-menu "${FUNCNAME[0]}" )
 if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
   print_prompt -r "To Be Removed:" -n "\n$selected_backup"
   print_prompt -r "WARNING! " -y "Removed Backup is not recoverable, are you sure?" ; ask_confirm "$USER"

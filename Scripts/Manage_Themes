@@ -87,12 +87,7 @@ get_preview "${PREVIEW}"
 
 theme_menu() {
 curl -sL ${db_url} -o "${file_DB}"
-patchList=$( list_themes | fzf \
-    --preview 'Manage_Themes preview_theme {}' \
-    -m \
-    --marker ' '\
-    --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all  | CTRL D : unmark all: ' \
-    --bind 'ctrl-a:select-all,ctrl-d:deselect-all' )
+patchList=$( list_themes | fzf-menu "${FUNCNAME[0]}" )
 
 [ -z "${patchList}" ] && exit 1
 readonly patchList

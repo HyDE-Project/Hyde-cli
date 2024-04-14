@@ -1,0 +1,88 @@
+#! /bin/env bash
+
+#? This Script stores all fzf menu related funtions
+#? Call the functions by 'fzf-menu "functions"'
+#? Functions have 'fzf_' prefix and its funtions to point to is the function name of the actual function
+# TODO: Make this Intuitive
+# TODO: Make the menu uniform
+
+#? Add common variables
+menu_height="--height 60%"
+
+
+fzf_theme_menu() {
+    fzf \
+        --preview 'Manage_Themes preview_theme {}' \
+        -m \
+        --marker ' ' \
+        --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        ${menu_height}
+}
+
+fzf_list_Marker_OVERWRITE() {
+fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list ${config_override}"
+}
+
+fzf_list_Marker_SYNC() {
+ fzf -m --marker '' \
+  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
+ --preview "Manage_Configs prev_restore_list ${config_override}" 
+}
+
+fzf_list_Marker_PRESERVE() {
+ fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list ${config_override}"
+}
+
+
+fzf_list_Marker_BACKUP() {
+ fzf -m --marker ' '\
+ --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+ --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+ --preview "Manage_Configs prev_restore_list ${config_override}" 
+}
+
+fzf_revert() {
+fzf \
+            --prompt 'List of explicit Backup, Run by Hyde backup all' \
+            --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")' \
+        ${menu_height}
+}
+
+fzf_main_config_menu() {
+fzf --prompt='▶' \
+    --pointer='→' \
+    --marker='♡' \
+    --preview "Manage_Configs prev_restore_list ${config_override}"
+}
+
+
+fzf_clean() {
+fzf -m --marker='X' --prompt 'Select files to be Removed!'\
+        ${menu_height}
+}
+
+fzf_BackUp() {
+    fzf \
+       --prompt='Restoring from a Backup Directory.' \
+       --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'\
+        ${menu_height}
+
+}
+
+fzf_shell_select() {
+fzf --prompt='Select shell: '
+
+}
+
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
+"fzf_${*}"
+
