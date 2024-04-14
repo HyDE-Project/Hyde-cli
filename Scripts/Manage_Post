@@ -1,7 +1,5 @@
 #! /bin/env bash
 
-. /usr/lib/hyprdots-ctl/GLOBAL
-
 sddm() {
     if ! pkg_installed sddm; then echo -e "\033[0;33m[WARNING]\033[0m sddm is not installed..." ; exit  0 ;fi
     

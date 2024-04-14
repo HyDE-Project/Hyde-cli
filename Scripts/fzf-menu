@@ -12,7 +12,7 @@ menu_height="--height 60%"
 
 fzf_theme_menu() {
     fzf \
-        --preview 'Manage_Themes preview_theme {}' \
+        --preview 'Manage-Themes preview_theme {}' \
         -m \
         --marker ' ' \
         --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
@@ -24,21 +24,21 @@ fzf_list_Marker_OVERWRITE() {
 fzf -m --marker ' '\
  --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+ --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 fzf_list_Marker_SYNC() {
  fzf -m --marker '' \
   --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
- --preview "Manage_Configs prev_restore_list ${config_override}" 
+ --preview "Manage-Config prev_restore_list ${config_override}" 
 }
 
 fzf_list_Marker_PRESERVE() {
  fzf -m --marker ' '\
  --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+ --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 
@@ -46,7 +46,7 @@ fzf_list_Marker_BACKUP() {
  fzf -m --marker ' '\
  --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}" 
+ --preview "Manage-Config prev_restore_list ${config_override}" 
 }
 
 fzf_revert() {
@@ -60,7 +60,7 @@ fzf_main_config_menu() {
 fzf --prompt='▶' \
     --pointer='→' \
     --marker='♡' \
-    --preview "Manage_Configs prev_restore_list ${config_override}"
+    --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 

@@ -7,8 +7,8 @@ export PATH=$PATH:/usr/lib/hyde-cli/
 hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 
 # . DEVEL
-. GLOBAL_hyde 
-. FUNCTIONS_hyde 
+. GLOBAL-hyde 
+. FUNCTIONS-hyde 
 initiate_hyde_command
 
 #! +----------------------------------------------------------------|
@@ -103,7 +103,7 @@ inform_updates
 upgrade() { #? Upgrades dots from the Repository  \n ﯧ Control file: '${ctlFile}'
     repo_info
     ask_confirm
-    Manage_Configs "upgrade"
+    Manage-Config "upgrade"
     rename_backup "_Hyde_upgrade"
 }
 
@@ -115,7 +115,7 @@ restore() { #? Restore Dots
         box_me "Restoring Dots"
             repo_info
                     # ask_confirm
-        . Manage_Configs
+        . Manage-Config
          list_Marker
         #  cat ${config_override}
         ask_confirm "${USER}"
@@ -126,13 +126,13 @@ restore() { #? Restore Dots
         Hyde reload
         ;;
         Clone) #? Restores Dots from a Clone Repository. \n ﯧ Provide ~/path/to/clone/directory
-        Manage_Configs "$1" "$2"
+        Manage-Config "$1" "$2"
         #? Meta is added inside Clone function
         rename_backup "_Hyde_restore_Clone"
         ;;
 
         BackUp) #? Restores Dots from previous Backup.\n   Files might not be complete\n ﯦ You can Cherry pick a file/dir from a backup
-        Manage_Configs "${@}"
+        Manage-Config "${@}"
         ;;
         Link) #? Links a Clone Directory. Useful if you want to change your CloneDir
         repo_info
@@ -154,22 +154,22 @@ backup() { #? Backing up commands
         navigate_clone
     case $1 in 
         all) #? Backs up the current configuration.
-            Manage_Configs "$1"
+            Manage-Config "$1"
             ;;
         # custom)
-        #     Manage_Configs "$1"
+        #     Manage-Config "$1"
         # ;;
         revert) #? Revert to a Previous Backup run by 'Hyde backup all'. \n ﯦ Different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
         barLine
-            Manage_Configs "$1"
+            Manage-Config "$1"
         barLine
         Hyde reload
             ;;
         list) #? List the backup
-        Manage_Configs "list_Backup"
+        Manage-Config "list_Backup"
         ;;
         clean) #? Clear some Storage by Deleting old backups. 
-            Manage_Configs "$1"
+            Manage-Config "$1"
         ;;
         *)  Parameters "$Function"  ;;
     esac
@@ -253,8 +253,8 @@ case $1 in
         patch) #? Patch A Theme from different repository.
            shift
         navigate_clone
-        if [ -z  $* ]; then
-            Manage_Themes theme_patcher
+        if [[ -z  "${*}" ]]; then
+            Manage-Themes theme_patcher
         else
             ./themepatcher.sh "$@"
         fi
@@ -321,18 +321,18 @@ wallbash() { #? Toggle to use wallpaper accent themes .
             notify-send -a "t1" -i "~/.config/dunst/icons/hyprdots.png" "${notif}"
         ;;
 
-        # term) #? Toogle Terminal colors into some presets
-        #     /usr/lib/hyde-cli/Manage_Wallbash "${@}"
-        # ;;
-        # kitty) #? Toogle 'kitty'
-            # /usr/lib/hyde-cli/Manage_Wallbash "${@}"
-        # ;;
-        # waybar) #? Toogle 'waybar'
-            # /usr/lib/hyde-cli/Manage_Wallbash "${@}"
-        # ;;
-        # spotify) #? Toogle 'spotify'
-            # /usr/lib/hyde-cli/Manage_Wallbash "${@}"
-        # ;;
+        # # term) #? Toogle Terminal colors into some presets
+        # #   Manage-Wallbash "${@}"
+        # # ;;
+        # # kitty) #? Toogle 'kitty'
+        #     Manage-Wallbash "${@}"
+        # # ;;
+        # # waybar) #? Toogle 'waybar'
+        #     Manage-Wallbash "${@}"
+        # # ;;
+        # # spotify) #? Toogle 'spotify'
+        #     Manage-Wallbash "${@}"
+        # # ;;
         *)  Parameters "$Function"  ;;
 esac
 }
@@ -395,16 +395,16 @@ power() { #? Power Options
 
     case $1 in 
         reset) #? Reset Changes.
-            Power_Manager "$@"
+            Manage-Power "$@"
         ;;     
         save) #? Save Power by disabling features
-            Power_Manager "$@"
+            Manage-Power "$@"
          ;;
         unset) #? Unset specific changes
-            Power_Manager  "$@"
+            Manage-Power  "$@"
         ;;
         game) #? Toggle Game mode
-            Power_Manager  "$@"
+            Manage-Power  "$@"
         ;;
         *)Parameters "$Function" 
          ;;

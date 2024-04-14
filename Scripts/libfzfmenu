@@ -4,5 +4,5 @@
 menu_1=" -m --marker ' '\
  --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
  --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage_Configs prev_restore_list ${config_override}"
+ --preview "Manage-Config prev_restore_list ${config_override}"
 "

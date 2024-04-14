@@ -79,8 +79,8 @@ fi
 
 #? Manage Configs
 [ -e $ctlFile ] && cp $ctlFile $config_override
-[ ! -e $ctlFile ] && Manage_Configs restore_Lister
-Manage_Configs list_Marker --custom
+[ ! -e $ctlFile ] && Manage-Config restore_Lister
+Manage-Config list_Marker --custom
 ask_confirm "${USER}"
 
 "${scriptDir}/install_pre.sh"

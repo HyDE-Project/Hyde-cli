@@ -9,7 +9,6 @@
 #* Khing 🦆
  
 pkill -x rofi && exit
-. /usr/lib/hyprdots-ctl/GLOBAL
 
 while [ "$#" -gt 0 ]; do
     case "$1" in

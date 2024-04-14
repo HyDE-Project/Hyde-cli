@@ -3,9 +3,7 @@
 #? Variables
 unset WLR_NO_HARDWARE_CURSORS
 
-. /usr/lib/hyprdots-ctl/GLOBAL
-
-etcFile="/etc/hyprdots-ctl/screencap.rasi"
+etcFile="${etcDir}/screencap.rasi"
 roFile="${ConfDir}/rofi/screencap.rasi"
 rec=''
 cap=''
@@ -91,8 +89,8 @@ state=$(hyprctl getoption animations:enabled -j | jq -r '.int' )
 hyprctl keyword animations:enabled 0 > /dev/null 2>&1
 
 hyprpicker -zrn &
-sleep 0.2
 HYPRPICKER_PID=$!
+sleep 0.2
 GEOM=$(slurp 2>&1)
 { [[ -n "${GEOM}" ]]  && snip=true ;} || true
 

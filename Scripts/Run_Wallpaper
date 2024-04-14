@@ -1,7 +1,5 @@
 #!/bin/env bash
 
-. /usr/lib/hyprdots-ctl/GLOBAL
-
 CHECK variety
 
 varietyDir=$ConfDir/variety/hyprdots

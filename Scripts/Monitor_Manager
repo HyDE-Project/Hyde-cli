@@ -1,9 +1,6 @@
 #!/bin/env bash
 
-export PATH=$PATH:/usr/lib/hyprdots-ctl/
-. GLOBAL
-
-CHECK "nwg-displays"
+package_check "nwg-displays"
 
 pid=$$
 monitorsConf="$ConfDir/hypr/monitors.conf"
