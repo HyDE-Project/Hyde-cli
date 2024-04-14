@@ -4,7 +4,7 @@ export Function="${1}"
 
 initiate_hyde_command() {
 
-if [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(find "${cacheCtl}/hyde_update_check" -mmin +4320) ]]; then
+if [ -f "${meta_file}" ] && { [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(find "${cacheCtl}/hyde_update_check" -mmin +4320) ]] ;} ; then
     navigate_clone
     print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
     notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"

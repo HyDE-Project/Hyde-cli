@@ -155,9 +155,10 @@ repo_info() {
 
 # shellcheck disable=SC2120
 navigate_clone() {
-    if ! source "${meta_file}"; then
+    if [ ! -f "${meta_file}" ]; then
         handle_error "Sourcing ${meta_file} failed.\nIt's possible you didn't install this with the hyde-cli.\n Don't worry, you can still manage Hyde configuration below."
     fi
+    source "${meta_file}"
     export CloneDir
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
