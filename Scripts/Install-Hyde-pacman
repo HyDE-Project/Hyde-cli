@@ -7,7 +7,7 @@ if [ "${fresh}" = true ]; then
 WOW an Arch BTW User!
 ${barLine}
 
-$(tput setaf 2)Hello ${USER}! This is an automated installation for Hyde.$(tput sgr0)
+$(tput setaf 2)Hello ${USER}! This is an Interactive installation for Hyde.$(tput sgr0)
 
 Hyde-cli is an active helper for Hyde. During this installation, the script will:
 1. Check if Hyde is already installed.
@@ -48,7 +48,7 @@ set_branch
 integrity_check "${newCloneDir}"
 
 # export config_override="/tmp/Hyde-${UID}-BAKmanage_cfg.lst"
-# export ctlFile="${cacheCtl}/manage_cfg.lst"
+# export ctlFile="${cacheDir}/manage_cfg.lst"
 
 echo "Clone Directory: ${newCloneDir}"
 echo "Git URL: $(git remote get-url origin)"
@@ -153,21 +153,23 @@ rm "${install_packages_list}"
 ./restore_fnt.sh || true
 Restore-Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
-    echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
-    while IFS='"' read -r null1 themeName null2 themeRepo
-    do
-        themeNameQ+=("${themeName//\"/}")
-        themeRepoQ+=("${themeRepo//\"/}")
-        themePath="${confDir}/hyde/themes/${themeName}"
-        [ -d "${themePath}" ] || mkdir -p "${themePath}"
-        [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
-    done < "${scriptDir}/themepatcher.lst"
-    parallel --bar --link "${scriptDir}/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
-    echo -e "\n\033[0;32m[cache]\033[0m generating cache files..."
-    "$HOME/.local/share/bin/swwwallcache.sh" -t ""
-    if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
-        "$HOME/.local/share/bin/themeswitch.sh" &> /dev/null
-    fi
+Manage-Themes theme_patcher
+
+    # echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
+    # while IFS='"' read -r null1 themeName null2 themeRepo
+    # do
+    #     themeNameQ+=("${themeName//\"/}")
+    #     themeRepoQ+=("${themeRepo//\"/}")
+    #     themePath="${confDir}/hyde/themes/${themeName}"
+    #     [ -d "${themePath}" ] || mkdir -p "${themePath}"
+    #     [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
+    # done < "${scriptDir}/themepatcher.lst"
+    # parallel --bar --link "${scriptDir}/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+    # echo -e "\n\033[0;32m[cache]\033[0m generating cache files..."
+    # "$HOME/.local/share/bin/swwwallcache.sh" -t ""
+    # if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
+    #     "$HOME/.local/share/bin/themeswitch.sh" &> /dev/null
+    # fi
 
 
 #---------------------#

@@ -4,7 +4,7 @@
 unset WLR_NO_HARDWARE_CURSORS
 
 etcFile="${etcDir}/screencap.rasi"
-roFile="${ConfDir}/rofi/screencap.rasi"
+roFile="${confDir}/rofi/screencap.rasi"
 rec=''
 cap=''
 snip=false

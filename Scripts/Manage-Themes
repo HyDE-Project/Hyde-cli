@@ -3,22 +3,6 @@
 #? This is a CLI and a TUI for Theme management using fzf,kitty's icat, and jp2a 
 #? This will serve a fn modules in the future
 
-
-
-clock() {
-                local LOOPDELAY
-                trap 'tput cnorm; trap - INT ERR' ERR
-                trap 'tput cnorm; trap - INT ERR; return' INT
-                tput civis
-                while :; do
-                        tput cr
-                        printf '%s' "$(date) "
-                        tput el
-                        sleep 1
-                done
-        }
-
-
 # Git_Repo="https://github.com/kRHYME7/hyde-gallery"
 Git_Repo="https://github.com/kRHYME7/hyde-gallery.git"
 hyde_gallery_dir="${cacheDir}/landing/hyde-gallery"

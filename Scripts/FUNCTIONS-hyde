@@ -4,7 +4,7 @@ export Function="${1}"
 
 initiate_hyde_command() {
 
-if [ -f "${meta_file}" ] && { [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(find "${cacheCtl}/hyde_update_check" -mmin +4320) ]] ;} ; then
+if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/hyde_update_check" ] || [[ $(find "${cacheDir}/hyde_update_check" -mmin +4320) ]] ;} ; then
     navigate_clone
     print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
     notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
@@ -15,7 +15,7 @@ if [ -f "${meta_file}" ] && { [ ! -f "${cacheCtl}/hyde_update_check" ] || [[ $(f
             # notify-send "Updates available! EXEC: 'Hyde update' "
         fi
     fi
-    touch "${cacheCtl}/hyde_update_check"
+    touch "${cacheDir}/hyde_update_check"
 fi
 }
 
@@ -67,7 +67,7 @@ ConfigCtl() {
 check_file_change() {
     file=$1
     base=$(echo "$file" | tr '/' '-')
-    hash_file="${cacheCtl}/${base}.hash"
+    hash_file="${cacheDir}/${base}.hash"
     
     # Calculate the current hash of the file
     current_hash=$(md5sum "$file" | cut -d ' ' -f 1)
@@ -186,7 +186,7 @@ rofi_pos() {
 
 #? handle pasting
 pasteIt() {
-    ignore_paste_file=${cacheCtl}/ignore.paste
+    ignore_paste_file=${cacheDir}/ignore.paste
     
     if [[ ! -e "${ignore_paste_file}" ]]; then
 cat << IGNOREWTYPE > "${ignore_paste_file}"
@@ -275,24 +275,6 @@ shell_select() {
             print_prompt -g "[SKIP]" -w "${myShell} is already set as shell..."
         fi            
 
-}
-
-
-
-load_spinner() {
-    local stat=$2
-    local pid=$1 # Process ID of the command to monitor
-    local spinstr='|/-\\'
-    local temp
-    while kill -0 $pid 2>/dev/null; do
-        temp="${spinstr#?}"
-        printf " [%c] " "${spinstr}"
-        spinstr=${temp}${spinstr%"${temp}"}
-        sleep 0.1
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b" # Clear the spinner
-    if [ "${stat}" -ne 0 ]; then exit 1; fi
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

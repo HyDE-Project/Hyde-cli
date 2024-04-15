@@ -93,7 +93,7 @@ list_Backup() {
     print_prompt -b "$bak_list"
   else
     print_prompt -m "Backup: Empty"
-    exit 1
+    return 1
   fi
 }
 
@@ -202,7 +202,7 @@ awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BE
 
 all() {
   list_Backup
-  echo -e "\e[33mBacking up Dots and wallpapers(swww), May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m" 
+  echo -e "\e[33mBacking up Dots and wallpapers, May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m" 
   ask_confirm
          awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override}
       Restore-Config --only "/tmp/Hyde-${UID}-BAK"
@@ -215,6 +215,8 @@ all() {
 }
 
 revert() {
+list_Backup || exit 1
+barLine
 print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
 ask_confirm
          awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst > ${config_override} 
@@ -227,6 +229,8 @@ ask_confirm
         rm -fr $bak
         #echo "Removed: $(ls -td -- $BkpDir/* | head -n 1 )"
       fi
+barLine
+Hyde reload
 }
 
 BackUp() {
@@ -269,7 +273,7 @@ fi
 }
 
 clean() {
-  list_Backup
+  list_Backup || exit 1
 selected_backup=$(ls -l -r $BkpDir | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | grep -v '^[[:space:]]*$' | Fzf-Menu "${FUNCNAME[0]}" )
 if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
   print_prompt -r "To Be Removed:" -n "\n$selected_backup"
@@ -277,6 +281,7 @@ if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
 echo -e "$selected_backup" | awk '{for(i=4; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | while read -r line; do
   if [ -n "$line" ]; then rm -r "${BkpDir}/${line}" ; fi
 done
+load_spinner $!
 else
   print_prompt -y "Operation cancelled" 
   exit 0

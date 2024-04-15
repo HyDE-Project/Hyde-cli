@@ -21,7 +21,7 @@ STOP() {
 OPTION="${1}"
 PASS="${@:2}"
 logFile="/tmp/hyprdots-${UID}-screencap.log"
-cacheFile="${cacheCtl}/screecap.meta"
+cacheFile="${cacheDir}/screecap.meta"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"

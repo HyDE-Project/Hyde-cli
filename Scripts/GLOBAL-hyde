@@ -101,7 +101,7 @@ For advanced usage see options below
                                                                     ﯦ This is useful if you already have a Hyde
                                                                     Default: 'false'
         -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
-                                                                Default: '${cacheCtl}/Hyde'
+                                                                Default: '${cacheDir}/Hyde'
         -g|--git https://gitclone/link/                          Upstream repository link to be cloned
                                                                 Default: 'https://github.com/prasanthrangan/hyprdots'
 [ TIP] Looks like you already have a clone directory somewhere
@@ -295,6 +295,24 @@ case_help() {
     sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
 
+
+load_spinner() {
+    local stat=${2:-0}
+    local pid=$1 # Process ID of the command to monitor
+    local spinstr='|/-\\'
+    local temp
+    while kill -0 $pid 2>/dev/null; do
+        temp="${spinstr#?}"
+        printf " [%c] " "${spinstr}"
+        spinstr=${temp}${spinstr%"${temp}"}
+        sleep 0.1
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b" # Clear the spinner
+ 
+    if [ "${stat}" -ne 0 ]; then exit 1; fi
+}
+
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 
 
@@ -306,23 +324,25 @@ export PATH=${PATH}:${libDir}
 export etcDir="/etc/hyde-cli"
 
 # Config
-export ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-export ctlDir="${ConfDir}/hyde"
-export hydeDir="${ConfDir}/hyde"
-export BkpDir="${ConfDir}/cfg_backups"
-export wallbashDir="${hydeDir}/wallbash"
-export themeDir="${hydeDir}/themes"
+export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ctlDir="${confDir}/hyde"
+export hydeConfDir="${confDir}/hyde"
+export BkpDir="${confDir}/cfg_backups"
+export wallbashDir="${hydeConfDir}/wallbash"
+export themeDir="${hydeConfDir}/themes"
 
 # Cache-dir
-export cacheCtl="${HOME}/.cache/hyde"
-export meta_file="${cacheCtl}/hyde.meta"
+export cacheDir="${HOME}/.cache/hyde"
+export meta_file="${cacheDir}/hyde.meta"
+
+
 
 #! Temporary
 [ -e "${HOME}/.cache/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
 install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 export install_packages_list
-export ctlFile="${cacheCtl}/manage_cfg.lst" #! Will use cacheDir
+export ctlFile="${cacheDir}/manage_cfg.lst" #! Will use cacheDir
 config_override="/tmp/Hyde-${UID}-BAK$(basename "${ctlFile}")"
 export config_override
 
@@ -338,7 +358,7 @@ export scrDir
 make_dir=(
     "${BkpDir}"
     "${cacheDir}"
-    "${cacheCtl}"
+    "${cacheDir}"
     "${etcDir}"
     "${ctlDir}"
 )

@@ -1,9 +1,9 @@
 #!/bin/env bash
-hyprlandConf="$ConfDir/hypr/hyprland.conf"
-userPrefs="$ConfDir/hypr/userprefs.conf"
-windowRules="$ConfDir/hypr/windowrules.conf"
-animFile="$ConfDir/hypr/animations.conf"
-PowManFile="$cacheCtl/power_manager.conf"
+hyprlandConf="$confDir/hypr/hyprland.conf"
+userPrefs="$confDir/hypr/userprefs.conf"
+windowRules="$confDir/hypr/windowrules.conf"
+animFile="$confDir/hypr/animations.conf"
+PowManFile="$cacheDir/power_manager.conf"
 
 
 powerOpt="$1" ;shift

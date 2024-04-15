@@ -2,7 +2,7 @@
 
 CHECK variety
 
-varietyDir=$ConfDir/variety/hyprdots
+varietyDir=$confDir/variety/hyprdots
 varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"
 
 # Pass arguments here
@@ -35,8 +35,8 @@ exit 0
 #! /bin/bash
 
 WP="${1}"
-ConfDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-hyprdotsDir="${ConfDir}/hyprdots"
+confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+hyprdotsDir="${confDir}/hyprdots"
 ScrDir="${hyprdotsDir}/scripts"
 source "${ScrDir}/globalcontrol.sh"
 

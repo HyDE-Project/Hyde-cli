@@ -1,7 +1,7 @@
 #!/bin/env bash
 
-STATE=${cacheCtl}/wallbash-state
-DWAL=${cacheCtl}/wallbash-sequences
+STATE=${cacheDir}/wallbash-state
+DWAL=${cacheDir}/wallbash-sequences
 DCOL="${wallbashDir}/sequence.dcol"
 grep -iq "EnableWallDcol=1" "${ScrDir}/globalcontrol.sh" && toggle_wallbash=true
 FLAG=${2}
