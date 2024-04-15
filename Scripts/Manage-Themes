@@ -1,0 +1,208 @@
+#!/bin/env bash
+
+#? This is a CLI and a TUI for Theme management using fzf,kitty's icat, and jp2a 
+#? This will serve a fn modules in the future
+
+
+
+clock() {
+                local LOOPDELAY
+                trap 'tput cnorm; trap - INT ERR' ERR
+                trap 'tput cnorm; trap - INT ERR; return' INT
+                tput civis
+                while :; do
+                        tput cr
+                        printf '%s' "$(date) "
+                        tput el
+                        sleep 1
+                done
+        }
+
+
+# Git_Repo="https://github.com/kRHYME7/hyde-gallery"
+Git_Repo="https://github.com/kRHYME7/hyde-gallery.git"
+hyde_gallery_dir="${cacheDir}/landing/hyde-gallery"
+file_DB="${hyde_gallery_dir}/hyde-themes.db"
+themepatcher_lst="${hyde_gallery_dir}/themepatcher.lst"
+
+    if [ -d "$hyde_gallery_dir" ]; then
+            git -C "$hyde_gallery_dir" fetch --all &> /dev/null
+            git -C "$hyde_gallery_dir" reset --hard @{upstream} &> /dev/null
+        if [ $? -ne 0 ]; then
+            print_prompt "Errors on the directory, retrying"
+            rm -r "${hyde_gallery_dir}"
+            exec $0
+            exit 1
+        fi
+    else
+        ( git clone --depth 1 "$Git_Repo" "$hyde_gallery_dir" 
+        if [ $? -ne 0 ]; then
+            print_prompt "Git clone failed"
+            exit 1
+        fi
+        ) &
+        load_spinner $! $?
+    fi
+[ ! -d "${hyde_gallery_dir}" ] && exit 1
+
+parse_ini() {
+    local section="$1"
+    local in_section=false
+    local key=""
+    local value=""
+
+    while IFS= read -r line; do
+        # Check if the line is a section header
+        if [[ $line =~ ^\[([^\]]+)\]$ ]]; then
+            # If the section matches, set in_section to true
+            if [[ "${BASH_REMATCH[1]}" == "$section" ]]; then
+                in_section=true
+            else
+                in_section=false
+            fi
+        elif $in_section && [[ $line =~ ^([^=]+)=(.*)$ ]]; then
+            # If in the correct section, extract key and value
+            key="${BASH_REMATCH[1]}"
+            value="${BASH_REMATCH[2]}"
+            # Remove quotes from the value if present
+            value="${value#\"}"
+            value="${value%\"}"
+            # Export the variable
+            export "$key=$value"
+        fi
+    done < "${file_DB}"
+}
+
+generate_list() {
+theme_menu
+# echo -e "${patchList}"
+: > "${themepatcher_lst}"
+while IFS= read -r selected_theme; do
+    parse_ini "${selected_theme}"
+    echo -e "\"$selected_theme\"" "\"$LINK\"" >> "${themepatcher_lst}"
+done <<< "$patchList"
+}
+
+get_preview() {
+    if  [[ $(tput colors) -lt "256" ]] ;then return ;fi
+image_url="${1}"
+        [ -z "${image_url}" ] && return 1
+if [ -n "$KITTY_WINDOW_ID" ]; then
+            kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@20x2 "$image_url" 
+                    else
+            if command -v jp2a &> /dev/null ; then
+                jp2a --colors --color-depth=24 --chars=' .:-=+*#%@' --fill --term-fit --background=dark "${image_url}"
+            else
+                cat << EOF
+                  ░▒▒▒░░░░░▓▓          ___________
+                ░░▒▒▒░░░░░▓▓        //___________/
+               ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
+               ░░▒▒░░░░░▓▓▓▓▓▓ | | | | |  | |  __/
+                ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
+                 ░▒▒░░▓▓   ▓▓   \__  |____/ |____/
+                   ░▒▓▓   ▓▓  //____/
+
+EOF
+                print_prompt -y "Install 'jp2a' to preview in ASCII format"
+            fi
+        fi
+    }
+
+preview_theme() {
+export THEME="$1"
+parse_ini "${THEME}"
+print_prompt -c " \\\ $THEME \\\ " -g "\nLink: " "$LINK" -y "\nOwner: " "${OWNER}\n"    
+    hyde_gallery_dir="${hyde_gallery_dir}/${THEME}"
+    [ ! -f "${hyde_gallery_dir}" ] && mkdir -p "${hyde_gallery_dir}"
+if [[ $( find "${hyde_gallery_dir}" -maxdepth 1 -type f | wc -l) -gt 1 ]]; then
+# while true; do
+    for image_file in "${hyde_gallery_dir}"/*; do get_preview "${image_file}" &
+    break
+# echo . &    #  sleep 2
+    done
+# done
+else 
+get_preview "${hyde_gallery_dir}" &
+fi
+
+#  find "${hyde_gallery_dir}" -maxdepth 1 -type f | wc -l
+}
+
+theme_menu() {
+patchList=$( sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}" | Fzf-Menu "${FUNCNAME[0]}" )
+[ -z "${patchList}" ] && exit 1
+readonly patchList
+export patchList
+}
+
+theme_patcher() {
+generate_list
+ [ ! -f "${themepatcher_lst}" ] && return 
+    print_prompt -g "[themepatcher]"  " Patching the following themes..."
+    print_prompt "${patchList}"
+    ask_confirm
+
+    while IFS='"' read -r null1 themeName null2 themeRepo
+    do
+        themeNameQ+=("${themeName//\"/}")
+        themeRepoQ+=("${themeRepo//\"/}")
+        themePath="${confDir}/hyde/themes/${themeName}"
+        [ -d "${themePath}" ] || mkdir -p "${themePath}"
+        [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
+    done < "${themepatcher_lst}"
+    parallel --bar --link "${CloneDir}/Scripts/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+    print_prompt -g "\n[cache]" " generating cache files..."
+    "${scrDir}/swwwallcache.sh" -t ""
+    if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
+        "${scrDir}/themeswitch.sh" &> /dev/null
+    fi
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
+
+"${@}"
+
+
+
+# fzf --preview 'icat {1} {1%.png}_a.png {1%.png}_b.png' \
+#     --preview-window 'up:60%' \
+#     --bind 'ctrl-v:toggle-preview' \
+#     --height 80% \
+#     --border \
+#     --info inline \
+#     --color=fg:#ebdbb2,bg:#282828,hl:#fabd2f \
+#     --preview-window=right:70%:wrap \
+#     --header "Navigation: j/k, select: enter, exit: esc" \
+#     --prompt="Select an image> " \
+#     --preview "echo 'Main Image:'; icat {}; echo 'Related Images:'; icat {1%.png}_a.png; icat {1%.png}_b.png" \
+#     --preview-window up,70%,border-sharp \
+#     --color=dark \
+#     --layout=reverse-list
+
+
+
+
+
+# pull_assets(){
+# # print_prompt -y "Fetching available themes..."
+# while IFS= read -r THEME; do
+#     parse_ini "${THEME}"
+#     hyde_gallery_dir="${hyde_gallery_dir}/${THEME}"
+#     [ ! -f "${hyde_gallery_dir}" ] && mkdir -p "${hyde_gallery_dir}"
+# # Iterate over all variables that start with PREVIEW
+# for var_name in $(compgen -A variable | grep '^PREVIEW'); do
+#     # Get the value of the variable
+#     image_url="${!var_name}"
+#     # Check if the variable is set and not empty
+#     if [ -n "$image_url" ]; then
+#         # echo "$image_url"
+#         thumbs="${hyde_gallery_dir}/$(basename "${image_url}")"
+#     #   [ ! -f "${thumbs}" ] && 
+#     curl -sL -o "$thumbs" "$image_url"
+#     fi
+#     unset $var_name
+# done
+
+# done <<< "$(sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}")"
+
+# }

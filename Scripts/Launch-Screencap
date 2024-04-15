@@ -11,7 +11,7 @@ snip=false
 
 do_contain "${etcFile}" "${roFile}"
 
-. Run_Screencap GUI
+. Run-Screencap GUI
 trap cleaNotify EXIT
 
 # # set position

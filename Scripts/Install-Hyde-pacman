@@ -38,7 +38,7 @@ GREET
 fi
 
 if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf ; then
-    SUPER ${libDir}/Install_ChaoticAUR --install fresh
+    SUPER ${libDir}/Install-chaotic-aur  --install fresh
 fi
 
 { [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 1
@@ -151,7 +151,7 @@ rm "${install_packages_list}"
 #? restore custom configs
 
 ./restore_fnt.sh || true
-Restore_Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
+Restore-Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
     echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
     while IFS='"' read -r null1 themeName null2 themeRepo

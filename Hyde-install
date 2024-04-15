@@ -17,11 +17,11 @@ install_distro() {
             Install_Hyde-DNF "${newCloneDir}" "${GIT}"
         ;;
         "arch")
-            Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
+            Install-Hyde-pacman "${newCloneDir}" "${GIT}"
         ;;
         *)
             # print_prompt -r "Can't recognize your disto: '${ID}'  "
-            Install_Hyde-PACMAN "${newCloneDir}" "${GIT}"
+            Install-Hyde-pacman "${newCloneDir}" "${GIT}"
             # Add the commands for other distributions here
             echo ""
 
@@ -96,7 +96,7 @@ else
     install_distro --fresh
 fi
 set_metadata "${newCloneDir}"
-print_prompt -c "\nContinue to Re-login now?"
+print_prompt -c "\nRestart now?"
 if ask_confirm "Yy" && pkg_installed sddm &> /dev/null ; then
  systemctl restart sddm
 fi
