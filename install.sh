@@ -19,7 +19,7 @@ case "${distro_ID}" in
         :
         #Yes posible! But I'm Lazy
     ;;
-    "arch")
+        *)
         pkgname=hyde-cli-git
         if pacman -Q yay &> /dev/null ; then aurhlpr="yay"
             elif pacman -Q paru &> /dev/null ; then aurhlpr="paru"
