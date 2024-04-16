@@ -126,7 +126,6 @@ y_offset=210 #* To point the Cursor to the 1st and 2nd latest word
 #? Parse clipboard.rasi and fetch the width. Should consider percent
 clpWidth=$(awk '/window {/,/}/ { if (/width:/) { split($2, a, "%"); print a[1] } }' "${roFile}" )
 clpWidth=${clpWidth:-20} #? Default
-clpHeight=$(awk '/window {/,/}/ { if (/height:/) { split($2, a, "%"); print a[1] } }' "${roFile}" )
 clpHeight=$((clpWidth * 100 / 36)) #? Default
 
 #? Monitor resolution , scale and rotation,Do maths @ json
