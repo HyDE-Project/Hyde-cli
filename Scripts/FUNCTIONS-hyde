@@ -4,19 +4,19 @@ export Function="${1}"
 
 initiate_hyde_command() {
 
-if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/hyde_update_check" ] || [[ $(find "${cacheDir}/hyde_update_check" -mmin +4320) ]] ;} ; then
-    navigate_clone
-    print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
-    notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
-    if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
-        git fetch >/dev/null 2>&1
-        if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
-            echo -e "Updates available! \nEXEC: \033[0;34mHyde update\033[0m"
-            # notify-send "Updates available! EXEC: 'Hyde update' "
+    if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/hyde_update_check" ] || [[ $(find "${cacheDir}/hyde_update_check" -mmin +4320) ]]; }; then
+        navigate_clone
+        print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+        notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+        if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+            git fetch >/dev/null 2>&1
+            if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
+                echo -e "Updates available! \nEXEC: \033[0;34mHyde update\033[0m"
+                # notify-send "Updates available! EXEC: 'Hyde update' "
+            fi
         fi
+        touch "${cacheDir}/hyde_update_check"
     fi
-    touch "${cacheDir}/hyde_update_check"
-fi
 }
 
 Parameters() { #TODO: Add conditionals here like 'case'
@@ -68,10 +68,10 @@ check_file_change() {
     file=$1
     base=$(echo "$file" | tr '/' '-')
     hash_file="${cacheDir}/${base}.hash"
-    
+
     # Calculate the current hash of the file
     current_hash=$(md5sum "$file" | cut -d ' ' -f 1)
-    
+
     # If the hash file exists, read the stored hash. Otherwise, create it.
     if [ -f "$hash_file" ]; then
         stored_hash=$(cat "$hash_file")
@@ -79,7 +79,7 @@ check_file_change() {
         echo "$current_hash" >"$hash_file"
         stored_hash=$current_hash
     fi
-    
+
     # Compare the current hash with the stored hash
     if [ "$current_hash" != "$stored_hash" ]; then
         # Update the hash file with the current hash
@@ -92,10 +92,10 @@ check_file_change() {
     fi
 }
 
-inform_updates(){
-latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
-if [[ $latest_hyde_version != $hyde_version ]]; then
-cat << WARN
+inform_updates() {
+    latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
+    if [[ $latest_hyde_version != $hyde_version ]]; then
+        cat <<WARN
 
 
 █░█ █▀█ █▀▄ ▄▀█ ▀█▀ █▀▀ █▀   ▄▀█ █░█ ▄▀█ █ █░░ ▄▀█ █▄▄ █░░ █▀▀
@@ -105,98 +105,96 @@ Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
 
 WARN
 
- print_prompt -r "Your Local Hyde version is outdated!"
- print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
+        print_prompt -r "Your Local Hyde version is outdated!"
+        print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
 
-fi
+    fi
 }
 
 rofi_pos() {
-    
+
     pkill -x rofi && exit
     package_check rofi jq
-    
+
     roFile=${confDir}/rofi/clipboard.rasi
     # set position
 
-#? Cursor position offset when pastebin is spawned
-x_offset=15   #* Cursor spawn position on clipboard
-y_offset=210   #* To point the Cursor to the 1st and 2nd latest word
+    #? Cursor position offset when pastebin is spawned
+    x_offset=15  #* Cursor spawn position on clipboard
+    y_offset=210 #* To point the Cursor to the 1st and 2nd latest word
 
-#? Parse clipboard.rasi and fetch the width. Should consider percent
-clipWidth=$(awk '/window {/,/}/' ${roFile}  | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
-clipWidth=${clipWidth:-20} #? Default
-clpHeight=$(awk '/window {/,/}/' ${roFile}  | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
-clpHeight=${clpHeight:-$((clipWidth * 100 / 36))} #? Default
+    #? Parse clipboard.rasi and fetch the width. Should consider percent
+    clipWidth=$(awk '/window {/,/}/' ${roFile} | awk '/width:/ {print $2}' | awk -F "%" '{print $1}')
+    clipWidth=${clipWidth:-20} #? Default
+    clpHeight=$(awk '/window {/,/}/' ${roFile} | awk '/height:/ {print $2}' | awk -F "%" '{print $1}')
+    clpHeight=${clpHeight:-$((clipWidth * 100 / 36))} #? Default
 
-#? Monitor resolution , scale and rotation,Do maths @ json
-eval "$(hyprctl monitors -j | jq -r \
---argjson clipWidth "$clipWidth" \
---argjson clpHeight "$clpHeight" \
-' .[] | select(.focused==true) | 
+    #? Monitor resolution , scale and rotation,Do maths @ json
+    eval "$(hyprctl monitors -j | jq -r \
+        --argjson clipWidth "$clipWidth" \
+        --argjson clpHeight "$clpHeight" \
+        ' .[] | select(.focused==true) | 
  (if (.transform | (. % 2) == 1) then
    {monWidth: (.height / .scale | floor), monHeight: (.width / .scale | floor)}
  else
    {monWidth: (.width / .scale | floor), monHeight: (.height / .scale | floor)}
  end) as $dims |
- "export monName=\(.name);
-   export monTrans=\(.transform);
-   export monScale=\(.scale);
-   export monWidth=\($dims.monWidth);
-   export monHeight=\($dims.monHeight);
-   export monXpos=\(.x | floor);
-   export monYpos=\(.y | floor);
-   export clipWidth=\(if (.transform | (. % 2) == 1) then ($dims.monHeight * $clipWidth / 100 | floor) else ($dims.monWidth * $clipWidth / 100 | floor) end);
-   export clpHeight=\(if (.transform | (. % 2) == 1) then ($dims.monWidth * $clpHeight / 100 | floor) else ($dims.monHeight * $clpHeight / 100 | floor) end);
-   "')"
+"export monName=\(.name);
+export monTrans=\(.transform);
+export monScale=\(.scale);
+export monWidth=\($dims.monWidth);
+export monHeight=\($dims.monHeight);
+export monXpos=\(.x | floor);
+export monYpos=\(.y | floor);
+export clipWidth=\(if (.transform | (. % 2) == 1) then ($dims.monHeight * $clipWidth / 100 | floor) else ($dims.monWidth * $clipWidth / 100 | floor) end);
+export clpHeight=\(if (.transform | (. % 2) == 1) then ($dims.monWidth * $clpHeight / 100 | floor) else ($dims.monHeight * $clpHeight / 100 | floor) end);
+"')"
 
-#? Level 1 layers  e.g namesapce for  waybar, for now just waybar \\ ensures that we can get a good boundary value
-wbarW=0 ; wbarH=0
-eval "$(hyprctl layers -j | jq -r --arg mon "$monName" '.[$mon].levels | .[] | .[] | select(.namespace == "waybar") | if .h < .w then "export wbarH=\(.h)" else "export wbarW=$((\(.w) + $wbarW ))" end')"
+    #? Level 1 layers  e.g namesapce for  waybar, for now just waybar \\ ensures that we can get a good boundary value
+    wbarW=0
+    wbarH=0
+    eval "$(hyprctl layers -j | jq -r --arg mon "$monName" '.[$mon].levels | .[] | .[] | select(.namespace == "waybar") | if .h < .w then "export wbarH=\(.h)" else "export wbarW=$((\(.w) + $wbarW ))" end')"
 
-#?  Cursor position filtered by Monitor stats
-eval "$(hyprctl cursorpos -j | jq -r \
---argjson x_offset "$x_offset" \
---argjson y_offset "$y_offset" \
---argjson monWidth "$monWidth" \
---argjson monHeight "$monHeight" \
---argjson monXpos "$monXpos" \
---argjson monYpos "$monYpos" \
---arg monTrans "$monTrans" \
-'"
+    #?  Cursor position filtered by Monitor stats
+    eval "$(hyprctl cursorpos -j | jq -r \
+        --argjson x_offset "$x_offset" \
+        --argjson y_offset "$y_offset" \
+        --argjson monWidth "$monWidth" \
+        --argjson monHeight "$monHeight" \
+        --argjson monXpos "$monXpos" \
+        --argjson monYpos "$monYpos" \
+        --arg monTrans "$monTrans" \
+        '"
 export curXpos=\(.x - $monXpos - $x_offset )
 export curYpos=\(.y - $monYpos - $y_offset)
 "')"
 
     #? Handles Boundary
-    xBound=$((monWidth - clipWidth - wbarW )) 
-    yBound=$((monHeight - clpHeight - wbarH )) 
-    curXpos=$(( curXpos < 0 ? 0 : ( curXpos > xBound ? xBound :  curXpos))) 
-    curYpos=$(( curYpos < 0 ? 0 : ( curYpos > yBound ? yBound :  curYpos)))
+    xBound=$((monWidth - clipWidth - wbarW))
+    yBound=$((monHeight - clpHeight - wbarH))
+    curXpos=$((curXpos < 0 ? 0 : (curXpos > xBound ? xBound : curXpos)))
+    curYpos=$((curYpos < 0 ? 0 : (curYpos > yBound ? yBound : curYpos)))
 
     h_override="height: ${clpHeight}px; width: ${clipWidth}px;"
     pos="window {${h_override}location: north west; x-offset: ${curXpos}px; y-offset: ${curYpos}px;}" #! I just Used the old pos function
-    #pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}" 
 
     # read hypr theme border
-    wind_border=$(( hypr_border * 3/2 ))
-    elem_border=`[ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border`
+    wind_border=$((hypr_border * 3 / 2))
+    elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
     r_override="window { border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
-    
-    
+
     # read hypr font size
-    
-    fnt_override=`gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}'`
+    fnt_override=$(gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}')
     fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
-    
+
 }
 
 #? handle pasting
 pasteIt() {
     ignore_paste_file=${cacheDir}/ignore.paste
-    
+
     if [[ ! -e "${ignore_paste_file}" ]]; then
-cat << IGNOREWTYPE > "${ignore_paste_file}"
+        cat <<IGNOREWTYPE >"${ignore_paste_file}"
 kitty
 org.kde.konsole
 terminator
@@ -205,20 +203,20 @@ Alacritty
 xterm-256color
 IGNOREWTYPE
     fi
-    
+
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
-    [ -n "${ignore_class}" ] && echo "${ignore_class}" >> "${ignore_paste_file}"  && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
-    
+    [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
+
     # is_xwayland=false
     #  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
-    if ! grep -q "${class}" "${ignore_paste_file}" ; then
+    if ! grep -q "${class}" "${ignore_paste_file}"; then
         wtype -M ctrl v -m ctrl
     fi
 }
 
 rename_backup() {
-    bak=$(ls -td -- "$BkpDir"/* | head -n 1 )
+    bak=$(ls -td -- "$BkpDir"/* | head -n 1)
     if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-$1"
     fi
@@ -226,79 +224,74 @@ rename_backup() {
     [ -e "$install_packages_list" ] && cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
 }
 
-
-
-
-
 shell_select() {
-#TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
-        navigate_clone
-        myShell="$(echo -e "zsh\nfish" | Fzf-Menu "${FUNCNAME[0]}" )"
-        echo "${myShell}"
+    #TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
+    navigate_clone
+    myShell="$(echo -e "zsh\nfish" | Fzf-Menu "${FUNCNAME[0]}")"
+    echo "${myShell}"
 
-        if [ "${myShell}" == "zsh" ];then       
-            CHECK zsh oh-my-zsh-git 
-            # add zsh plugins            
-                # set variables
-                Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
-                Zsh_Path="/usr/share/oh-my-zsh"
-                Zsh_Plugins="$Zsh_Path/custom/plugins"
-                Fix_Completion=""
-            
-                # generate plugins from list
-                while read r_plugin
-                do
-                    z_plugin=$(echo $r_plugin | awk -F '/' '{print $NF}')
-                    if [ "${r_plugin:0:4}" == "http" ] && [ ! -d $Zsh_Plugins/$z_plugin ] ; then
-                        SUPER git clone $r_plugin $Zsh_Plugins/$z_plugin
-                    fi
-                    if [ "$z_plugin" == "zsh-completions" ] && [ `grep 'fpath+=.*plugins/zsh-completions/src' $Zsh_rc | wc -l` -eq 0 ]; then
-                        Fix_Completion='\nfpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
-                    else
-                        w_plugin=$(echo ${w_plugin} ${z_plugin})
-                    fi
-                done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
-            
-                # update plugin array in zshrc
-                print_prompt -y "[SHELL]" -w " intalling plugins (${w_plugin})"
-                sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
-        
-        elif [ "${myShell}" == "fish" ];then   
-            config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"    
-            package_check fish lsd starship
-            (
-            echo 'P|${HOME}/.config|fish|fish'  
+    if [ "${myShell}" == "zsh" ]; then
+        CHECK zsh oh-my-zsh-git
+        # add zsh plugins
+        # set variables
+        Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
+        Zsh_Path="/usr/share/oh-my-zsh"
+        Zsh_Plugins="$Zsh_Path/custom/plugins"
+        Fix_Completion=""
+
+        # generate plugins from list
+        while read r_plugin; do
+            z_plugin=$(echo $r_plugin | awk -F '/' '{print $NF}')
+            if [ "${r_plugin:0:4}" == "http" ] && [ ! -d $Zsh_Plugins/$z_plugin ]; then
+                SUPER git clone $r_plugin $Zsh_Plugins/$z_plugin
+            fi
+            if [ "$z_plugin" == "zsh-completions" ] && [ $(grep 'fpath+=.*plugins/zsh-completions/src' $Zsh_rc | wc -l) -eq 0 ]; then
+                Fix_Completion='\nfpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
+            else
+                w_plugin=$(echo ${w_plugin} ${z_plugin})
+            fi
+        done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
+
+        # update plugin array in zshrc
+        print_prompt -y "[SHELL]" -w " intalling plugins (${w_plugin})"
+        sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
+
+    elif [ "${myShell}" == "fish" ]; then
+        config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"
+        package_check fish lsd starship
+        (
+            echo 'P|${HOME}/.config|fish|fish'
             echo 'P|${HOME}/.config|lsd|lsd'
-            ) > ${config_override}
+        ) >${config_override}
 
-            Restore-Config --only "/tmp/Hyde-$(id -u)-BAK"
-        fi
-        # set shell
-        [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
-        if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]] ; then
-            print_prompt -y "[SHELL] " -w "changing shell to ${myShell}..."
-            chsh -s "$(which ${myShell})"
-        else
-            print_prompt -g "[SKIP]" -w "${myShell} is already set as shell..."
-        fi            
+        Restore-Config --only "/tmp/Hyde-$(id -u)-BAK"
+    fi
+    # set shell
+    [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
+    if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
+        print_prompt -y "[SHELL] " -w "changing shell to ${myShell}..."
+        chsh -s "$(which ${myShell})"
+    else
+        print_prompt -g "[SKIP]" -w "${myShell} is already set as shell..."
+    fi
 
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 
-
 #??? Handle Syntax errors
-help=$(grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }'| \
+help=$(
+    grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
-            -e "s|\${ctlFile}|$ctlFile|g"        
+            -e "s|\${ctlFile}|$ctlFile|g"
 )
 
 if [ -z "$1" ]; then
     box_me -s "Hyde-cli $hyde_cli_version"
     print_prompt -w "$help"
     exit 1
-    elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1>/dev/null); then
+elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1>/dev/null); then
     echo -e "[Function unknown]: '$*'\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
     exit 1
 fi
