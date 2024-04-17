@@ -91,6 +91,12 @@ ask_confirm() {
 }
 
 handle_error() {
+print_prompt -r "Looks Like I forgot your Clone Directory!"
+if [ -d "${cacheDir}/Hyde-Clone"  ]; then
+print_prompt -y "Using the Clone Directory: " -w "${cacheDir}/Hyde-Clone"
+Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
+fi
+
 cat << HANDLE_ERROR
 $(print_prompt -r "${*}")
 =======================================================================================
@@ -338,7 +344,7 @@ export meta_file="${cacheDir}/hyde.meta"
 
 
 #! Temporary
-[ -e "${HOME}/.cache/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
+[ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
 install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
 export install_packages_list
