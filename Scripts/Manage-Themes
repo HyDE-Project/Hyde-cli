@@ -9,25 +9,25 @@ hyde_gallery_dir="${cacheDir}/landing/hyde-gallery"
 file_DB="${hyde_gallery_dir}/hyde-themes.db"
 themepatcher_lst="${hyde_gallery_dir}/themepatcher.lst"
 
-if [ -d "$hyde_gallery_dir" ]; then
-    git -C "$hyde_gallery_dir" fetch --all &>/dev/null
-    git -C "$hyde_gallery_dir" reset --hard @{upstream} &>/dev/null
-    if [ $? -ne 0 ]; then
-        print_prompt "Errors on the directory, retrying"
-        rm -r "${hyde_gallery_dir}"
-        exec $0
-        exit 1
-    fi
-else
-    (
+(
+    if [ -d "$hyde_gallery_dir" ]; then
+        git -C "$hyde_gallery_dir" fetch --all &>/dev/null
+        git -C "$hyde_gallery_dir" reset --hard @{upstream} &>/dev/null
+        if [ $? -ne 0 ]; then
+            print_prompt "Errors on the directory, retrying"
+            rm -r "${hyde_gallery_dir}"
+            exec $0
+            exit 1
+        fi
+    else
         git clone --depth 1 "$Git_Repo" "$hyde_gallery_dir"
         if [ $? -ne 0 ]; then
             print_prompt "Git clone failed"
             exit 1
         fi
-    ) &
-    load_spinner $! $?
-fi
+    fi
+) &
+load_spinner $! $?
 [ ! -d "${hyde_gallery_dir}" ] && exit 1
 
 parse_ini() {
@@ -94,6 +94,7 @@ EOF
 }
 
 preview_theme() {
+    clear
     export THEME="$1"
     parse_ini "${THEME}"
     print_prompt -c " \\\ $THEME \\\ " -g "\nLink: " "$LINK" -y "\nOwner: " "${OWNER}\n"
