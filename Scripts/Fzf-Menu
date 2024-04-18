@@ -10,51 +10,50 @@
 menu_height="--height 60%"
 
 fzf_list_Marker_OVERWRITE() {
-fzf -m --marker ' '\
- --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage-Config prev_restore_list ${config_override}"
+    fzf -m --marker ' ' \
+        --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 fzf_list_Marker_SYNC() {
- fzf -m --marker '' \
-  --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all'\
- --preview "Manage-Config prev_restore_list ${config_override}" 
+    fzf -m --marker '' \
+        --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 fzf_list_Marker_PRESERVE() {
- fzf -m --marker ' '\
- --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage-Config prev_restore_list ${config_override}"
+    fzf -m --marker ' ' \
+        --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
-
 fzf_list_Marker_BACKUP() {
- fzf -m --marker ' '\
- --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage-Config prev_restore_list ${config_override}" 
+    fzf -m --marker ' ' \
+        --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        --preview "Manage-Config prev_restore_list ${config_override}"
 }
 
 #? restore Config
 fzf_main_config_menu() {
-fzf --prompt='▶' \
-    --pointer='→' \
-    --marker='♡' \
-    --cycle \
-    --preview "Manage-Config prev_restore_list ${config_override}" \
-    --preview-window 'right:80%,border-rounded'
+    fzf --prompt='▶' \
+        --pointer='→' \
+        --marker='♡' \
+        --cycle \
+        --preview "Manage-Config prev_restore_list ${config_override}" \
+        --preview-window 'right:80%,border-rounded'
 }
 
 fzf_revert() {
-        fzf --prompt 'List of explicit Backup, Run by Hyde backup all' \
-            --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'
+    fzf --prompt 'List of explicit Backup, Run by Hyde backup all' \
+        --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'
 }
 
 fzf_clean() {
-        fzf -m \
+    fzf -m \
         --marker='X' \
         --cycle \
         --pointer='→' \
@@ -64,18 +63,18 @@ fzf_clean() {
 
 fzf_BackUp() {
     fzf \
-       --prompt='Restoring from a Backup Directory.' \
-       --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'\
+        --prompt='Restoring from a Backup Directory.' \
+        --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")' \
         ${menu_height}
 
 }
 
 fzf_shell_select() {
-fzf --prompt='Select shell: '
+    fzf --prompt='Select shell: '
 
 }
 
-#? Theme patch Menu 
+#? Theme patch Menu
 fzf_theme_menu() {
     fzf \
         --cycle \
@@ -85,11 +84,9 @@ fzf_theme_menu() {
         --pointer='→' \
         --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
-        --preview-window 'right:60%,border-rounded' \
+        --preview-window 'right:60%,border-rounded'
 
 }
 
-
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 "fzf_${*}"
-

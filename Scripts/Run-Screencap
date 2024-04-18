@@ -2,11 +2,11 @@
 
 package_check grimblast swappy
 
-if [ -z "${XDG_PICTURES_DIR}" ] ; then
+if [ -z "${XDG_PICTURES_DIR}" ]; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
 fi
 
-if [ -z "${XDG_VIDEOS_DIR}" ] ; then
+if [ -z "${XDG_VIDEOS_DIR}" ]; then
     XDG_VIDEOS_DIR="${HOME}/Videos"
 fi
 
@@ -32,30 +32,33 @@ temp_screenshot="/tmp/Hyprdots-$(id -u)-${img_file}"
 mkdir -p "${img_dir}"
 mkdir -p "${vid_dir}"
 mkdir -p "${swpy_dir}"
-echo -e "[Default]\nsave_dir=${img_dir}\nsave_filename_format=${img_file}" > "${swpy_dir}"/config
+echo -e "[Default]\nsave_dir=${img_dir}\nsave_filename_format=${img_file}" >"${swpy_dir}"/config
 
 focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
 first_setup() {
     if [ ! -f "${cacheFile}" ]; then
-    package_check wl-screenrec
-        if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then CHECK libva-intel-driver intel-media-driver ; fi
-        if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then CHECK libva-mesa-driver ; fi
-        
+        package_check wl-screenrec
+        if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then CHECK libva-intel-driver intel-media-driver; fi
+        if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then CHECK libva-mesa-driver; fi
+
         notify-send -a "ScreenCap Initializing" "Testing on monitor: ${focus_monitor}. Please Wait..." -t 10000 -r 56789
         touch "${cacheFile}"
         video_driver_files=$(find /usr/lib/dri -type f -name "*_drv_video.so" -printf '%P\n' | sed 's/_drv_video.so$//')
         for libva_Driver in $video_driver_files; do
             vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be used by wl-screenrec"
             export LIBVA_DRIVER_NAME=${libva_Driver}
-            if  wl-screenrec -f /tmp/test.mp4 -o "${focus_monitor}"  > "${logFile}" 2>&1  & sleep 3 && pkill --signal=SIGINT wl-screenrec ; then
+            if
+                wl-screenrec -f /tmp/test.mp4 -o "${focus_monitor}" >"${logFile}" 2>&1 &
+                sleep 3 && pkill --signal=SIGINT wl-screenrec
+            then
                 if grep -q "Failed to initialise VAAPI connection" "${logFile}"; then
                     echo "${libva_Driver} : Not Supported"
                 else
                     {
                         echo -e "${vaMsg}"
                         echo "screen_recorder=\"wl-screenrec\""
-                    } >> "${cacheFile}"
+                    } >>"${cacheFile}"
                     notify-send -a "ScreenCap" "wl-screenrec will use \"${libva_Driver}\" for screen recording." -t 5000 -r 56789
                     killall wl-screenrec
                     break
@@ -64,14 +67,14 @@ first_setup() {
                 notify-send -a "ScreenCap: Segfault" "We can't use ${libva_Driver}. Continuing " -e -r 56789
             fi
         done
-        
+
         if ! grep -q "${vaMsg}" "${cacheFile}"; then
             notify-send -a "ScreenCap" "Oh no! wl-screenrec might not work on your system. Will use 'wf-recorder' for now." -t 3000 -r 56789
             vaMsg="#! Oh no! wl-screenrec is not working for you. Do not worry we will use wf-recorder instead. Try to run 'wl-screenrec' in termianl."
             {
                 echo "${vaMsg}"
                 echo "screen_recorder=\"wf-recorder\""
-            } >> "${cacheFile}"
+            } >>"${cacheFile}"
             package_check wf-recorder
         fi
         sleep 3
@@ -86,7 +89,7 @@ first_setup() {
 warn_dup() {
     first_setup
     instance=$(pgrep "${screen_recorder}" | wc -l)
-    if [ "${instance}" -ne  0 ]; then
+    if [ "${instance}" -ne 0 ]; then
         notify-send -a "Screencap Warning! ${instance} instances running!" " ${screen_recorder} recording at ${focus_monitor}" -i "${temp_screenshot}" -t 900
     else
         notify-send -a "Screencap:" ${screen_recorder}"  recording at ${focus_monitor} " -i "${temp_screenshot}" -t 900
@@ -96,8 +99,8 @@ warn_dup() {
 
 print_error() {
     usage="$(case_help OPTION)"
-    
-cat << HELP
+
+    cat <<HELP
 Screenrecord: '${screen_recorder}'
 Screenshot: 'grimblast'
 
@@ -111,11 +114,11 @@ Example you can append [--audio] to capture audio.
 HELP
 }
 
-cleaNotify () {
-    if [ -f "${img_dir}/${img_file}" ] ; then
+cleaNotify() {
+    if [ -f "${img_dir}/${img_file}" ]; then
         notify-send -a "Screencap" "Saved in ${img_dir}" -i "${img_dir}/${img_file}" -e
         rm -f "${temp_screenshot}"
-        elif [ -f "${vid_dir}/${vid_file}" ] ; then
+    elif [ -f "${vid_dir}/${vid_file}" ]; then
         notify-send -a "Screencap" "Saved in ${vid_dir}" -i "${temp_screenshot}" -e
         rm -f "${temp_screenshot}"
     fi
@@ -128,47 +131,62 @@ if [ "${OPTION}" = "--stop" ]; then
 fi
 
 case ${OPTION} in
-    -pa|--print-all) #? 󰄀 Print all outputs
-        grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    cleaNotify;;
-    -ra|--record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
-    -rf|--record-focus) #? 󰃽 Record focused monitor
-        grim -o "${focus_monitor}" "${temp_screenshot}"
-        warn_dup
-        if [ -z "${screen_recorder}" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
-        "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS}
-    cleaNotify;;
-    -ps|--print-snip) #? 󰄀 Drag to manually snip an area
-        grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    cleaNotify;;
-    -rs|--record-snip) #? 󰃽 Drag to manually snip an area to screen record it
-        GEOM=$(slurp)
-        grim -g "${GEOM}" "${temp_screenshot}"
-        warn_dup
-        if [ -z "$screen_recorder" ]; then $0 --reset ; notify-send "No Screenrecorder Detected" ; first_setup "${*}" ; exit ;fi
-        "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
-    cleaNotify;;
-    -f|--freeze) #? 󰄀 Frozen screen, drag to manually snip an area
+-pa | --print-all) #? 󰄀 Print all outputs
+    grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    cleaNotify
+    ;;
+-ra | --record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
+-rf | --record-focus) #? 󰃽 Record focused monitor
+    grim -o "${focus_monitor}" "${temp_screenshot}"
+    warn_dup
+    if [ -z "${screen_recorder}" ]; then
+        $0 --reset
+        notify-send "No Screenrecorder Detected"
+        first_setup "${*}"
+        exit
+    fi
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS}
+    cleaNotify
+    ;;
+-ps | --print-snip) #? 󰄀 Drag to manually snip an area
+    grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    cleaNotify
+    ;;
+-rs | --record-snip) #? 󰃽 Drag to manually snip an area to screen record it
+    GEOM=$(slurp)
+    grim -g "${GEOM}" "${temp_screenshot}"
+    warn_dup
+    if [ -z "$screen_recorder" ]; then
+        $0 --reset
+        notify-send "No Screenrecorder Detected"
+        first_setup "${*}"
+        exit
+    fi
+    "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
+    cleaNotify
+    ;;
+-f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
     grimblast --freeze copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}" ;;
-    -pm|--print-monitor) #? 󰄀 Print focused monitor
-        grimblast copysave output "${temp_screenshot}" && swappy -f  "${temp_screenshot}"
-    cleaNotify;;
-    -sc|--scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
-        CHECK tesseract-data-eng tesseract
-        GEOM=$(slurp)
-        grim -g "${GEOM}" "${temp_screenshot}"
-        pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
-        tesseract  "${temp_screenshot}" - | wl-copy
-        notify-send -a "Screencap" "OCR preview" -i "${temp_screenshot}" -e
-        rm -f "${temp_screenshot}"
+-pm | --print-monitor) #? 󰄀 Print focused monitor
+    grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    cleaNotify
     ;;
-    --stop) #?  Stop every instance of Screencap
-        :
+-sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
+    CHECK tesseract-data-eng tesseract
+    GEOM=$(slurp)
+    grim -g "${GEOM}" "${temp_screenshot}"
+    pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
+    tesseract "${temp_screenshot}" - | wl-copy
+    notify-send -a "Screencap" "OCR preview" -i "${temp_screenshot}" -e
+    rm -f "${temp_screenshot}"
     ;;
-    --reset) #?  Reinitialize screencap
-        rm -f "${cacheFile}"
+--stop) #?  Stop every instance of Screencap
+    :
     ;;
-    GUI) : ;;
-    *)  # invalid option
+--reset) #?  Reinitialize screencap
+    rm -f "${cacheFile}"
+    ;;
+GUI) : ;;
+*) # invalid option
     print_error ;;
 esac

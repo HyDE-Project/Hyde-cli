@@ -4,7 +4,7 @@
 SUPER() {
     local command="$*"
     print_prompt -y "[ROOT] " "${command}"
-    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ] ; then
+    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ]; then
         doas sh -c "$command"
     else
         sudo sh -c "$command"
@@ -13,20 +13,50 @@ SUPER() {
 
 export -f SUPER
 
-barLine() { printf '=%.0s' $(seq 3 "$(tput cols)"); echo; }
+barLine() {
+    printf '=%.0s' $(seq 3 "$(tput cols)")
+    echo
+}
 
 print_prompt() {
-    while (( "$#" )); do
+    while (("$#")); do
         case "$1" in
-            -r) echo -ne "\e[31m$2\e[0m"; shift 2 ;; # Red
-            -g) echo -ne "\e[32m$2\e[0m"; shift 2 ;; # Green
-            -y) echo -ne "\e[33m$2\e[0m"; shift 2 ;; # Yellow
-            -b) echo -ne "\e[34m$2\e[0m"; shift 2 ;; # Blue
-            -m) echo -ne "\e[35m$2\e[0m"; shift 2 ;; # Magenta
-            -c) echo -ne "\e[36m$2\e[0m"; shift 2 ;; # Cyan
-            -w) echo -ne "\e[37m$2\e[0m"; shift 2 ;; # White
-            -n) echo -ne "\e[96m$2\e[0m"; shift 2 ;; # Neon
-            *) echo -ne "$1"; shift ;;
+        -r)
+            echo -ne "\e[31m$2\e[0m"
+            shift 2
+            ;; # Red
+        -g)
+            echo -ne "\e[32m$2\e[0m"
+            shift 2
+            ;; # Green
+        -y)
+            echo -ne "\e[33m$2\e[0m"
+            shift 2
+            ;; # Yellow
+        -b)
+            echo -ne "\e[34m$2\e[0m"
+            shift 2
+            ;; # Blue
+        -m)
+            echo -ne "\e[35m$2\e[0m"
+            shift 2
+            ;; # Magenta
+        -c)
+            echo -ne "\e[36m$2\e[0m"
+            shift 2
+            ;; # Cyan
+        -w)
+            echo -ne "\e[37m$2\e[0m"
+            shift 2
+            ;; # White
+        -n)
+            echo -ne "\e[96m$2\e[0m"
+            shift 2
+            ;; # Neon
+        *)
+            echo -ne "$1"
+            shift
+            ;;
         esac
     done
     echo ""
@@ -35,23 +65,23 @@ print_prompt() {
 box_me() {
     local sender="Hyde-cli: "
     local color=3
-    
-    while (( "$#" )); do
+
+    while (("$#")); do
         case "$1" in
-            -s)
-                sender="$2"
-                shift 2
+        -s)
+            sender="$2"
+            shift 2
             ;;
-            -c)
-                color="$2"
-                shift 2
+        -c)
+            color="$2"
+            shift 2
             ;;
-            *)
-                break
+        *)
+            break
             ;;
         esac
     done
-    
+
     local s="${sender}$*"
     tput setaf ${color}
     echo -e " ═${s//?/═}"
@@ -62,13 +92,13 @@ box_me() {
 
 ask_confirm() {
     local key=$1
-    if [[ "$key" == "Yy"  ]]; then
+    if [[ "$key" == "Yy" ]]; then
         while true; do
             read -n 1 -s -r -p "$(print_prompt -n "[y] " -w "yes (default) " -m "[n] " -w "no:\n")" key
             [[ -z "$key" ]] && key=y
             if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
                 return 0
-                elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
+            elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
                 return 1
             else
                 echo "[Y]es or [N]o?"
@@ -77,7 +107,8 @@ ask_confirm() {
     else
         while true; do
             if [ -z "$key" ]; then
-                read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key ; [[ -z "$key" ]] && break || exit 0
+                read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key
+                [[ -z "$key" ]] && break || exit 0
             else
                 read -p "Please type '$(print_prompt -m "$key")' to continue: " answer
                 if [[ "$answer" == "$key" ]]; then
@@ -91,13 +122,13 @@ ask_confirm() {
 }
 
 handle_error() {
-print_prompt -r "Looks Like I forgot your Clone Directory!"
-if [ -d "${cacheDir}/Hyde-Clone"  ]; then
-print_prompt -y "Using the Clone Directory: " -w "${cacheDir}/Hyde-Clone"
-Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
-fi
+    print_prompt -r "Looks Like I forgot your Clone Directory!"
+    if [ -d "${cacheDir}/Hyde-Clone" ]; then
+        print_prompt -y "Using the Clone Directory: " -w "${cacheDir}/Hyde-Clone"
+        Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
+    fi
 
-cat << HANDLE_ERROR
+    cat <<HANDLE_ERROR
 $(print_prompt -r "${*}")
 =======================================================================================
 Please run:
@@ -135,12 +166,12 @@ set_branch() {
     git_branch=$(git branch -a | fzf --prompt='Choose a branch')
     [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
     if [[ $git_branch == *"*"* ]]; then
-    export current_branch="${git_branch//\* /}"
+        export current_branch="${git_branch//\* /}"
         print_prompt -y "Already in branch: ${current_branch}"
         return 1
     else
         # Extract the branch name without the remote prefix and trim leading whitespace
-    export current_branch=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        export current_branch=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
         # Switch to the selected branch
         git checkout "${current_branch}"
         echo "On branch: ${current_branch}"
@@ -148,9 +179,8 @@ set_branch() {
 }
 
 repo_info() {
-  [[ $* != *"--local"* ]] && 
-
-    navigate_clone
+    [[ $* != *"--local"* ]] &&
+        navigate_clone
     print_prompt -g "CloneDirectory: " -n "${CloneDir}"
     print_prompt -g "Git URL: " -n "${git_url}"
     print_prompt -g "Git Branch: " -n "${current_branch}"
@@ -169,25 +199,25 @@ navigate_clone() {
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
     current_branch=$(git branch --show-current)
-    git_url=$( git remote get-url origin)
+    git_url=$(git remote get-url origin)
     # check changes on the restore lst
 }
 
 set_metadata() {
     print_prompt -y "Setting metadata"
     CloneDir=${1:-${CloneDir}}
-    export CloneDir 
+    export CloneDir
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
     current_branch=$(git branch --show-current)
     git_url=$(git remote get-url origin)
     # check changes on the restore lst
-    restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1 )"
+    restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
     commit_message="$(git show -s --format='%B')"
-touch "${meta_file}"
-cat << METADATA > "${meta_file}"
+    touch "${meta_file}"
+    cat <<METADATA >"${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this
 export CloneDir="$CloneDir"
@@ -200,13 +230,12 @@ export commit_message="${commit_message}"
 METADATA
 }
 
-pkg_installed()
-{
+pkg_installed() {
     local PkgIn=$1
-    
-    if pacman -Qi $PkgIn &> /dev/null
-    then
+
+    if pacman -Qi $PkgIn &>/dev/null; then
         #echo "${PkgIn} is already installed..."
+
         return 0
     else
         #echo "${PkgIn} is not installed..."
@@ -214,30 +243,31 @@ pkg_installed()
     fi
 }
 
-CHECK () {
+CHECK() {
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
-    
-    if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
+
+    if [[ -n "${Pkg_Dep}" ]]; then
+        echo -e "$0 Dependencies:\n$Pkg_Dep"
         notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
         get_aurhlpr
-        { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
+        { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
     fi
 }
 
-
-package_check () {
+package_check() {
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
-if [[ -n "${Pkg_Dep}" ]]; then echo -e "$0 Dependencies:\n$Pkg_Dep"
-    get_aurhlpr
-    if [ -n "${DISPLAY}" ]; then
+    if [[ -n "${Pkg_Dep}" ]]; then
+        echo -e "$0 Dependencies:\n$Pkg_Dep"
+        get_aurhlpr
+        if [ -n "${DISPLAY}" ]; then
             notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
-            { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}" ; } || { notify-send "Operation Cancelled" && exit 1; }
-    else
+            { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
+        else
             print_prompt -y "Confirm to install Dependencies: '${Pkg_Dep}'"
-            { "${aurhlpr}" -S $Pkg_Dep --noconfirm && print_prompt -y "Installed: ${Pkg_Dep}" ; } || { print_prompt -r "Operation Cancelled" && exit 1; }
-    fi
+            { "${aurhlpr}" -S $Pkg_Dep --noconfirm && print_prompt -y "Installed: ${Pkg_Dep}"; } || { print_prompt -r "Operation Cancelled" && exit 1; }
+        fi
 
-fi
+    fi
 }
 
 integrity_check() {
@@ -253,7 +283,7 @@ integrity_check() {
     #     ".config/hyde/themes/*/hypr.theme"
     #     ".config/hyde/themes/*/wallpapers"
     # )
-    
+
     # exit_flag=false
     # for fchk in "${config[@]}" ; do
     #     # Use find to search for files matching the pattern
@@ -263,7 +293,7 @@ integrity_check() {
     #         exit_flag=true
     #     fi
     # done
-    
+
     # [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
     :
 }
@@ -284,23 +314,21 @@ do_contain() {
     local etc_file="$1"
     local conf_file="$2"
     local tag_line=$(grep -i "Hyde-cli tag:" "${etc_file}")
-    
-    if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}" ; then
+
+    if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}"; then
         cp "${etc_file}" "${conf_file}"
         echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
-    else :
+    else
+        :
         # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
         print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates"
     fi
 }
 
-
-
 case_help() {
     OPTION="$1"
     sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
-
 
 load_spinner() {
     local stat=${2:-0}
@@ -315,12 +343,11 @@ load_spinner() {
         printf "\b\b\b\b\b\b"
     done
     printf "    \b\b\b\b" # Clear the spinner
- 
+
     if [ "${stat}" -ne 0 ]; then exit 1; fi
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
-
 
 # PATH
 export libDir=/usr/lib/hyde-cli
@@ -341,8 +368,6 @@ export themeDir="${hydeConfDir}/themes"
 export cacheDir="${HOME}/.cache/hyde"
 export meta_file="${cacheDir}/hyde.meta"
 
-
-
 #! Temporary
 [ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
@@ -352,7 +377,7 @@ export ctlFile="${cacheDir}/manage_cfg.lst" #! Will use cacheDir
 config_override="/tmp/Hyde-${UID}-BAK$(basename "${ctlFile}")"
 export config_override
 
-scrDir=""$(dirname $(which globalcontrol.sh 2> /dev/null ) 2> /dev/null )""
+scrDir=""$(dirname $(which globalcontrol.sh 2>/dev/null) 2>/dev/null)""
 [ ! -e "${scrDir}/globalcontrol.sh" ] && export scrDir="$HOME/.local/share/bin/"
 [ ! -e "${scrDir}/globalcontrol.sh" ] && [[ ${is_fresh_install} != true ]] && handle_error "Scripts for HyDE not detected at ${scrDir}"
 
@@ -376,6 +401,6 @@ for dir in "${make_dir[@]}"; do
 done
 
 if [ "$(ls -A "$BkpDir")" ]; then
-    last_bak=$(ls -td -- $BkpDir/* | head -n 1 )
+    last_bak=$(ls -td -- $BkpDir/* | head -n 1)
 fi
 export last_bak

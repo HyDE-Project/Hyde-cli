@@ -1,7 +1,7 @@
 #! /bin/env bash
 
 if [ "${fresh}" = true ]; then
-    
+
     clear
     cat <<GREET
 WOW an Arch BTW User!
@@ -37,13 +37,15 @@ GREET
     git clone --depth 1 "${GIT}" "${newCloneDir}"
 fi
 
-if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf ; then
-    SUPER ${libDir}/Install-chaotic-aur  --install fresh
+if ! grep -q "chaotic-mirrorlist" /etc/pacman.conf; then
+    SUPER ${libDir}/Install-chaotic-aur --install fresh
 fi
 
-{ [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts" ;} || exit 1
+{ [ -d "${newCloneDir}/Scripts" ] && cd "${newCloneDir}/Scripts"; } || exit 1
 print_prompt -y "Pulling Hyde repo..."
-git stash > /dev/null ; git pull ; git stash pop 2> /dev/null 
+git stash >/dev/null
+git pull
+git stash pop 2>/dev/null
 set_branch
 integrity_check "${newCloneDir}"
 
@@ -66,7 +68,7 @@ export CloneDir=${newCloneDir}
 #? Nvidia
 fix_nvidia=false
 print_prompt -y "Would you like Hyde to pre-configure your nvidia drivers?"
-if nvidia_detect && ask_confirm "Yy" ;then export fix_nvidia=true ; fi
+if nvidia_detect && ask_confirm "Yy"; then export fix_nvidia=true; fi
 
 #? Add Custom Apps
 custom_apps="${scriptDir}/custom_apps.lst"
@@ -84,7 +86,6 @@ Manage-Config list_Marker --custom
 ask_confirm "${USER}"
 
 "${scriptDir}/install_pre.sh"
-
 
 #? Prepare package list
 cp "${scriptDir}/custom_hypr.lst" "${install_packages_list}"
@@ -115,13 +116,13 @@ echo -e "\033[0;32m[GPU]\033[0m detected // $dGPU"
 if ! chk_list "aurhlpr" "${aurList[@]}"; then
     echo -e "Available aur helpers:\n[1] yay\n[2] paru"
     prompt_timer 120 "Enter option number"
-    
+
     case "${promptIn}" in
-        1) export getAur="yay" ;;
-        2) export getAur="paru" ;;
-        *)
-            echo -e "...Invalid option selected..."
-            exit 1
+    1) export getAur="yay" ;;
+    2) export getAur="paru" ;;
+    *)
+        echo -e "...Invalid option selected..."
+        exit 1
         ;;
     esac
 fi
@@ -129,20 +130,19 @@ fi
 if ! chk_list "myShell" "${shlList[@]}"; then
     echo -e "Select shell:\n[1] zsh\n[2] fish"
     prompt_timer 120 "Enter option number"
-    
+
     case "${promptIn}" in
-        1) export myShell="zsh" ;;
-        2) export myShell="fish" ;;
-        *)
-            echo -e "...Invalid option selected..."
-            exit 1
+    1) export myShell="zsh" ;;
+    2) export myShell="fish" ;;
+    *)
+        echo -e "...Invalid option selected..."
+        exit 1
         ;;
     esac
     echo "${myShell}" >>"${install_packages_list}"
 fi
 
-
-#? install packages from the list 
+#? install packages from the list
 
 # cat  "${install_packages_list}"
 "${scriptDir}/install_pkg.sh" "${install_packages_list}"
@@ -155,22 +155,21 @@ Restore-Config --only "/tmp/Hyde-$(id -u)-BAK" ${CloneDir}/Configs
 
 Manage-Themes theme_patcher
 
-    # echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
-    # while IFS='"' read -r null1 themeName null2 themeRepo
-    # do
-    #     themeNameQ+=("${themeName//\"/}")
-    #     themeRepoQ+=("${themeRepo//\"/}")
-    #     themePath="${confDir}/hyde/themes/${themeName}"
-    #     [ -d "${themePath}" ] || mkdir -p "${themePath}"
-    #     [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
-    # done < "${scriptDir}/themepatcher.lst"
-    # parallel --bar --link "${scriptDir}/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
-    # echo -e "\n\033[0;32m[cache]\033[0m generating cache files..."
-    # "$HOME/.local/share/bin/swwwallcache.sh" -t ""
-    # if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
-    #     "$HOME/.local/share/bin/themeswitch.sh" &> /dev/null
-    # fi
-
+# echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
+# while IFS='"' read -r null1 themeName null2 themeRepo
+# do
+#     themeNameQ+=("${themeName//\"/}")
+#     themeRepoQ+=("${themeRepo//\"/}")
+#     themePath="${confDir}/hyde/themes/${themeName}"
+#     [ -d "${themePath}" ] || mkdir -p "${themePath}"
+#     [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
+# done < "${scriptDir}/themepatcher.lst"
+# parallel --bar --link "${scriptDir}/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+# echo -e "\n\033[0;32m[cache]\033[0m generating cache files..."
+# "$HOME/.local/share/bin/swwwallcache.sh" -t ""
+# if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
+#     "$HOME/.local/share/bin/themeswitch.sh" &> /dev/null
+# fi
 
 #---------------------#
 # post-install script #
@@ -183,7 +182,7 @@ Manage-Themes theme_patcher
 #------------------------#
 
 while read servChk; do
-    
+
     if [[ $(systemctl list-units --all -t service --full --no-legend "${servChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${servChk}.service" ]]; then
         echo -e "\033[0;33m[SKIP]\033[0m ${servChk} service is active..."
     else
@@ -191,5 +190,5 @@ while read servChk; do
         SUPER systemctl enable "${servChk}.service"
         SUPER systemctl start "${servChk}.service"
     fi
-    
+
 done <"${scriptDir}/system_ctl.lst"

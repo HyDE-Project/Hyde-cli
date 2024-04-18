@@ -1,8 +1,0 @@
-#! /bin/env bash
-
-
-menu_1=" -m --marker ' '\
- --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
- --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
- --preview "Manage-Config prev_restore_list ${config_override}"
-"
