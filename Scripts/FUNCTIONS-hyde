@@ -4,7 +4,7 @@ export Function="${1}"
 
 initiate_hyde_command() {
 
-    if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/hyde_update_check" ] || [[ $(find "${cacheDir}/hyde_update_check" -mmin +4320) ]]; }; then
+    if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/landing/update.check" ] || [[ $(find "${cacheDir}/landing/update.check" -mmin +4320) ]]; }; then
         navigate_clone
         print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
         notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
@@ -15,7 +15,9 @@ initiate_hyde_command() {
                 # notify-send "Updates available! EXEC: 'Hyde update' "
             fi
         fi
-        touch "${cacheDir}/hyde_update_check"
+        touch "${cacheDir}/landing/update.check"
+    else
+    :
     fi
 }
 
@@ -112,10 +114,9 @@ WARN
 }
 
 rofi_pos() {
-
     pkill -x rofi && exit
     package_check rofi jq
-
+    source_user
     roFile=${confDir}/rofi/clipboard.rasi
     # set position
 
@@ -124,9 +125,9 @@ rofi_pos() {
     y_offset=210 #* To point the Cursor to the 1st and 2nd latest word
 
     #? Parse clipboard.rasi and fetch the width. Should consider percent
-    clpWidth=$(awk '/window {/,/}/ { if (/width:/) { split($2, a, "%"); print a[1] } }' "${roFile}")
-    clpWidth=${clpWidth:-20}           #? Default
-    clpHeight=$((clpWidth * 100 / 37)) #? Default
+    clpWidth=$(awk '/window {/,/}/ { if (/width:/) { split($2, a, "%"); print a[1] } }' "${roFile}" | grep '%')
+    clpWidth=${board_width:-${clpWidth:-20}}            #? Default
+    clpHeight=${board_height:-$((clpWidth * 100 / 37))} #? Default
 
     #? Monitor resolution , scale and rotation,Do maths @ json
     eval "$(hyprctl monitors -j | jq -r \

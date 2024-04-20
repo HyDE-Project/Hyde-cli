@@ -14,7 +14,7 @@ CHECK wtype
 #TODO:    make the Script run on User space
 
 glyphDATA="${etcDir}/glyph.db"
-recentData="${cacheDir}/show_glyph_recent.db"
+recentData="${cacheDir}/landing/show_glyph.recent"
 
 save_recent() {
     #? Prepend the selected glyph to the top of the recentData file
