@@ -298,6 +298,10 @@ integrity_check() {
     :
 }
 
+source_user() {
+[ -f "${hydeConfDir}/hyde.conf" ] && . "${hydeConfDir}/hyde.conf"
+}
+
 service_check() {
     for servChk in "$@"; do
         if [[ $(systemctl list-units --all -t service --full --no-legend "${servChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${servChk}.service" ]]; then
