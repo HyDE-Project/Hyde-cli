@@ -142,6 +142,15 @@ theme_patcher() {
     if printenv HYPRLAND_INSTANCE_SIGNATURE &>/dev/null; then
         "${scrDir}/themeswitch.sh" &>/dev/null
     fi
+
+    readarray -t themesList <<<"$patchList"
+    for theme in "${themesList[@]}"; do
+        if [ -d "${HOME}/.config/hyde/themes/${theme}" ]; then
+            print_prompt -g "[OK]" " $theme"
+        else
+            print_prompt -r "[ERROR]" " $theme"
+        fi
+    done
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
