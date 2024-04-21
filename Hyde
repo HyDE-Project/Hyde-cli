@@ -15,7 +15,7 @@ initiate_hyde_command
 #? Add functions below this section.
 #? Be careful with spaces in your Function definitions.
 #? Example Function:
-#* |Function example() { #? Example Function.
+#* |Function example() { #? Example Function. this comments supports '\n' 
 #* | case $1 in
 #* |      # Cases go here...
 #* |   esac
@@ -266,11 +266,12 @@ esac
 
 wallpaper() { #? Wallpaper Commands
   case $1 in
-        set) #? Set /Path/to/Wallpapers as new Wallpaper Directory
-            shift
-            cd - || exit
-            if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
-            "${scrDir}"/swwwallpaper.sh -s "$1"
+        set) #? Set /Path/to/Wallpapers as new Wallpaper Directory 
+        print_prompt -r "[deprecated] " -y "add 'wallAddCustomPath=( \"path/to/wallpapers\" \"...\" )' in '${hydeConfDir}/hyde.conf' instead."
+            #! shift
+            #! cd - || exit
+            #! if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
+            #! "${scrDir}"/swwwallpaper.sh -s "$1"
         ;;
         next) #? Next Wallppaer
             "${scrDir}"/swwwallpaper.sh -n 
