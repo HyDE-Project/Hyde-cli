@@ -204,16 +204,16 @@ cache() { #? Manages Hyde' Cache
     esac
 }
 
-sync() { #? Overwrite current dots from the user ﯦ See upstream for more info
-
-    userDir=${userDir:-${HOME}/.config/hyde/user}
-    [ ! -d "$userDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
-    print_prompt -r "This will overwrite the current dots with the ones in '${userDir}'"
+sync() { #? Overwrite current dots from the user ﯦ See upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
+    source_user
+    userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
+    [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
+    print_prompt -r "This will overwrite the current dots with the ones in '${userPrefsDir}'"
     ask_confirm "${USER}"
-    # Find all files in the userDir, remove the directory prefix, and create hard links in $HOME
-    find "$userDir" -type f | while read -r file; do
+    # Find all files in the userPrefsDir, remove the directory prefix, and create hard links in $HOME
+    find "$userPrefsDir" -type f | while read -r file; do
         # Remove the directory prefix from the file path
-        relativePath=$(echo "$file" | sed "s|^$userDir/||")
+        relativePath=$(echo "$file" | sed "s|^$userPrefsDir/||")
         # Extract the directory part of the relative path
         targetDir="$HOME/$(dirname "$relativePath")"
         # Check if the target directory exists, and create it if it doesn't
@@ -223,7 +223,7 @@ sync() { #? Overwrite current dots from the user ﯦ See upstream for more info
             break
         fi
         # Create the hard link in $HOME
-        ln -f "$file" "$HOME/$relativePath"
+        cp -f "$file" "$HOME/$relativePath"
         print_prompt -g "[Linked] " -c " " "$file" -y "  " "$HOME/$relativePath"
     done
 }
