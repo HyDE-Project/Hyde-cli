@@ -224,7 +224,7 @@ sync() { #? Overwrite current dots from the user ﯦ See upstream for more info 
         fi
         # Create the hard link in $HOME
         cp -f "$file" "$HOME/$relativePath"
-        print_prompt -g "[Linked] " -c " " "$file" -y "  " "$HOME/$relativePath"
+        print_prompt -g "[Overwrite] " -c " " "$file" -y "  " "$HOME/$relativePath"
     done
 }
 
