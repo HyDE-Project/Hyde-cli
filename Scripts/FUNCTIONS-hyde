@@ -117,72 +117,45 @@ rofi_pos() {
     pkill -x rofi && exit
     package_check rofi jq
     source_user
-    roFile=${confDir}/rofi/clipboard.rasi
-    # set position
+    roFile="${confDir}/rofi/clipboard.rasi"
 
-    #? Cursor position offset when pastebin is spawned
-    x_offset=15  #* Cursor spawn position on clipboard
-    y_offset=210 #* To point the Cursor to the 1st and 2nd latest word
 
-    #? Parse clipboard.rasi and fetch the width. Should consider percent
-    clpWidth=$(awk '/window {/,/}/ { if (/width:/) { split($2, a, "%"); print a[1] } }' "${roFile}" | grep '%')
-    clpWidth=${board_width:-${clpWidth:-20}}            #? Default
-    clpHeight=${board_height:-$((clpWidth * 100 / 37))} #? Default
+#// set rofi scaling
 
-    #? Monitor resolution , scale and rotation,Do maths @ json
-    eval "$(hyprctl monitors -j | jq -r \
-        --argjson clpWidth "$clpWidth" \
-        --argjson clpHeight "$clpHeight" \
-        ' .[] | select(.focused==true) | 
- (if (.transform | (. % 2) == 1) then
-   {monWidth: (.height / .scale | floor), monHeight: (.width / .scale | floor)}
- else
-   {monWidth: (.width / .scale | floor), monHeight: (.height / .scale | floor)}
- end) as $dims |
-"export monName=\(.name);
-export monWidth=\($dims.monWidth);
-export monHeight=\($dims.monHeight);
-export monXpos=\(.x | floor);
-export monYpos=\(.y | floor);
-export clpWidth=\(if (.transform | (. % 2) == 1) then ($dims.monHeight * $clpWidth / 100 | floor) else ($dims.monWidth * $clpWidth / 100 | floor) end);
-export clpHeight=\(if (.transform | (. % 2) == 1) then ($dims.monWidth * $clpHeight / 100 | floor) else ($dims.monHeight * $clpHeight / 100 | floor) end);
-"')"
+[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
+r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+wind_border=$((hypr_border * 3 / 2))
+elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
 
-    #? Level 1 layers  e.g namesapce for  waybar, for now just waybar \\ ensures that we can get a good boundary value
-    # TODO Handle if we got multple waybar layouts
-    wbarW=0
-    wbarH=0
-    eval "$(hyprctl layers -j | jq -r --arg mon "$monName" '.[$mon].levels | .[] | .[] | select(.namespace == "waybar") | if .h < .w then "export export wbarH=$((\(.h) + $wbarH ))" else "export wbarW=$((\(.w) + $wbarW ))" end')"
+#// evaluate spawn position
 
-    #?  Cursor position filtered by Monitor stats
-    eval "$(hyprctl cursorpos -j | jq -r \
-        --argjson x_offset "$x_offset" \
-        --argjson y_offset "$y_offset" \
-        --argjson monXpos "$monXpos" \
-        --argjson monYpos "$monYpos" \
-        '"
-export curXpos=\(.x - $monXpos - $x_offset )
-export curYpos=\(.y - $monYpos - $y_offset)
-"')"
+readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
+readarray -t monRes < <(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width,.height,.scale,.x,.y')
+readarray -t offRes < <(hyprctl -j monitors | jq -r '.[] | select(.focused==true).reserved | map(tostring) | join("\n")')
+monRes[2]="$(echo "${monRes[2]}" | sed "s/\.//")"
+monRes[0]="$(( ${monRes[0]} * 100 / ${monRes[2]} ))"
+monRes[1]="$(( ${monRes[1]} * 100 / ${monRes[2]} ))"
+curPos[0]="$(( ${curPos[0]} - ${monRes[3]} ))"
+curPos[1]="$(( ${curPos[1]} - ${monRes[4]} ))"
 
-    #? Handles Boundary
-    xBound=$((monWidth - clpWidth - wbarW))
-    yBound=$((monHeight - clpHeight - wbarH))
-    curXpos=$((curXpos < 0 ? 0 : (curXpos > xBound ? xBound : curXpos)))
-    curYpos=$((curYpos < 0 ? 0 : (curYpos > yBound ? yBound : curYpos)))
+if [ "${curPos[0]}" -ge "$((${monRes[0]} / 2))" ] ; then
+    x_pos="east"
+    x_off="-$(( ${monRes[0]} - ${curPos[0]} - ${offRes[2]} ))"
+else
+    x_pos="west"
+    x_off="$(( ${curPos[0]} - ${offRes[0]} ))"
+fi
 
-    #? Override height and width
-    h_override="height: ${clpHeight}px; width: ${clpWidth}px;"
-    pos="window {${h_override}location: north west; x-offset: ${curXpos}px; y-offset: ${curYpos}px;}" #! I just Used the old pos function
+if [ "${curPos[1]}" -ge "$((${monRes[1]} / 2))" ] ; then
+    y_pos="south"
+    y_off="-$(( ${monRes[1]} - ${curPos[1]} - ${offRes[3]} ))"
+else
+    y_pos="north"
+    y_off="$(( ${curPos[1]} - ${offRes[1]} ))"
+fi
 
-    # read hypr theme border
-    wind_border=$((hypr_border * 3 / 2))
-    elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
-    r_override="window { border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+r_override="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:${x_off}px;y-offset:${y_off}px;border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
-    # read hypr font size
-    fnt_override=$(gsettings get org.gnome.desktop.interface monospace-font-name | awk '{gsub(/'\''/,""); print $NF}')
-    fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${fnt_override}\";}"
 
 }
 
