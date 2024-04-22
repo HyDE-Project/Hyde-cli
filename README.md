@@ -1,137 +1,155 @@
-# HyDE-CLI
+<div align="center">
+  <br>
 
-&ensp;[<kbd> <br> Read me <br> </kbd>](#read-me)&ensp;
-&ensp;[<kbd> <br> Installation <br> </kbd>](#installation)&ensp;
-&ensp;[<kbd> <br> Usage <br> </kbd>](#usage)&ensp;
-&ensp;[<kbd> <br> Wiki <br> </kbd>](https://github.com/kRHYME7/Hyde-cli/wiki)&ensp;
-&ensp;[<kbd> <br> Discussions <br> </kbd>](https://github.com/kRHYME7/Hyde-cli/discussions)&ensp;
-<br><br>
-# Read Me
+![hyde_cli_banner](https://raw.githubusercontent.com/krhyme7/hyde-cli/master/Assets/hyde_cli_banner.png)
 
-Hyde-cli is a command-line interface for [Hyde ricing](https://github.com/prasanthrangan/hyprdots). This repository contains scripts that are currently in the WIP phase, but could potentially be useful. This CLI aims to add patches for Hyde and update the script to address common configuration issues and requests. Please be aware that using these scripts may alter your configurations.
+  <br>
+  <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
+  <a href="#usage"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
+  <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
+  <a href="#roadmap"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
+  <a href="https://github.com/kRHYME7/Hyde-cli/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
+  <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> HyDE Discord <br> </kbd></a>
+  <br><br><br>
 
-Hyde is stable, but this CLI is designed to be an active helper to some issues or some feature requests for Hyde. It is important to note that these scripts may alter or mess up your configurations. Please use them at your discretion.
+Hyde-cli is a CLI tool for [HyDE](https://github.com/prasanthrangan/hyprdots).
+This repository contains scripts that, while may not be perfect, could provide a better way to manage your HyDE installation.
+For example, we have a functional TUI restore tool that follows `restore_cfg.lst`, power-saving options that could be useful for laptops, and much more!
 
-### Warning
+</div>
 
-These scripts may alter or mess up your configurations. Please use them at your discretion.
+> [!CAUTION]
+> While Hyde-cli is stable, it is important to note that these scripts do alter and *could* potentially mess up your system configuration.
+> We ask that you use this tool carefully and report any bugs you find.
 
-# Installation
+## Installation
 
-You can install the package by running this command.
+To install, execute the following command: 
 
 ```
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
 ```
-See below, other ways to install ``` Hyde-cli```
+
+For other working install solutions, see the following below.
 
 ### Arch Linux
 
-Recommended: Use your preferred AUR helper `paru` or `yay`.
+Use your preferred AUR helper `paru` or `yay`: 
+
 ```
 paru -Sy hyde-cli-git
+```
+
+```
 yay -Sy hyde-cli-git
 ```
-> [!Important]
-> Incase you did not recieve updates for a long time.
 
-![image](https://github.com/kRHYME7/Hyde-cli/assets/53417443/60dd1d75-e38b-4a15-a5f6-2f002fbb4d2a)
+Use makepkg: 
 
-
-Manual: Use makepkg
 ```
 git clone https://aur.archlinux.org/hyde-cli-git.git
-cd hyde-cli
+cd ./hyde-cli
 makepkg -si
 ```
 
 ### Make
 
-Install required dependencies: `git make fzf tree`.
+Install required dependencies: `git make fzf tree ttf-jetbrains-mono-nerd`.
 
-Font dependencies: '[JetBrains Nerd font](https://github.com/ryanoasis/nerd-fonts)'
+Clone: 
+
+```
+git clone https://github.com/kRHYME7/Hyde-cli
+cd ./Hyde-cli
+```
 
 To install: 
+
 ```
-$git clone https://github.com/kRHYME7/Hyde-cli
-$cd ./Hyde-cli
-# make
+make
 ```
 
 To uninstall: 
+
 ```
-# make uninstall
+make uninstall
 ```
 
 To update: 
+
 ```
-# make update clean install
+make update clean install
 ```
 
-# Usage
+## Usage
 
-Run: `Hyde man` for Usage.
+Run: `Hyde man` if Hyde-cli is installed.
+<br>
+View: `USAGE` in this repository.
 
 ---
 
-**Installation Instructions for Hyde**
-
-1. **Basic Installation**
+#### Installation Instructions for HyDE with Hyde-install
 
 > [!Note]
-   > To achieve the best experience, I encourage you to perform a fresh install of Hyde.
+> To achieve the best experience, it is encouraged you perform a fresh install of HyDE.
 
-   - To install Hyde with default settings, simply run the following command in your terminal:
-     ```
-     Hyde-install
-     ```
+1) **Basic Installation**
 
+  - To install HyDE with the defaults, simply run the following command: 
 
-2. **Advanced Usage and if you installed Hyde first** 
-   - For more control over the installation process, you can use the following options:
+    ```
+    Hyde-install
+    ```
 
-     - **Custom Directory**
-       - To clone Hyde into a custom directory and then run the installation, use the `-d` or `--dir` option followed by the path to your desired directory. The default path is `$HOME/.cache/hyde-cli/Hyde`.
-         ```
-         Hyde-install --dir /path/to/Clone/Hyde
-         ```
+2) **Advanced Installation**
 
-     - **Specify Remote Repository**
-       - If you wish to clone Hyde from a different remote repository, use the `-g` or `--git` option followed by the URL of the repository. The default repository is `https://github.com/prasanthrangan/hyde`.
-         ```
-         Hyde-install --git https://gitclone/repo/link/
-         ```
+  - For more control over the installation process, you can use the following options: 
 
-     - **Transfer Link to Clone Directory**
-       - To transfer the link to a clone directory, use the `-l` or `--link` option. By default, this option is set to `false`.
-         ```
-         Hyde-install --link
-         ```
- > [!Important]
->   If you have previously installed Hyde without using the CLI, you can still use the CLI to manage your installation. To do this, you can combine the --dir and --link options. The --dir option specifies the directory where Hyde is installed, and the -l option allows Hyde-CLI to remember this directory for future commands. This is particularly useful if you want Hyde-CLI to recognize your existing Hyde installation and manage it accordingly.
+    - **Specify Local Directory**: To clone HyDE into a specific local directory and run the installation, use the `-d` or `--dir` flag followed by the path of the directory.
 
-``` Hyde-install --dir /path/to/existing/Hyde --link ```
+      ```
+      Hyde-install --dir /path/to/directory
+      ```
 
+    - **Specify Remote Git Repository**: To clone HyDE from a specific remote git repository, use the `-g` or `--git` flag followed by the URL of the repository.
 
+      ```
+      Hyde-install --git https://host/owner/repository
+      ```
 
-## Contributing
+    - **Link Local Git Repository**: To link a local git repository, use the `-l` or `--link` flag.
 
-If you would like to contribute to the project, thanks.
-I don't know what's the use of the STARS ⭐ but Please leave one when you visit this repo. 
+      ```
+      Hyde-install --link
+      ```
+
+> [!Important]
+> If you have previously installed HyDE without using the CLI, you can still use the CLI to manage your installation.
+> To do this, combine the --dir and --link flags where the local cloned repository is located.
+> 
+> For example: 
+> 
+> ```
+> Hyde-install --dir /path/to/directory --link
+> ```
 
 ## Support
 
-If you encounter any issues, please submit them...
+If you would like to support this project, but don't know how, here are some ways: 
+
+- Submit PRs. Even if it's formatting improvements or fixing spelling mistakes, they are all appreciated!
+- Report issues. Major or minor, doesn't matter, please report any you find.
+- I don't really know what the use of the stars is, but feel free to leave one!
 
 ## Roadmap
 
-📔 This will just be an active helper to some issues or some feature requests for Hyde.
-🔳 Add interactive installation using fzf
-✅ interactive restore config
-🔳 interactive package installation
-🔳 interactive theme selection
-🔳  shell selection
-🔳 Separate TUI from CLI command 
-🔳 More to come...
+This is the current unfinished and completed plans of the project: 
 
-
+- [ ] Add interactive installation using fzf
+- [x] Interactive restore config following `restore_cfg.lst`
+- [x] Interactive package installation following `custom_apps.lst`
+- [ ] Interactive theme selection
+- [ ] Shell swap selection
+- [ ] Separate TUI from CLI
+- [ ] More to come...
