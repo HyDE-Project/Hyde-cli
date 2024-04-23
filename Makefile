@@ -31,7 +31,7 @@ directories:
 	mkdir -p $(DESTDIR)$(usrdir)
 
 	mkdir -p ${DESTDIR}$(prefix)/share/bash-completion/completions
-	mkdir -p ${DESTDIR}$(prefix)/share/fish/completions
+	mkdir -p ${DESTDIR}$(prefix)/share/fish/vendor_completions.d
 	mkdir -p ${DESTDIR}$(prefix)/share/zsh/site-functions
 
 backup:
