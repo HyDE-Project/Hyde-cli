@@ -3,6 +3,7 @@ prefix := /usr
 bindir := $(prefix)/bin
 libdir := $(prefix)/lib/$(pkgname)
 etcdir := /etc/$(pkgname)
+usrdir := $(prefix)/share/$(pkgname)
 BACKUPDIR := $(shell mktemp -d)
 VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
@@ -27,12 +28,15 @@ directories:
 	mkdir -p $(DESTDIR)$(bindir)
 	mkdir -p $(DESTDIR)$(libdir)
 	mkdir -p $(DESTDIR)$(etcdir)
+	mkdir -p $(DESTDIR)$(usrdir)
+
 
 backup:
 
 	mkdir -p $(BACKUPDIR)/bin
 	mkdir -p $(BACKUPDIR)/scripts
 	mkdir -p $(BACKUPDIR)/confs
+	mkdir -p $(BACKUPDIR)/extras
 	if [ -f $(DESTDIR)$(bindir)/Hyde ]; then \
 	cp $(DESTDIR)$(bindir)/Hyde $(BACKUPDIR)/bin; \
 	fi
@@ -41,19 +45,21 @@ backup:
 	fi
 	[ "$(ls -A $(DESTDIR)$(libdir))" ] && cp -r $(DESTDIR)$(libdir)/* $(BACKUPDIR)/scripts || true
 	[ "$(ls -A $(DESTDIR)$(etcdir))" ] && cp -r $(DESTDIR)$(etcdir)/* $(BACKUPDIR)/confs || true
+	[ "$(ls -A $(DESTDIR)$(usrdir))" ] && cp -r $(DESTDIR)$(usrdir)/* $(BACKUPDIR)/extras || true
 
 install:
-	install -m 755 ./Hyde $(DESTDIR)$(bindir) || make restore
-	install -m 755 ./Hyde-install $(DESTDIR)$(bindir) || make restore
+	install -m 755 ./Hyde $(DESTDIR)$(bindir) 
+	install -m 755 ./Hyde-install $(DESTDIR)$(bindir)
 
 	@echo "Version: $(VERSION)" > .$(pkgname).ver
 	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
 	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .$(pkgname).ver
 
-	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(etcdir) || make restore
+	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(etcdir) 
 
-	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) || make restore
-	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) || make restore
+	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
+	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
+	install -m 644 ./Extras/* $(DESTDIR)$(usrdir) 
 
 restore:
 	make clean
@@ -61,6 +67,8 @@ restore:
 	cp -r $(BACKUPDIR)/bin/* $(DESTDIR)$(bindir)
 	cp -r $(BACKUPDIR)/scripts/* $(DESTDIR)$(libdir)
 	cp -r $(BACKUPDIR)/confs/* $(DESTDIR)$(etcdir)
+	cp -r $(BACKUPDIR)/extras/* $(DESTDIR)$(usrdir)
+
 
 uninstall: purge
 clean: purge 
@@ -70,6 +78,7 @@ purge :
 
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
+	-rm -rf $(wildcard $(DESTDIR)$(usrdir)/)
 
 old:
 

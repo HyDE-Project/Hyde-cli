@@ -70,8 +70,13 @@ fzf_BackUp() {
 }
 
 fzf_shell_select() {
-    fzf --prompt='Select shell: '
-
+    fzf --prompt='Select default shell: ' \
+        --marker='X' \
+        --cycle \
+        --pointer='→' \
+        --disabled \
+        --preview 'Fzf-Preview /usr/share/hyde-cli/shell_{}.png' \
+        --preview-window 'right:80%,border-rounded'
 }
 
 #? Theme patch Menu
@@ -86,6 +91,17 @@ fzf_theme_menu() {
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview-window 'right:60%,border-rounded'
 
+}
+
+fzf_sddm() {
+
+    fzf --prompt='Select SDDM theme: ' \
+        --marker='X' \
+        --cycle \
+        --pointer='→' \
+        --disabled \
+        --preview 'Fzf-Preview /usr/share/hyde-cli/sddm_{}.png' \
+        --preview-window 'right:80%,border-rounded'
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

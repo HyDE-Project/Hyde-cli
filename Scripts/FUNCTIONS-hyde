@@ -198,7 +198,7 @@ shell_select() {
     #TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
     navigate_clone
     myShell="$(echo -e "zsh\nfish" | Fzf-Menu "${FUNCNAME[0]}")"
-    echo "${myShell}"
+    print_prompt -y "[Shell] " -w "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
         CHECK zsh oh-my-zsh-git
@@ -242,7 +242,7 @@ shell_select() {
         print_prompt -y "[SHELL] " -w "changing shell to ${myShell}..."
         chsh -s "$(which ${myShell})"
     else
-        print_prompt -g "[SKIP]" -w "${myShell} is already set as shell..."
+        print_prompt -g "[SKIP] " -w "${myShell} is already set as shell..."
     fi
 
 }

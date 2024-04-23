@@ -6,7 +6,7 @@ if [ "$1" == "--only" ]; then
     shift
 fi
 
-FileOverride="${1:-${ctlDir}/}" #override default config list with custom theme list [param 1]
+FileOverride="${1:-${cacheDir}/}" #override default config list with custom theme list [param 1]
 ctlFile="${FileOverride}manage_cfg.lst"
 CfgDir="${2:-${CloneDir}/Configs}" #override default config path with custom theme path [param 2]
 

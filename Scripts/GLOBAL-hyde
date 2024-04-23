@@ -359,10 +359,10 @@ export PATH=${PATH}:${libDir}
 
 # CONFIGS
 export etcDir="/etc/hyde-cli"
+export usrDir="/usr/share/hyde-cli"
 
 # Config
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-export ctlDir="${confDir}/hyde"
 export hydeConfDir="${confDir}/hyde"
 export BkpDir="${confDir}/cfg_backups"
 export wallbashDir="${hydeConfDir}/wallbash"
@@ -395,7 +395,6 @@ make_dir=(
     "${cacheDir}"
     "${cacheDir}"
     "${etcDir}"
-    "${ctlDir}"
 )
 for dir in "${make_dir[@]}"; do
     if [[ ! -d "${dir}" ]] && [[ -n "${dir}" ]]; then

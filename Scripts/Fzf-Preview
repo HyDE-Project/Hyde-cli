@@ -1,0 +1,40 @@
+#! /bin/env bash
+
+PREVIEW=${1}
+
+img_preview() {
+    if [[ $(tput colors) -lt "256" ]]; then return; fi
+    local image_url="${1}"
+    [ -z "${image_url}" ] && return 1
+    if [ xterm-kitty == "$TERM" ]; then
+        kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@20x2 "$image_url" || \
+        kitty icat --clear --transfer-mode=memory --stdin=no "$image_url" 
+    else
+        if command -v jp2a &>/dev/null; then
+            find "${image_url}" -name "*" -exec jp2a --colors --color-depth=24 --chars=' .:-=+*#%@' --fill --term-fit --background=dark {} \; 2>/dev/null
+        else
+            cat <<EOF
+          ░▒▒▒░░░░░▓▓          ___________
+        ░░▒▒▒░░░░░▓▓        //___________/
+       ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
+       ░░▒▒░░░░░▓▓▓▓▓▓ | | | | |  | |  __/
+        ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
+         ░▒▒░░▓▓   ▓▓   \__  |____/ |____/
+           ░▒▓▓   ▓▓  //____/
+
+EOF
+            print_prompt -y "Install 'jp2a' to preview in ASCII format"
+        fi
+    fi
+}
+
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
+
+
+if [ -d "${PREVIEW}" ]; then
+    img_preview "$PREVIEW"
+elif [ -f "${PREVIEW}" ]; then
+    img_preview "$PREVIEW"
+fi
+
