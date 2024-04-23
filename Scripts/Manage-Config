@@ -4,13 +4,13 @@ prev_restore_list() {
   cat <<REVIEW
 "Please review the list..."
 $(barLine)
-O   Overwrite     ﬌ Move Dots to Backup then Populate dots from Source Directory (${CloneDir})
-                       Move means mving the whole Directory including all files inside.
-S   Sync          ﬌ Copy Dots to Backup > Copy to overwrite Dots from Source Directory (${CloneDir})  
+O   Overwrite     ﬌ Move dots to Backup then populate dots from source directory (${CloneDir})
+                       Move means mving the whole directory including all files inside.
+S   Sync          ﬌ Copy dots to Backup > Copy to overwrite dots from source directory (${CloneDir})  
                       ﯧ Recommended to use.It will only overrwrite the CONFLICTING files if both files exist.
-P   Preserve      ﬌ Populates Dots But Preserves existing user Dots
+P   Preserve      ﬌ Populates dots but preserves existing user sots
                       ﯧ Will skip the files/dirs if it already exists
-B   Backup        ﬌ Only Backup the selected Dots (Default)
+B   Backup        ﬌ Only backup the selected dots (Default)
                       ﯧ 'Hyde backup clean' to do some cleanup
 $(barLine)
 $(GROUP "${1}")
@@ -87,11 +87,11 @@ main_config_menu() {
 
 list_Backup() {
   if [ -d "$BkpDir" ] && [ "$(ls -A "$BkpDir")" ]; then
-    print_prompt -m "List of Backups:"
+    print_prompt -m "List of backups:"
     bak_list=$(ls -l -r $BkpDir | tac | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}')
     print_prompt -b "$bak_list"
   else
-    print_prompt -m "Backup: Empty"
+    print_prompt -m "Backup: empty"
     return 1
   fi
 }
@@ -220,7 +220,7 @@ all() {
 revert() {
   list_Backup || exit 1
   barLine
-  print_prompt -y "Restoring a backup will not create a backup of the current Dots.\nExecute 'Hyde backup all' to save the current Dots"
+  print_prompt -y "Restoring a backup will not create a backup of the current dots.\nExecute 'Hyde backup all' to save the current Dots"
   ask_confirm
   awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst >${config_override}
   selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | Fzf-Menu "${FUNCNAME[0]}" |
@@ -288,7 +288,7 @@ clean() {
   selected_backup=$(ls -l -r $BkpDir | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | grep -v '^[[:space:]]*$' | Fzf-Menu "${FUNCNAME[0]}")
   if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
     print_prompt -r "To Be Removed:" -n "\n$selected_backup"
-    print_prompt -r "WARNING! " -y "Removed Backup is not recoverable, are you sure?"
+    print_prompt -r "WARNING! " -y "Removed backup is not recoverable, are you sure?"
     ask_confirm "$USER"
     echo -e "$selected_backup" | awk '{for(i=4; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | while read -r line; do
       if [ -n "$line" ]; then rm -r "${BkpDir}/${line}"; fi
@@ -309,7 +309,7 @@ Clone() {
   custClone="$1"
   integrity_check "${custClone}"
   echo "Generating a Restore List"
-  cd $custClone/Scripts || handle_error "Cannot Change Directory to $custClone/Scripts"
+  cd $custClone/Scripts || handle_error "Cannot change directory to $custClone/Scripts"
   #! restore_Lister "$custClone/Configs"
   list_Marker "${custClone}"
   ask_confirm "$USER"

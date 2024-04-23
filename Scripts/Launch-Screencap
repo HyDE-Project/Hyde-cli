@@ -130,7 +130,7 @@ case ${OPT} in
         warn_dup
         if [ -z "${screen_recorder}" ]; then
             $0 --reset
-            notify-send "No Screenrecorder Detected"
+            notify-send "No screenrecorder detected"
             first_setup "${*}"
             exit
         fi

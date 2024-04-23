@@ -57,16 +57,16 @@ save() {
     for arg in "$@"; do
         if [ "${processed_flags[$arg]}" != "true" ]; then
             case $arg in
-                -a|--animations) #? Disable Animations
+                -a|--animations) #? Disable animations
                     append "animations:enabled = 0" "DISABLE Animations"
                 ;;
-                -ba|--borderangle) #? Disable border angle Animation.
+                -ba|--borderangle) #? Disable border angle animation
                     append "animation = borderangle, 0" "DISABLE Border angle animation"
                 ;;
-                -b|--blur) #? Disable Blur
+                -b|--blur) #? Disable blur
                     append "decoration:blur:enabled = 0" "DISABLE Blur"
                 ;;
-                -o|--opacity) #? Disable Tranparency
+                -o|--opacity) #? Disable tranparency
                     append 'windowrule=opacity 1 override 1 override,title:(.*)' "DISABLE Transparent opacity"
                     #! DEPRECATED if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
                     #! DEPRECATED     sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
@@ -86,17 +86,17 @@ unset() {
     for arg in "$@"; do
         if [ "${processed_flags[$arg]}" != "true" ]; then
             case $arg in
-                -a|--animations) #? Default Animations
+                -a|--animations) #? Default animations
                     remove "animations:enabled = 0" "ENABLE Animations"
                 ;;
-                -ba|--borderangle) #? Default border angle Animation.
+                -ba|--borderangle) #? Default border angle animation
                     remove "animation = borderangle, 0" "ENABLE Border angle animation"
                     sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
                 ;;
-                -b|--blur) #? Default Blur
+                -b|--blur) #? Default blur
                     remove "decoration:blur:enabled = 0" "ENABLE Blur"
                 ;;
-                -o|--opacity) #? Default Tranparency
+                -o|--opacity) #? Default tranparency
                     remove "windowrule=opacity 1 override 1 override,title:(.*)" "ENABLE Tranparency"
                     #! DEPRECATED sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
                 ;;
@@ -112,16 +112,16 @@ game() {
     "${scrDir}/gamemode.sh"
 }
 
-max() { #? Power Saving Options
+max() { #? Power saving options
     for arg in "$@"; do
         case $arg in
-            -a|--animation) #? Animation Optionsss
+            -a|--animation) #? Animation options
                 echo "Animation flag set"
             ;;
-            -b|--blur) #? Disable Blur
+            -b|--blur) #? Disable blur
                 echo "Blur flag set"
             ;;
-            -o|--opacity) #? Solid Opacity
+            -o|--opacity) #? Solid opacity
                 echo "Opacity flag set"
             ;;
             *) echo "Unknown flag: $arg"; print_help; exit 1;;

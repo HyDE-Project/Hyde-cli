@@ -37,7 +37,7 @@ trap 'move_lines_to_bottom "$sM" "$wS" "$monitorsConf"' EXIT
 
 if ! grep -F "float" ~/.config/hypr/windowrules.conf | grep -F "nwg-displays" > /dev/null; then
     # If the line does not exist in the file, append it
-    wR='windowrulev2=float,class:^(nwg-displays)$ #! Hyprdots-ctl: Auto Generated windowrules'
+    wR='windowrulev2=float,class:^(nwg-displays)$ #! Hyprdots-ctl: Auto generated windowrules'
     echo "$wR" >> ~/.config/hypr/windowrules.conf
 fi
 

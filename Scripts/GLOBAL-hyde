@@ -122,7 +122,7 @@ ask_confirm() {
 }
 
 handle_error() {
-    print_prompt -r "Looks Like I forgot your Clone Directory!"
+    print_prompt -r "Looks like I forgot your clone directory!"
     if [ -d "${cacheDir}/Hyde-Clone" ]; then
         print_prompt -y "Using the Clone Directory: " -w "${cacheDir}/Hyde-Clone"
         Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
@@ -158,13 +158,13 @@ check_Ping() {
 
 set_branch() {
     check_Ping
-    print_prompt -w "Fetching Upstream"
+    print_prompt -w "Fetching upstream"
     if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
         git remote set-branches origin '*'
     fi
     git fetch --all
     git_branch=$(git branch -a | fzf --prompt='Choose a branch')
-    [[ -z ${git_branch} ]] && print_prompt -r "Operation Cancelled" && exit 0
+    [[ -z ${git_branch} ]] && print_prompt -r "Operation cancelled" && exit 0
     if [[ $git_branch == *"*"* ]]; then
         export current_branch="${git_branch//\* /}"
         print_prompt -y "Already in branch: ${current_branch}"
@@ -248,7 +248,7 @@ CHECK() {
 
     if [[ -n "${Pkg_Dep}" ]]; then
         echo -e "$0 Dependencies:\n$Pkg_Dep"
-        notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
+        notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'"
         get_aurhlpr
         { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
     fi
@@ -260,11 +260,11 @@ package_check() {
         echo -e "$0 Dependencies:\n$Pkg_Dep"
         get_aurhlpr
         if [ -n "${DISPLAY}" ]; then
-            notify-send -a "${0}" "Confirm to install Dependencies: '${Pkg_Dep}'"
+            notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'"
             { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
         else
-            print_prompt -y "Confirm to install Dependencies: '${Pkg_Dep}'"
-            { "${aurhlpr}" -S $Pkg_Dep --noconfirm && print_prompt -y "Installed: ${Pkg_Dep}"; } || { print_prompt -r "Operation Cancelled" && exit 1; }
+            print_prompt -y "Confirm to install dependencies: '${Pkg_Dep}'"
+            { "${aurhlpr}" -S $Pkg_Dep --noconfirm && print_prompt -y "Installed: ${Pkg_Dep}"; } || { print_prompt -r "Operation dancelled" && exit 1; }
         fi
 
     fi

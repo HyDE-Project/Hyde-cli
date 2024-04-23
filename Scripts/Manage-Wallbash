@@ -103,8 +103,8 @@ function term() {
 cat << TERM
 Presets: ${max}
 ================================================================
-[ -R | --restore]       Restore last colors.
-[ -t | --toggle ]       Toggles the preset.
+[ -R | --restore]       Restore last colors
+[ -t | --toggle ]       Toggles the preset
 [ n ]                   Set a preset [n]umber as terminal colors
 TERM
         exit 0
