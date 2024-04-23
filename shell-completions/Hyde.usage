@@ -30,7 +30,7 @@ Hyde <COMMANDS>
 <CACHE_OPERATIONS> ::= reload  "Wallpaper Cache"
                      | rebuild "Force rebuild cache";
 
-<WALLBASH_OPERATIONS> ::= (toggle (0 "off" | 1 "auto" | 2 "dark" | 3 "light"))  "Cycles wallbash [0] off [1] auto [2] dark [3] light"
+<WALLBASH_OPERATIONS> ::= (toggle)  "Cycles wallbash [0] off [1] auto [2] dark [3] light"
                         | (mode (0 | 1 | 2 | 3))   "Set wallbash mode. [0] [1] [2] [3] ";
 
 
