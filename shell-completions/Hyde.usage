@@ -2,9 +2,9 @@
 # Repo: https://github.com/adaszko/complgen
 # Generate completion scripts: "complgen aot --bash-script Hyde.bash --fish-script Hyde.fish --zsh-script Hyde.zsh ./Hyde.usage"
 
-Hyde <ARGUMENTS>
+Hyde <COMMANDS>
 
-<ARGUMENTS> ::= (man)                                             "Show manual"
+<COMMANDS> ::= (man)                                             "Show manual"
             |   (version)                                         "Hyde-cli version"
             |   (systeminfo)                                      "System information"
             |   (branch)                                          "Set pref Hyde branch"

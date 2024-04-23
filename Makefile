@@ -65,7 +65,7 @@ install:
 	install -m 644 ./Extras/* $(DESTDIR)$(usrdir) 
 
 	install -m 644 ./shell-completions/Hyde.bash ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde
-	install -m 644 ./shell-completions/Hyde.fish ${DESTDIR}$(prefix)/share/fish/completions/Hyde.fish
+	install -m 644 ./shell-completions/Hyde.fish ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde.fish
 	install -m 644 ./shell-completions/Hyde.zsh ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde
 
 restore:
@@ -88,9 +88,8 @@ purge :
 	-rm -rf $(wildcard $(DESTDIR)$(usrdir)/)
 
 	-rm -f ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde
-	-rm -f ${DESTDIR}$(prefix)/share/fish/completions/Hyde.fish
+	-rm -f ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde.fish
 	-rm -f ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde
-
 
 old:
 
