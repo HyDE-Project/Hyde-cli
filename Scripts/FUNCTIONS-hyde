@@ -6,8 +6,8 @@ initiate_hyde_command() {
 
     if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/landing/update.check" ] || [[ $(find "${cacheDir}/landing/update.check" -mmin +4320) ]]; }; then
         navigate_clone
-        print_prompt -y "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
-        notify-send "Checking For Updates (This prompts every 3 Days or after you run Hyde update)"
+        print_prompt -y "Checking for updates (This prompts every 3 Days or after you run Hyde update)"
+        notify-send "Checking for updates (This prompts every 3 Days or after you run Hyde update)"
         if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
             git fetch >/dev/null 2>&1
             if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
@@ -107,7 +107,7 @@ Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
 
 WARN
 
-        print_prompt -r "Your Local Hyde version is outdated!"
+        print_prompt -r "Your local Hyde version is outdated!"
         print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
 
     fi
@@ -190,7 +190,7 @@ rename_backup() {
     if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-$1"
     fi
-    print_prompt -y "Backup Directory: " -w "$bak-$1"
+    print_prompt -y "Backup directory: " -w "$bak-$1"
     [ -e "$install_packages_list" ] && cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
 }
 

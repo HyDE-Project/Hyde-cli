@@ -22,8 +22,8 @@ while (( "$#" )); do
         ;;
     esac
 done
-[[ -n ${CloneDir} ]] && echo "Set Clone Directory: ${CloneDir}"
-[[ ${is_link} == true ]] && echo "Linked to Clone Directory: ${CloneDir}"
+[[ -n ${CloneDir} ]] && echo "Set clone directory: ${CloneDir}"
+[[ ${is_link} == true ]] && echo "Linked to clone directory: ${CloneDir}"
 [[ -n ${GIT} ]] &&    echo "Cloning from: ${GIT}"
 
 # Set default values if not provided
@@ -61,7 +61,7 @@ if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then
     read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed?" key ; [[ -z "${key}" ]] || exit 0
     git reset --hard HEAD  && git clean -fd  && git pull  || true
     if [[ ${is_link} == true ]]; then
-        echo -e "Hyprdots-ctl will make ${CloneDir} your Clone Directory By restoring the links."
+        echo -e "Hyprdots-ctl will make ${CloneDir} your clone directory By restoring the links."
         ./restore_lnk.sh
     else
         install_distro

@@ -68,7 +68,7 @@ else echo "Select a Branch"
     fi
 fi
 
-[[ -z ${git_branch} ]] && echo "Operation Cancelled" && exit 0
+[[ -z ${git_branch} ]] && echo "Operation cancelled" && exit 0
 if [[ $git_branch == *"*"* ]]; then
     echo "Already in branch: ${git_branch}"
     return 1

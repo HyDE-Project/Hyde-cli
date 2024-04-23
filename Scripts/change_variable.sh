@@ -22,7 +22,7 @@ if grep -Ff <(echo "$varName") <(echo "$defVar") > /dev/null   ; then
     fi
 done
 
-echo -e "Variable Defaults: \n$(grep '^\s*\$.*=' "$defKeys" | sed 's/^[ \t]*//' )"
+echo -e "Variable defaults: \n$(grep '^\s*\$.*=' "$defKeys" | sed 's/^[ \t]*//' )"
 
 # Ask for user confirmation to keep the changes
 echo "Please try to check if your configuration are still correct."

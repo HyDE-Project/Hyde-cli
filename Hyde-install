@@ -7,7 +7,7 @@ export is_fresh_install=true
 
 . GLOBAL-hyde
 
-#? One Time Set up on Terminal.
+#? One time set up on terminal
 install_distro() {
     if [ "${1}" = "--fresh" ]; then export fresh=true; fi
     . /etc/os-release
@@ -56,7 +56,7 @@ Unknown option: $1
 Please run: 'Hyde-install'                                Install Hyde (Defaults)
 
 Advanced usage: [Hyde-install] --[options]
-        -d|--dir /path/to/Clone/Hyde                       Clone Hyde in a Custom path then run installation.
+        -d|--dir /path/to/Clone/Hyde                       Clone Hyde in a Custom path then run installation
                                                                     Default: '${HOME}/.cache/hyde/Hyde'
         -g|--git https://gitclone/repo/link/                     Remote Repository link to be cloned
                                                                     Default: 'https://github.com/prasanthrangan/hyprdots'
@@ -68,8 +68,8 @@ HANDLE_ERROR
     esac
 done
 
-[[ -n ${newCloneDir} ]] && print_prompt -y "Custom Clone Directory: ${newCloneDir}"
-[[ ${is_link} == true ]] && print_prompt - "Linked to Custom Clone Directory: ${newCloneDir}"
+[[ -n ${newCloneDir} ]] && print_prompt -y "Custom clone directory: ${newCloneDir}"
+[[ ${is_link} == true ]] && print_prompt - "Linked to custom clone directory: ${newCloneDir}"
 [[ -n ${GIT} ]] && print_prompt -"Custom repository from: ${GIT}"
 
 # Set default values if not provided
@@ -83,12 +83,12 @@ export GIT
 
 export CloneDir=${newCloneDir}
 if cd "${newCloneDir}"/Scripts; then
-    print_prompt -m "[*] " -y "Using existing directory."
+    print_prompt -m "[*] " -y "Using existing directory"
     if [[ ${is_link} == true ]]; then
-        echo -e "Hyde-cli will make ${newCloneDir} your Clone Directory By restoring the links."
+        echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
         set_branch
         integrity_check 
-        print_prompt -y "Successfully Migrated the Clone Directory: ${newCloneDir}"
+        print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
     else
         install_distro 
     fi
