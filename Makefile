@@ -63,6 +63,8 @@ install:
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
 	install -m 644 ./Extras/* $(DESTDIR)$(usrdir) 
+	install -m 644 ./shell-completions/Hyde.bash $(DESTDIR)$(usrdir)
+	install -m 644 ./shell-completions/Hyde.zsh $(DESTDIR)$(usrdir)
 
 	install -m 644 ./shell-completions/Hyde.bash ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde
 	install -m 644 ./shell-completions/Hyde.fish ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde.fish
