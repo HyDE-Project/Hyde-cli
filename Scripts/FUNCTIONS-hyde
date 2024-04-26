@@ -183,7 +183,7 @@ LOSSLESS
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
     [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
     lossless_class=$(echo "$@" | awk -F'--lossless=' '{print $2}')
-    [ -n "${lossless_class}" ] && echo "${lossless_class}" >>"${lossless_paste}" && print_prompt -y "[lossless pamodesting]" -w "'$lossless_class'" && exit 0
+    [ -n "${lossless_class}" ] && echo "${lossless_class}" >>"${lossless_paste}" && print_prompt -y "[lossless paste]" -w "'$lossless_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
         if ! grep -q "${class}" "${ignore_paste_file}"; then
             if grep -q "${class}" "${lossless_paste}"; then
