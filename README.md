@@ -135,7 +135,8 @@ View: `USAGE` in this repository.
 > ```
 
 ## FAQ
-If the shell completions are not working, you can manulaly source them from terminal. You could also include persist the change by adding the snippet the end of your `.zshrc,.bashrc` or `.fishrc`
+If the shell completions are not working, you can manually source them from terminal. You could also persist the change by adding the snippet the end of your `.zshrc,.bashrc` or `.fishrc`
+
 <details>
 <summary>Zsh</summary>
 
