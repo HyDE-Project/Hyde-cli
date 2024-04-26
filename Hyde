@@ -456,7 +456,7 @@ show() { #? Some Hypr GUI you might want to use
     emoji) #? Emoji selector
         Launch-Emoji
         ;;
-    pastebin) #? [*] Pastebin manager \n ﯧ pass [only once] '--ignore=initialclass' to disable autopaste \n ﯧ pass [only once] '--lossless=initialclass' to disable autopaste
+    pastebin) #? [*] Pastebin manager \n ﯧ pass [only once] '--ignore=initialclass' to disable autopaste \n ﯧ pass [only once] '--lossless=initialclass' to enable lossless pasting
         [[ $* == *"--ignore"* ]] && pasteIt "${*}"
         [[ $* == *"--lossless"* ]] && pasteIt "${*}"
         shift
