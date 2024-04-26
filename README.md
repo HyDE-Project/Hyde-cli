@@ -135,6 +135,7 @@ View: `USAGE` in this repository.
 > ```
 
 ## FAQ
+#### Activate Shell-completions
 If the shell completions are not working, you can manually source them from terminal. You could also persist the change by adding the snippet the end of your `.zshrc,.bashrc` or `.fishrc`
 
 <details>
