@@ -134,6 +134,33 @@ View: `USAGE` in this repository.
 > Hyde-install --dir /path/to/directory --link
 > ```
 
+## FAQ
+If the shell completions are not working, you can manulaly source them from terminal. You could also include persist the change by adding the snippet the end of your `.zshrc,.bashrc` or `.fishrc`
+<details>
+<summary>Zsh</summary>
+
+```sh
+source /usr/share/hyde-cli/Hyde.zsh
+```
+</details>
+
+<details>
+<summary>Bash</summary>
+
+```sh
+source /usr/share/hyde-cli/Hyde.bash
+```
+</details>
+
+
+<details>
+<summary>Fish</summary>
+
+```sh
+source /usr/share/hyde-cli/Hyde.fish
+```
+</details>
+
 ## Support
 
 If you would like to support this project, but don't know how, here are some ways: 
