@@ -6,6 +6,7 @@
   <br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
   <a href="#usage"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
+  <a href="#faq"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
   <a href="#roadmap"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
   <a href="https://github.com/kRHYME7/Hyde-cli/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
@@ -131,36 +132,40 @@ View: `USAGE` in this repository.
 > For example: 
 > 
 > ```
-> Hyde-install --dir /path/to/directory --link
+> Hyde-install --dir /path/to/cloned/hyde --link
 > ```
 
 ## FAQ
+
 #### Activate Shell-completions
-If the shell completions are not working, you can manually source them from terminal. You could also persist the change by adding the snippet the end of your `.zshrc,.bashrc` or `.fishrc`
+
+If shell completions are not working, you can manually source them from the terminal. You can also persist the changes by adding the snippet at the end of your `.zshrc`, `.bashrc`, or `~/.config/fish/config.fish`.
 
 <details>
 <summary>Zsh</summary>
 
-```sh
+```
 source /usr/share/hyde-cli/Hyde.zsh
 ```
+
 </details>
 
 <details>
 <summary>Bash</summary>
 
-```sh
+```
 source /usr/share/hyde-cli/Hyde.bash
 ```
-</details>
 
+</details>
 
 <details>
 <summary>Fish</summary>
 
-```sh
+```
 source /usr/share/hyde-cli/Hyde.fish
 ```
+
 </details>
 
 ## Support
