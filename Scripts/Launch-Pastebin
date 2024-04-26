@@ -12,8 +12,8 @@ cliphist_decode() {
     # Get the total number of lines
     total_lines=${#lines[@]}
     
-    if [ "${lines}" = "delete" ] ; then Hyprdots show pastebin d ;exit 0
-        elif [ "${lines}" = "wipe" ] ; then Hyprdots show pastebin w ; exit 0
+    if [ "${lines}" = "delete" ] ; then Hyde show pastebin d ;exit 0
+        elif [ "${lines}" = "wipe" ] ; then Hyde show pastebin w ; exit 0
     else
         # Iterate over each line in the array
         for (( i=0; i<$total_lines; i++ )); do
@@ -42,7 +42,7 @@ checkContent() {
     read -r line
     if  [[ ${line} == *"[[ binary data"* ]]; then
         imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
-        temprev="/tmp/hyprdots-${UID}-pastebin-preview${imag}"
+        temprev="/tmp/hyde-${UID}-pastebin-preview${imag}"
         echo -e "${imag}\t" | cliphist decode | wl-copy
         wl-paste > "${temprev}"
         notify-send -a "Pastebin:" "Preview: ${imag}" -i "${temprev}" -t 2000

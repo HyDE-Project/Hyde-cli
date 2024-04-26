@@ -161,7 +161,8 @@ r_override="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:
 
 #? handle pasting
 pasteIt() {
-    ignore_paste_file=${cacheDir}/ignore.paste
+    ignore_paste_file=${cacheDir}/landing/ignore.paste
+    lossless_paste=${cacheDir}/landing/lossless.paste
 
     if [[ ! -e "${ignore_paste_file}" ]]; then
         cat <<IGNOREWTYPE >"${ignore_paste_file}"
@@ -173,16 +174,23 @@ Alacritty
 xterm-256color
 IGNOREWTYPE
     fi
-
+    if [[ ! -e "${lossless_paste}" ]]; then
+        cat <<LOSSLESS >"${lossless_paste}"
+# Append files here to have lossless pasting
+LOSSLESS
+    fi
+    
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
     [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
-
-    # is_xwayland=false
-    #  is_xwayland="$(hyprctl -j activewindow | jq -r '.xwayland' )"
+    lossless_class=$(echo "$@" | awk -F'--lossless=' '{print $2}')
+    [ -n "${lossless_class}" ] && echo "${lossless_class}" >>"${lossless_paste}" && print_prompt -y "[lossless pamodesting]" -w "'$lossless_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
-    if ! grep -q "${class}" "${ignore_paste_file}"; then
-        wtype -M ctrl v -m ctrl
-    fi
+        if ! grep -q "${class}" "${ignore_paste_file}"; then
+            if grep -q "${class}" "${lossless_paste}"; then
+                wtype -M ctrl v -m ctrl
+            else wtype "$(wl-paste)"
+            fi
+        fi
 }
 
 rename_backup() {

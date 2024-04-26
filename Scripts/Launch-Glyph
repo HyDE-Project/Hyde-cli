@@ -39,5 +39,6 @@ dataGlyph=$(echo "${unique_entries}" | rofi -dmenu -multi-select -i -theme-str  
 # selGlyph=$(echo -n "${selGlyph}" | cut -d' ' -f1 | tr -d '\n' | wl-copy)
 trap save_recent EXIT
 selGlyph=$(printf "%s" "${dataGlyph}" | cut -d' ' -f1 | tr -d '\n\r' )
-wl-copy "${selGlyph}"
-pasteIt "${*}"
+wtype "${selGlyph}"
+# wl-copy "${selGlyph}"
+# pasteIt "${*}"
