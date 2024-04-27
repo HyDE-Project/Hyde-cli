@@ -97,7 +97,7 @@ list_Backup() {
 }
 
 restore_Lister() { #* Check the content of a Directory and make a restore list
-  # Define the backup directory
+  # restore_directory is the  Source directory for Configs
   restore_directory="${1:-${CloneDir}/Configs}"
   # echo "$restore_directory"
   : >"${config_override}"
@@ -106,6 +106,7 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
     IFS='|' read -r -a array <<<"$line"
 
     # Get the directory and file/directory name from the 3rd and 4th columns
+    flg="${array[0]}${array[1]}" #? This part are the flags so I can follow the defaults
     dir="${array[2]}"
     files="${array[3]}"
     pkg="${array[4]}"
@@ -115,17 +116,27 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
     IFS=' ' read -r -a files_array <<<"$files"
     # Iterate over each file or directory in the 4th column
     for file in "${files_array[@]}"; do
-
-      if [ "$restore_directory" = "BACKUP" ]; then
+      case "$restore_directory" in
+        "BACKUP") 
+      # if [ "$restore_directory" = "BACKUP" ]; then
         echo "B|$dir|$file|$pkg" >>"${config_override}"
-      elif [ "$restore_directory" = "OVERWRITE" ]; then
+        ;;
+      "OVERWRITE")
+      # elif [ "$restore_directory" = "OVERWRITE" ]; then
         echo "O|$dir|$file|$pkg" >>"${config_override}"
-      else
-        if [ -e "$restore_directory$curr/$file" ]; then
-          #  echo -e "$curr/$file"
-          echo "S|$dir|$file|$pkg" >>"${config_override}"
-        fi
+      ;;
+      *)
+      # else
+      if [ -e "$restore_directory$curr/$file" ]; then
+           if [ "${flg}" == "NY" ]; then
+                echo "P|$dir|$file|$pkg" >>"${config_override}"              
+            else 
+                echo "S|$dir|$file|$pkg" >>"${config_override}"              
+           fi
       fi
+      # fi
+      ;;
+    esac
     done
   done <"$(dirname ${restore_directory})/Scripts/restore_cfg.lst"
 }

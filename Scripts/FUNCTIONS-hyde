@@ -188,7 +188,8 @@ LOSSLESS
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
         if ! grep -q "${class}" "${ignore_paste_file}"; then
             if grep -q "${class}" "${lossless_paste_file}" || [ "${sanitize_paste}" = "true" ] ; then
-                hyprctl dispatch exec 'wtype -M ctrl v -m ctrl'      
+                # hyprctl dispatch exec 'wtype -M ctrl v -m ctrl'
+                hyprctl dispatch exec 'wtype -M ctrl V -m ctrl'
             else wtype "$(wl-paste)"
             fi
         fi
