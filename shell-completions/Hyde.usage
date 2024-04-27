@@ -35,30 +35,24 @@ Hyde <COMMANDS>
 
 
 <POWER_OPERATIONS> ::= reset                         "Reset changes"
-                     | save<POWER_SETTINGS_DISABLE>  "Save power by disabling features"
-                     | unset<POWER_SETTINGS_UNSET>   "Unset specific changes"
+                     | save <POWER_SETTINGS_DISABLE>  "Save power by disabling features"
+                     | unset <POWER_SETTINGS_UNSET>   "Unset specific changes"
                      | game                          "Toggle game mode";
 
-<POWER_SETTINGS_DISABLE> ::= (-a | --animations)         "Disable animations"
-                           | (-ba | --borderangle)       "Disable border angle animation"
-                           | (-b | --blur)               "Disable blur"
-                           | (-o| --opacity)             "Disable opacity";
+<POWER_SETTINGS_DISABLE> ::= (--animations)         "Disable animations"
+                           | (--borderangle)       "Disable border angle animation"
+                           | (--blur)               "Disable blur"
+                           | (--opacity)             "Disable opacity";
 
 
-<POWER_SETTINGS_UNSET> ::= (-a | --animations)         "Default animations"
-                           | (-ba | --borderangle)       "Default border angle animation"
-                           | (-b | --blur)               "Default blur"
-                           | (-o| --opacity)             "Default opacity";
+<POWER_SETTINGS_UNSET> ::= (--animations)         "Default animations"
+                           | (--borderangle)       "Default border angle animation"
+                           | (--blur)               "Default blur"
+                           | (--opacity)             "Default opacity";
 
 
 <RUN_OPERATIONS> ::= events    "Watches hyprland events and executes actions"
                    | screencap "Screenshot and screenrecord tool";
-
-[-a] [--animations]             Disable animations
-[-ba] [--borderangle]           
-[-b] [--blur]                   Disable blur
-[-o] [--opacity]                Disable tranparency
-
 
 <SHOW_GUIS> ::= monitors     "Manages Monitors using nwg-displays"
               | binds        "Keybind hints"
