@@ -118,15 +118,12 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
     for file in "${files_array[@]}"; do
       case "$restore_directory" in
         "BACKUP") 
-      # if [ "$restore_directory" = "BACKUP" ]; then
         echo "B|$dir|$file|$pkg" >>"${config_override}"
         ;;
       "OVERWRITE")
-      # elif [ "$restore_directory" = "OVERWRITE" ]; then
         echo "O|$dir|$file|$pkg" >>"${config_override}"
       ;;
       *)
-      # else
       if [ -e "$restore_directory$curr/$file" ]; then
            if [ "${flg}" == "NY" ]; then
                 echo "P|$dir|$file|$pkg" >>"${config_override}"              
@@ -134,7 +131,6 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
                 echo "S|$dir|$file|$pkg" >>"${config_override}"              
            fi
       fi
-      # fi
       ;;
     esac
     done
