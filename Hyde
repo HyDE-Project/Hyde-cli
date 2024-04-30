@@ -91,11 +91,16 @@ systeminfo() { #? System information
     hyprctl systeminfo
 }
 
-branch() { #? Set pref Hyde branch \n ﯧ '--dev <number> <branch>' switch to a merge request branch
-    repo_info
-    if [[ ${1} == *"--dev"* ]]; then
-        git fetch origin pull/"${2}"/head:"${3}"
-        git switch "${3}"
+branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge request branch
+    # repo_iavailablefo
+    if [[ ${1} == *"--devel"* ]]; then
+        pull_request=$(curl https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
+        [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
+        IFS=' ' read -ra parts <<< "$pull_request"
+        number="${parts[0]}"
+        branchname="${parts[*]:1}"
+        git fetch origin pull/"${number}"/head:"${branchname}"
+        git switch "${branchname}"
         exit 1
     fi
     set_branch
