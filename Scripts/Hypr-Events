@@ -82,6 +82,11 @@ event_workspace() {
   : # WORKSPACENAME
 }
 
+
+event_workspacev2() {
+  : # WORKSPACENAME2
+}
+
 event_focusedmon() {
   : # MONNAME WORKSPACENAME
 }
@@ -117,7 +122,15 @@ event_createworkspace() {
   : # WORKSPACENAME
 }
 
+
+event_createworkspacev2() {
+  : # WORKSPACENAME2
+}
+
 event_destroyworkspace() {
+  : # WORKSPACENAME
+}
+event_destroyworkspacev2() {
   : # WORKSPACENAME
 }
 
@@ -180,12 +193,14 @@ while true; do
     set -- $edata
     IFS=$PFS
 
-    if [ -n "$verbose" ]; then
-      printf >&2 '[%s] 1:%s 2:%s 3:%s 4:%s\n' "$event" "$1" "$2" "$3" "$4"
+    if [ 1 == "$verbose" ]; then
+      printf >&2 '[%s] 1:%s 2:%s 3:%s 4:%s\n>\n' "$event" "$1" "$2" "$3" "$4"
+
     fi
 
       case "$event" in
     "workspace") WORKSPACENAME="$1" event_workspace ;;
+    "workspacev2") WORKSPACENAMEv2="$1" event_workspacev2 ;;
     "focusedmon") MONNAME="$1" WORKSPACENAME="$2" event_focusedmon ;;
     "activewindow") WINDOWCLASS="$1" WINDOWTITLE="$2" event_activewindow ;;
     "activewindowv2") WINDOWCLASS="$1" WINDOWTITLE="$2" event_activewindowv2 ;;
@@ -194,7 +209,9 @@ while true; do
     "monitorremoved") MONITORNAME="$1" event_monitorremoved ;;
     "monitoradded") MONITORNAME="$1" event_monitoradded ;;
     "createworkspace") WORKSPACENAME="$1" event_createworkspace ;;
+    "createworkspacev2") WORKSPACENAMEv2="$1" event_createworkspacev2 ;;
     "destroyworkspace") WORKSPACENAME="$1" event_destroyworkspace ;;
+    "destroyworkspacev2") WORKSPACENAMEv2="$1" event_destroyworkspacev2 ;;
     "moveworkspace") WORKSPACENAME="$1" MONNAME="$2" event_moveworkspace ;;
     "activelayout") KEYBOARDNAME="$1" LAYOUTNAME="$2" event_activelayout ;;
     "openwindow") WINDOWADDRESS="$1" WORKSPACENAME="$2" WINDOWCLASS="$3" WINDOWTITLE="$4" event_openwindow ;;
@@ -206,7 +223,7 @@ while true; do
     "changefloatingmode") WINDOWCLASS="$1" WINDOWTITLE="$2" event_changefloatingmode  ;;
     "urgent")  : ;; #I don't know this yet
     *) printf >&2 'Unknown event: %s\n' "$event" ;
-if [ -n "$verbose" ]; then
+if [  1 == "$verbose" ] ; then
    notify-send -t 10000 -u "CRITICAL" 'Unknown event:' "Append $event to your hyprevents"
 fi
     esac
@@ -215,9 +232,9 @@ done
 }
 
 PFS=$IFS
-verbose= #   pass '-v' as first argument to shellevents to print all events to stderr
-case "$1" in -v) verbose=1 && shift ;; esac
 event_files="$*"
 load_events
 trap 'load_events; continue' USR1
+# handle for stable hyprland 
+[ ! -d $XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE ] && XDG_RUNTIME_DIR=/tmp
 socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done

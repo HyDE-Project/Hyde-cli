@@ -17,7 +17,7 @@ initiate_hyde_command() {
         fi
         touch "${cacheDir}/landing/update.check"
     else
-    :
+        :
     fi
 }
 
@@ -119,43 +119,41 @@ rofi_pos() {
     source_user
     roFile="${confDir}/rofi/clipboard.rasi"
 
+    #// set rofi scaling
 
-#// set rofi scaling
+    [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
+    r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+    wind_border=$((hypr_border * 3 / 2))
+    elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
 
-[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
-r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
-wind_border=$((hypr_border * 3 / 2))
-elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
+    #// evaluate spawn position
 
-#// evaluate spawn position
+    readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
+    readarray -t monRes < <(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width,.height,.scale,.x,.y')
+    readarray -t offRes < <(hyprctl -j monitors | jq -r '.[] | select(.focused==true).reserved | map(tostring) | join("\n")')
+    monRes[2]="$(echo "${monRes[2]}" | sed "s/\.//")"
+    monRes[0]="$((${monRes[0]} * 100 / ${monRes[2]}))"
+    monRes[1]="$((${monRes[1]} * 100 / ${monRes[2]}))"
+    curPos[0]="$((${curPos[0]} - ${monRes[3]}))"
+    curPos[1]="$((${curPos[1]} - ${monRes[4]}))"
 
-readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
-readarray -t monRes < <(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width,.height,.scale,.x,.y')
-readarray -t offRes < <(hyprctl -j monitors | jq -r '.[] | select(.focused==true).reserved | map(tostring) | join("\n")')
-monRes[2]="$(echo "${monRes[2]}" | sed "s/\.//")"
-monRes[0]="$(( ${monRes[0]} * 100 / ${monRes[2]} ))"
-monRes[1]="$(( ${monRes[1]} * 100 / ${monRes[2]} ))"
-curPos[0]="$(( ${curPos[0]} - ${monRes[3]} ))"
-curPos[1]="$(( ${curPos[1]} - ${monRes[4]} ))"
+    if [ "${curPos[0]}" -ge "$((${monRes[0]} / 2))" ]; then
+        x_pos="east"
+        x_off="-$((${monRes[0]} - ${curPos[0]} - ${offRes[2]}))"
+    else
+        x_pos="west"
+        x_off="$((${curPos[0]} - ${offRes[0]}))"
+    fi
 
-if [ "${curPos[0]}" -ge "$((${monRes[0]} / 2))" ] ; then
-    x_pos="east"
-    x_off="-$(( ${monRes[0]} - ${curPos[0]} - ${offRes[2]} ))"
-else
-    x_pos="west"
-    x_off="$(( ${curPos[0]} - ${offRes[0]} ))"
-fi
+    if [ "${curPos[1]}" -ge "$((${monRes[1]} / 2))" ]; then
+        y_pos="south"
+        y_off="-$((${monRes[1]} - ${curPos[1]} - ${offRes[3]}))"
+    else
+        y_pos="north"
+        y_off="$((${curPos[1]} - ${offRes[1]}))"
+    fi
 
-if [ "${curPos[1]}" -ge "$((${monRes[1]} / 2))" ] ; then
-    y_pos="south"
-    y_off="-$(( ${monRes[1]} - ${curPos[1]} - ${offRes[3]} ))"
-else
-    y_pos="north"
-    y_off="$(( ${curPos[1]} - ${offRes[1]} ))"
-fi
-
-r_override="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:${x_off}px;y-offset:${y_off}px;border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
-
+    r_override="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:${x_off}px;y-offset:${y_off}px;border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
 }
 
@@ -177,9 +175,9 @@ IGNOREWTYPE
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
     [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
-        if ! grep -q "${class}" "${ignore_paste_file}"; then
-                hyprctl dispatch exec 'wtype -M ctrl V -m ctrl'
-        fi
+    if ! grep -q "${class}" "${ignore_paste_file}"; then
+        hyprctl dispatch exec 'wtype -M ctrl V -m ctrl'
+    fi
 }
 
 rename_backup() {
@@ -251,6 +249,7 @@ help=$(
     grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
             -e "s|\${ctlFile}|$ctlFile|g"
 )
 

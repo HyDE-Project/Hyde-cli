@@ -215,7 +215,7 @@ set_metadata() {
     restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
-    commit_message="$(git show -s --format='%B')"
+    commit_message="'$(git show -s --format='%B')'"
     touch "${meta_file}"
     cat <<METADATA >"${meta_file}"
 #? This is a meta file generated for hyde-cli

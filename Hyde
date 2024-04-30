@@ -40,6 +40,7 @@ man() { #? Show Manual
     echo -e "${manPage}" |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
             -e "s|\${ctlFile}|$ctlFile|g"
     barLine
     print_prompt -y "\nDescriptions with [*] can be expanded to show more information. Append [--help]"
@@ -90,8 +91,13 @@ systeminfo() { #? System information
     hyprctl systeminfo
 }
 
-branch() { #? Set pref Hyde branch
+branch() { #? Set pref Hyde branch \n ﯧ '--dev <number> <branch>' switch to a merge request branch
     repo_info
+    if [[ ${1} == *"--dev"* ]]; then
+        git fetch origin pull/"${2}"/head:"${3}"
+        git switch "${3}"
+        exit 1
+    fi
     set_branch
 }
 
@@ -108,7 +114,7 @@ update() { #? Pull updates from Hyde repository
     inform_updates
 }
 
-upgrade() { #? Upgrades dots from the repository  \n ﯧ Control file: '${ctlFile}'
+upgrade() { #? Upgrades dots from the repository
     repo_info
     ask_confirm
     Manage-Config "upgrade"
@@ -133,12 +139,12 @@ restore() { #? Restore dots
         rename_backup "_Hyde_restore_Configs"
         Hyde reload
         ;;
-    Clone) #? Restores dots from a clone repository. \n ﯧ Provide ~/path/to/clone/directory
+    Clone) #? Restores dots from a clone repository \n ﯧ Provide ~/path/to/clone/directory
         Manage-Config "$1" "$2" && rename_backup "_Hyde_restore_Clone"
         #? Meta is added inside Clone function
         ;;
 
-    BackUp) #? Restores dots from previous backup.\n   Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
+    BackUp) #? Restores dots from previous backup\n   Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
         Manage-Config "${@}"
         ;;
     Link) #? Links a clone directory. Useful if you want to change your CloneDir
@@ -179,6 +185,30 @@ backup() { #? Backing up commands
     esac
 }
 
+sync() { #? Overwrite current dots from the user ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
+    source_user
+    userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
+    [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
+    print_prompt -r "This will overwrite the current dots with the ones in '${userPrefsDir}'"
+    ask_confirm "${USER}"
+    # Find all files in the userPrefsDir, remove the directory prefix, and create hard links in $HOME
+    find "$userPrefsDir" -type f | while read -r file; do
+        # Remove the directory prefix from the file path
+        relativePath=$(echo "$file" | sed "s|^$userPrefsDir/||")
+        # Extract the directory part of the relative path
+        targetDir="$HOME/$(dirname "$relativePath")"
+        # Check if the target directory exists, and create it if it doesn't
+        if [ ! -d "$targetDir" ]; then
+            # mkdir -p "$targetDir"
+            echo "$targetDir does not exist... Skipping"
+            break
+        fi
+        # Create the hard link in $HOME
+        cp -f "$file" "$HOME/$relativePath"
+        print_prompt -g "[Overwrite] " -c " " "$file" -y "  " "$HOME/$relativePath"
+    done
+}
+
 cache() { #? Manages Hyde's cache
     case $1 in
     reload) #? Reload wallpaper cache
@@ -202,30 +232,6 @@ cache() { #? Manages Hyde's cache
         Parameters "$Function"
         ;;
     esac
-}
-
-sync() { #? Overwrite current dots from the user ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
-    source_user
-    userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
-    [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
-    print_prompt -r "This will overwrite the current dots with the ones in '${userPrefsDir}'"
-    ask_confirm "${USER}"
-    # Find all files in the userPrefsDir, remove the directory prefix, and create hard links in $HOME
-    find "$userPrefsDir" -type f | while read -r file; do
-        # Remove the directory prefix from the file path
-        relativePath=$(echo "$file" | sed "s|^$userPrefsDir/||")
-        # Extract the directory part of the relative path
-        targetDir="$HOME/$(dirname "$relativePath")"
-        # Check if the target directory exists, and create it if it doesn't
-        if [ ! -d "$targetDir" ]; then
-            # mkdir -p "$targetDir"
-            echo "$targetDir does not exist... Skipping"
-            break
-        fi
-        # Create the hard link in $HOME
-        cp -f "$file" "$HOME/$relativePath"
-        print_prompt -g "[Overwrite] " -c " " "$file" -y "  " "$HOME/$relativePath"
-    done
 }
 
 theme() { #? Theme commands
@@ -479,6 +485,7 @@ run() { #? Executables
 
     case $1 in
     events) #? Watches hyprland events and executes actions
+        if [[ $* == *"--verbose"* ]]; then export verbose=1; fi
         Hypr-Events
         ;;
     screencap) #? [*] Screenshot and screenrecord tool
