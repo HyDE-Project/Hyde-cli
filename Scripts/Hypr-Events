@@ -113,7 +113,7 @@ event_monitorremoved() {
 
 event_monitoradded() {
   : # MONITORNAME
- ~/.config/hypr/scripts/swwwallpaper.sh
+    hyprctl dispatch exec 'swwwallpaper.sh'
 #    Hyprdots show monitors
 
 }
