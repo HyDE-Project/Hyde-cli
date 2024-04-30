@@ -529,25 +529,25 @@ run() { #? Executables
 inject() { #? User/Device specific scripts that might be useful
 
     case $1 in
-    chaotic) #? install chaotic aur
+    chaotic_aur) #? Add chaotic aur
         shift
         SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
         ;;
-    # asus_patch)
-    # # Add Keys of asus repository
-    # pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-    # pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-    # pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
-    # pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+    asus_patch) #? Fixes issues for asus devices
+    # Add Keys of asus repository
+    SUPER pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+    SUPER pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+    SUPER pacman-key --lsign-key 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
+    SUPER pacman-key --finger 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
 
-    # # Add in pacman.conf
-    # echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | SUPER tee -a /etc/pacman.conf
+    # Add in pacman.conf
+    echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | SUPER tee -a /etc/pacman.conf
 
-    # CHECK asusctl supergfxctl rog-control-center power-profiles-daemon
+    package_check asusctl supergfxctl rog-control-center power-profiles-daemon
 
-    # #Check First before enabling
-    # service_check power-profiles-daemon.service supergfxd
-    # ;;
+    #Check First before enabling
+    service_check power-profiles-daemon.service supergfxd
+    ;;
     # test)
     # service_check sddm
     # ;;
