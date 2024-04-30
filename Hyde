@@ -78,6 +78,10 @@ systeminfo() { #? System information
     print_prompt -y "\n**Hyde repository:**"
     repo_info
 
+    if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+     print_prompt -y "\n**Hyprland system information:** (hyprctl)" 
+    hyprctl systeminfo
+    else
     print_prompt -y "\n**GPU:** "
     lspci -nn | grep -Ei "VGA|3d"
 
@@ -86,9 +90,7 @@ systeminfo() { #? System information
 
     print_prompt -y "\n**OS:** "
     cat /etc/os-release
-
-    print_prompt -y "\n**Hyprland system information:** (Not always available)"
-    hyprctl systeminfo
+    fi
 }
 
 branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge request branch
@@ -109,6 +111,7 @@ branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge re
 update() { #? Pull updates from Hyde repository
     trap 'rm -f "${cacheDir}/landing/update.check"' EXIT
     repo_info
+    barLine
     get_aurhlpr
     print_prompt -y "Pulling Hyde repo..."
     git stash >/dev/null
