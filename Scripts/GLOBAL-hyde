@@ -354,9 +354,10 @@ load_spinner() {
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 
-# PATH
+# HYDE-CLI
 export libDir=/usr/lib/hyde-cli
 export PATH=${PATH}:${libDir}
+export HYDE_RUNTIME_DIR=$XDG_RUNTIME_DIR/hyde
 
 # CONFIGS
 export etcDir="/etc/hyde-cli"
@@ -396,6 +397,7 @@ make_dir=(
     "${cacheDir}"
     "${cacheDir}"
     "${etcDir}"
+    "${HYDE_RUNTIME_DIR}"
 )
 for dir in "${make_dir[@]}"; do
     if [[ ! -d "${dir}" ]] && [[ -n "${dir}" ]]; then

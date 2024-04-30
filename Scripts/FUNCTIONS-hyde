@@ -25,7 +25,7 @@ Parameters() { #TODO: Add conditionals here like 'case'
     Function="${Function// /}"
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case'; then
         # Define a variable for the tab characters
-        man_params=$(awk "/^$Function\(\) \{/,/esac/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
+        man_params=$(awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
         echo -e "${man_params}"
     else
         :

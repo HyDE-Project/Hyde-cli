@@ -21,7 +21,7 @@ initiate_hyde_command
 #* |Function example() { #? Example Function. this comments supports '\n'
 #* | case $1 in
 #* |      # Cases go here...
-#* |   esac
+#* |   esac; << ' ; ' is also use to parse case conditions 
 #* |}
 #! +----------------------------------------------------------------|
 
@@ -168,7 +168,7 @@ restore() { #? Restore dots
         Hyde reload
         ;;
     *) Parameters "$Function" ;;
-    esac
+    esac;
 }
 
 backup() { #? Backing up commands
@@ -190,7 +190,7 @@ backup() { #? Backing up commands
         Manage-Config "$1"
         ;;
     *) Parameters "$Function" ;;
-    esac
+    esac;
 }
 
 sync() { #? Overwrite current dots from the user ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
@@ -239,7 +239,7 @@ cache() { #? Manages Hyde's cache
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 }
 
 theme() { #? Theme commands
@@ -274,7 +274,7 @@ theme() { #? Theme commands
     # ;;
     *) Parameters "$Function" ;;
 
-    esac
+    esac;
 }
 
 wallpaper() { #? Wallpaper commands
@@ -301,7 +301,7 @@ wallpaper() { #? Wallpaper commands
     # ;;
     *) Parameters "$Function" ;;
 
-    esac
+    esac;
 }
 
 wallbash() { #? Toggle to use wallpaper accent themes
@@ -348,7 +348,7 @@ wallbash() { #? Toggle to use wallpaper accent themes
     #     Manage-Wallbash "${@}"
     # # ;;
     *) Parameters "$Function" ;;
-    esac
+    esac;
 }
 
 waybar() { #? Waybar commands
@@ -360,7 +360,7 @@ waybar() { #? Waybar commands
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 }
 
 sddm() { #? Sddm commands
@@ -389,7 +389,7 @@ sddm() { #? Sddm commands
     #   ;;
     *) Parameters "$Function" ;;
 
-    esac
+    esac;
 }
 
 shell() { #? Shell commands
@@ -402,7 +402,7 @@ shell() { #? Shell commands
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 }
 
 power() { #? Power Options
@@ -423,7 +423,7 @@ power() { #? Power Options
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 
 }
 
@@ -454,7 +454,7 @@ code() { #! Modify Vscode Extensions
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 }
 
 show() { #? Some Hypr GUI you might want to use
@@ -486,11 +486,10 @@ show() { #? Some Hypr GUI you might want to use
         Parameters "$Function"
         ;;
 
-    esac
+    esac;
 }
 
 run() { #? Executables
-
     case $1 in
     events) #? Watches hyprland events and executes actions
         shift
@@ -522,7 +521,7 @@ run() { #? Executables
         Parameters "$Function"
         ;;
 
-    esac
+    esac;
 
 }
 
@@ -554,7 +553,7 @@ inject() { #? User/Device specific scripts that might be useful
     *)
         Parameters "$Function"
         ;;
-    esac
+    esac;
 
 }
 
