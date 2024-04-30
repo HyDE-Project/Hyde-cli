@@ -220,4 +220,4 @@ case "$1" in -v) verbose=1 && shift ;; esac
 event_files="$*"
 load_events
 trap 'load_events; continue' USR1
-socat -U - UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done
