@@ -22,7 +22,7 @@ Hyde <COMMANDS>
             |   (power <POWER_OPERATIONS>)                        "Power options"
             |   (show <SHOW_GUIS>)                                "Some Hypr GUI you might want to use"
             |   (run <RUN_OPERATIONS>)                            "Executables"
-            |   (inject [chaotic])                                "User/Device specific scripts that might be useful"
+            |   (inject <chaotic_aur | asus_patch | file_associations>)                                "User/Device specific scripts that might be useful"
             |   (reload)                                          "Just Reload"
             ;
 
