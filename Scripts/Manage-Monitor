@@ -42,9 +42,9 @@ if ! grep -F "float" ~/.config/hypr/windowrules.conf | grep -F "nwg-displays" > 
 fi
 
 # Create a file with the PID in the filename
-touch /tmp/hyprdots-monitors-$pid
-# If any /tmp/hyprdots-monitors* files exist, kill the processes with those PIDs
-for file in /tmp/hyprdots-monitors*; do
+touch ${HYDE_RUNTIME_DIR}/monitors-$pid
+# If any ${HYDE_RUNTIME_DIR}/monitors* files exist, kill the processes with those PIDs
+for file in ${HYDE_RUNTIME_DIR}/monitors*; do
     # Extract the PID from the filename
     pid_to_kill=$(basename $file | cut -d '-' -f 3)
     

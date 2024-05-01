@@ -24,7 +24,7 @@ themepatcher_lst="${hyde_gallery_dir}/themepatcher.lst"
         fi
     fi
 ) &
-load_spinner $! $?
+loading_spinner $! $?
 [ ! -d "${hyde_gallery_dir}" ] && exit 1
 
 parse_ini() {

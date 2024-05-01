@@ -100,7 +100,7 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
   # restore_directory is the  Source directory for Configs
   restore_directory="${1:-${CloneDir}/Configs}"
   # echo "$restore_directory"
-  : >"${config_override}"
+  : >"${ctl_override}"
   # Read the file line by line
   while IFS= read -r line; do
     IFS='|' read -r -a array <<<"$line"
@@ -118,17 +118,17 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
     for file in "${files_array[@]}"; do
       case "$restore_directory" in
         "BACKUP") 
-        echo "B|$dir|$file|$pkg" >>"${config_override}"
+        echo "B|$dir|$file|$pkg" >>"${ctl_override}"
         ;;
       "OVERWRITE")
-        echo "O|$dir|$file|$pkg" >>"${config_override}"
+        echo "O|$dir|$file|$pkg" >>"${ctl_override}"
       ;;
       *)
       if [ -e "$restore_directory$curr/$file" ]; then
            if [ "${flg}" == "NY" ]; then
-                echo "P|$dir|$file|$pkg" >>"${config_override}"              
+                echo "P|$dir|$file|$pkg" >>"${ctl_override}"              
             else 
-                echo "S|$dir|$file|$pkg" >>"${config_override}"              
+                echo "S|$dir|$file|$pkg" >>"${ctl_override}"              
            fi
       fi
       ;;
@@ -153,20 +153,20 @@ list_Marker() {
       if [ $? -eq 1 ]; then
         restore_Lister "${CloneDir}/Configs"
       else
-        cp "${ctlFile}" "${config_override}"
+        cp "${ctlFile}" "${ctl_override}"
       fi
     fi
     read
-  elif [[ $* == *"--custom"* ]] && [ -e "${config_override}" ]; then
-    #? --custom will always asume that config_override is already present
-    prev_restore_list "${config_override}"
+  elif [[ $* == *"--custom"* ]] && [ -e "${ctl_override}" ]; then
+    #? --custom will always asume that ctl_override is already present
+    prev_restore_list "${ctl_override}"
   fi
 
   main_config_menu
 
-  prev_restore_list "${config_override}"
+  prev_restore_list "${ctl_override}"
 
-  [[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${config_override}" "${ctlFile}"
+  [[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${ctl_override}" "${ctlFile}"
 
   print_prompt -w '[ctrl + c]' -r ' Cancel'
   print_prompt -w "Continue?"
@@ -174,46 +174,46 @@ list_Marker() {
 
 list_Marker_OVERWRITE() {
   OVERWRITE="$(
-    echo -e "[CONFIRM]\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" |
+    echo -e "[CONFIRM]\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
   )"
 
-  awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${config_override}" >./temp.lst && mv ./temp.lst "${config_override}"
+  awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
 list_Marker_SYNC() {
   SYNC="$(
-    echo -e "[CONFIRM]\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" |
+    echo -e "[CONFIRM]\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
   )"
 
-  awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${config_override}" >./temp.lst && mv ./temp.lst "${config_override}"
+  awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
 list_Marker_PRESERVE() {
   PRESERVE="$(
-    echo -e "[CONFIRM]\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" |
+    echo -e "[CONFIRM]\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
   )"
 
-  awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${config_override}" >./temp.lst && mv ./temp.lst "${config_override}"
+  awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
 list_Marker_BACKUP() {
   BACKUP="$(
-    echo -e "[CONFIRM]\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${config_override}")" |
+    echo -e "[CONFIRM]\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
   )"
 
-  awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "B"; print; next} {print}}' "${config_override}" >./temp.lst && mv ./temp.lst "${config_override}"
+  awk -v ignore="$(echo "$BACKUP" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "B"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
 all() {
   list_Backup
   echo -e "\e[33mBacking up Dots and wallpapers, May use significant storage. \nRun 'Hyde backup clean' to free up space.\e[0m"
   ask_confirm
-  awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst >${config_override}
-  Restore-Config --only "/tmp/Hyde-${UID}-BAK"
+  awk -F'|' -v OFS='|' '{ $2="B"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst >${ctl_override}
+  Restore-Config --only "${HYDE_RUNTIME_DIR}/"
   bak=$(ls -td -- $BkpDir/* | head -n 1)
   if [[ "$last_bak" != "$bak" ]]; then
     echo -e "\e[33mProvide a Short Description for the Backup:[All]\e[0m"
@@ -229,14 +229,14 @@ revert() {
   barLine
   print_prompt -y "Restoring a backup will not create a backup of the current dots.\nExecute 'Hyde backup all' to save the current Dots"
   ask_confirm
-  awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst >${config_override}
+  awk -F'|' -v OFS='|' '{ $2="O"; print $2"|"$3"|"$4"|"$5  }' ./restore_cfg.lst >${ctl_override}
   selected_backup=$(ls -l -r $BkpDir | grep -- '--' | awk '{print $6,$7,$8,$9}' | Fzf-Menu "${FUNCNAME[0]}" |
     cut -d ' ' -f4) && echo "$selected_backup"
   if [[ -z $selected_backup ]]; then
     echo "Operation Cancelled"
     exit 0
   fi
-  Restore-Config --only "/tmp/Hyde-${UID}-BAK" "$BkpDir/$selected_backup"
+  Restore-Config --only "${HYDE_RUNTIME_DIR}/" "$BkpDir/$selected_backup"
   bak=$(ls -td -- $BkpDir/* | head -n 1)
   if [[ "$last_bak" != $bak ]]; then
     rm -fr $bak
@@ -266,7 +266,7 @@ BackUp() {
     print_prompt -y "Restoring from:" -w "${config_source}"
     echo "Please Review files to be re-populated to your Dots"
     if [ -e "${config_source}/$(basename ${ctlFile})" ]; then
-      : cp -f "${config_source}/$(basename ${ctlFile})" "${config_override}"
+      : cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"
       print_prompt -y "Using the Backup manifest file"
     else
       restore_Lister "${config_source}"
@@ -277,7 +277,7 @@ BackUp() {
       echo "Nothing Selected"
       exit 0
     fi
-    Restore-Config "/tmp/Hyde-${UID}-BAK" "${config_source}"
+    Restore-Config "${HYDE_RUNTIME_DIR}/" "${config_source}"
     Hyde reload
     bak=$(ls -td -- $BkpDir/* | head -n 1)
     if [[ "${last_bak}" != "${bak}" ]]; then
@@ -300,7 +300,7 @@ clean() {
     echo -e "$selected_backup" | awk '{for(i=4; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | while read -r line; do
       if [ -n "$line" ]; then rm -r "${BkpDir}/${line}"; fi
     done
-    load_spinner $!
+    loading_spinner $!
   else
     print_prompt -y "Operation cancelled"
     exit 0
@@ -321,7 +321,7 @@ Clone() {
   list_Marker "${custClone}"
   ask_confirm "$USER"
   # ./restore_fnt.sh
-  Restore-Config "/tmp/Hyde-${UID}-BAK" "${custClone}/Configs" && set_metadata "${custClone}"
+  Restore-Config "${HYDE_RUNTIME_DIR}/" "${custClone}/Configs" && set_metadata "${custClone}"
   Hyde reload
 }
 
@@ -338,7 +338,7 @@ upgrade() {
   ./install.sh -i "${install_packages_list}"
   ./restore_fnt.sh
 
-  Restore-Config "/tmp/Hyde-$(id -u)-BAK" && set_metadata
+  Restore-Config "${HYDE_RUNTIME_DIR}/" && set_metadata
   ./install_pst.sh
   Hyde reload
 }

@@ -30,7 +30,7 @@ install_distro() {
 }
 
 # Variables
-export install_packages_list="/tmp/hyde-cli-$(id -u)-temporary-apps"
+export install_packages_list="${HYDE_RUNTIME_DIR}/temporary-apps"
 export barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
 export cacheDir="${HOME}/.cache/hyde"
 export meta_file="${cacheDir}/hyde.meta"

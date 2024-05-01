@@ -14,20 +14,20 @@ STOP() {
     pkill -SIGINT "${screen_recorder}"
     pkill slurp
     pkill hyprpicker
-    rm -f "/tmp/Hyprdots-${UID}-*screenshot.png"
+    rm -f "${HYDE_RUNTIME_DIR}/*screenshot.png"
 }
 
 #variables
 OPTION="${1}"
 PASS="${@:2}"
-logFile="/tmp/hyprdots-${UID}-screencap.log"
+logFile="${HYDE_RUNTIME_DIR}/screencap.log"
 cacheFile="${cacheDir}/screecap.meta"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
 swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
 img_dir="${XDG_PICTURES_DIR}/Screenshots"
 img_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
-temp_screenshot="/tmp/Hyprdots-$(id -u)-${img_file}"
+temp_screenshot="${HYDE_RUNTIME_DIR}/${img_file}"
 
 mkdir -p "${img_dir}"
 mkdir -p "${vid_dir}"
@@ -49,7 +49,7 @@ first_setup() {
             vaMsg="export LIBVA_DRIVER_NAME=\"$libva_Driver\" # This is the driver to be used by wl-screenrec"
             export LIBVA_DRIVER_NAME=${libva_Driver}
             if
-                wl-screenrec -f /tmp/test.mp4 -o "${focus_monitor}" >"${logFile}" 2>&1 &
+                wl-screenrec -f "${HYDE_RUNTIME_DIR}/test.mp4" -o "${focus_monitor}" >"${logFile}" 2>&1 &
                 sleep 3 && pkill --signal=SIGINT wl-screenrec
             then
                 if grep -q "Failed to initialise VAAPI connection" "${logFile}"; then

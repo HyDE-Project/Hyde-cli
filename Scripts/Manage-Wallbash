@@ -115,7 +115,7 @@ TERM
     sequence="$(grep "^${pre_set}" "${DWAL}" | cut -d'|' -f2)"
     # Send the sequence to all active terminals
     for term in /dev/pts/[0-9]*; do  echo -en "${sequence}" > "${term}" &  done
-    echo -en "${sequence}" > /tmp/sequence
+    echo -en "${sequence}" > "${HYDE_RUNTIME_DIR}/sequence"
     
     ChangeValue "term_last_state" "${pre_set}"
 }

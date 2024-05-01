@@ -335,7 +335,7 @@ case_help() {
     sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
 }
 
-load_spinner() {
+loading_spinner() {
     local stat=${2:-0}
     local pid=$1 # Process ID of the command to monitor
     local spinstr='|/-\\'
@@ -377,11 +377,11 @@ export meta_file="${cacheDir}/hyde.meta"
 #! Temporary
 [ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
-install_packages_list="/tmp/hyde-ctl-$(id -u)-temporary-apps"
+install_packages_list="${HYDE_RUNTIME_DIR}/temporary-apps"
 export install_packages_list
 export ctlFile="${cacheDir}/manage_cfg.lst" #! Will use cacheDir
-config_override="/tmp/Hyde-${UID}-BAK$(basename "${ctlFile}")"
-export config_override
+ctl_override="${HYDE_RUNTIME_DIR}/$(basename "${ctlFile}")"
+export ctl_override
 
 scrDir=""$(dirname $(which globalcontrol.sh 2>/dev/null) 2>/dev/null)""
 [ ! -e "${scrDir}/globalcontrol.sh" ] && export scrDir="$HOME/.local/share/bin/"

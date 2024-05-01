@@ -3,13 +3,12 @@
 #? Variables
 unset WLR_NO_HARDWARE_CURSORS
 
-etcFile="${etcDir}/screencap.rasi"
 roFile="${confDir}/rofi/screencap.rasi"
 rec=''
 cap=''
 snip=false
 
-do_contain "${etcFile}" "${roFile}"
+[ ! -f "${rofile}" ] && roFile="${etcDir}/screencap.rasi"
 
 . Run-Screencap GUI
 trap cleaNotify EXIT

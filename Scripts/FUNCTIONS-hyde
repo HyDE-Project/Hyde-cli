@@ -46,7 +46,7 @@ ConfigCtl() {
     FILE="$1"
     EDITOR="${EDITOR:-code}" #* Use VS Code as the default editor
     echo -e "[Editor]: $EDITOR (\"export EDITOR=pref_editor\") \n[Modifying]: $FILE \nPress Any Key if done editing"
-    #kitty -o allow_remote_control=yes -o listen_on=unix:/tmp/mykitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
+    #kitty -o allow_remote_control=yes -o listen_on=unix:/${HYDE_RUNTIME_DIR}/mykitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
     kitty "$(which $EDITOR)" "$FILE" >/dev/null 2>&1 &
     LAST_MD5SUM=$(md5sum "$FILE")
     while true; do
@@ -222,14 +222,13 @@ shell_select() {
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
-        config_override="/tmp/Hyde-$(id -u)-BAKmanage_cfg.lst"
         package_check fish lsd starship
         (
             echo 'P|${HOME}/.config|fish|fish'
             echo 'P|${HOME}/.config|lsd|lsd'
-        ) >${config_override}
+        ) >${ctl_override}
 
-        Restore-Config --only "/tmp/Hyde-$(id -u)-BAK"
+        Restore-Config --only "${HYDE_RUNTIME_DIR}/"
     fi
     # set shell
     [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0

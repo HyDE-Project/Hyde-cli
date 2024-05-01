@@ -94,14 +94,15 @@ systeminfo() { #? System information
 }
 
 branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge request branch
-    # repo_iavailablefo
+    repo_info
     if [[ ${1} == *"--devel"* ]]; then
-        pull_request=$(curl https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
+        pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf) 
         [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
         IFS=' ' read -ra parts <<< "$pull_request"
         number="${parts[0]}"
-        branchname="${parts[*]:1}"
-        git fetch origin pull/"${number}"/head:"${branchname}"
+        branchname=$(printf "%s" "${parts[@]:1}" | sed -e 's/[^a-zA-Z0-9_-]//g')
+        echo -e "\n$number $branchname"
+        git fetch origin pull/${number}/head:${branchname}
         git switch "${branchname}"
         exit 1
     fi
@@ -139,10 +140,10 @@ restore() { #? Restore dots
         # ask_confirm
         . Manage-Config
         list_Marker
-        #  cat ${config_override}
+        #  cat ${ctl_override}
         ask_confirm "${USER}"
         ./restore_fnt.sh
-        Restore-Config --only "/tmp/Hyde-$(id -u)-BAK"
+        Restore-Config --only "${HYDE_RUNTIME_DIR}/"
         set_metadata
         rename_backup "_Hyde_restore_Configs"
         Hyde reload
@@ -470,9 +471,8 @@ show() { #? Some Hypr GUI you might want to use
     emoji) #? Emoji selector
         Launch-Emoji
         ;;
-    pastebin) #? [*] Pastebin manager \n ﯧ pass [only once] '--ignore=initialclass' to disable autopaste \n ﯧ pass [only once] '--lossless=initialclass' to enable lossless pasting
+    pastebin) #? [*] Pastebin manager \n ﯧ pass [only once] '--ignore=initialclass' to disable autopaste
         [[ $* == *"--ignore"* ]] && pasteIt "${*}"
-        [[ $* == *"--lossless"* ]] && pasteIt "${*}"
         shift
         Launch-Pastebin "$@"
         ;;

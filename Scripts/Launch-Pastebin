@@ -42,7 +42,7 @@ checkContent() {
     read -r line
     if  [[ ${line} == *"[[ binary data"* ]]; then
         imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
-        temprev="/tmp/hyde-${UID}-pastebin-preview${imag}"
+        temprev="${HYDE_RUNTIME_DIR}/pastebin-preview${imag}"
         echo -e "${imag}\t" | cliphist decode | wl-copy
         wl-paste > "${temprev}"
         notify-send -a "Pastebin:" "Preview: ${imag}" -i "${temprev}" -t 2000

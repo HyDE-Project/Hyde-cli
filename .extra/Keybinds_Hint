@@ -45,7 +45,7 @@ done
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
 keyConf+="$keyconfDir/hyprland.conf $keyconfDir/keybindings.conf $keyconfDir/userprefs.conf"
-tmpMapDir="/tmp"
+tmpMapDir="${HYDE_RUNTIME_DIR}"
 tmpMap="$tmpMapDir/hyprdots-keybinds.jq"
 roDir="$confDir/rofi"
 roconf="$roDir/clipboard.rasi"
