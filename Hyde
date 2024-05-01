@@ -532,6 +532,13 @@ inject() { #? User/Device specific scripts that might be useful
         shift
         SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
         ;;
+    file_associations) #? Add file associations
+        shift
+        SUPER pacman -Sy archlinux-xdg-menu
+        SUPER pacman -Sy update-desktop-database
+        SUPER mv arch-applications.menu applications.menu
+        kbuildsycoca6 --noincremental
+        ;;
     asus_patch) #? Fixes issues for asus devices
     # Add Keys of asus repository
     SUPER pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
