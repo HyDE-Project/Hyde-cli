@@ -35,6 +35,7 @@ Hyde <COMMANDS>
 
 
 <POWER_OPERATIONS> ::= reset                         "Reset changes"
+                     | toggle                         "Set/unset current changes"
                      | save <POWER_SETTINGS_DISABLE>  "Save power by disabling features"
                      | unset <POWER_SETTINGS_UNSET>   "Unset specific changes"
                      | game                          "Toggle game mode";
