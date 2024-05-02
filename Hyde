@@ -415,6 +415,9 @@ power() { #? Power Options
     save) #? [*] Save power by disabling features
         Manage-Power "$@"
         ;;
+    toggle) #? Toggle ﯦ Set/unset current changes'
+        Manage-Power "$@"
+        ;;
     unset) #? [*] Unset specific changes
         Manage-Power "$@"
         ;;
