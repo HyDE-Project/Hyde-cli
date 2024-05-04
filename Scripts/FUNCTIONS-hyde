@@ -192,7 +192,7 @@ rename_backup() {
 shell_select() {
     #TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
     navigate_clone
-    myShell="$(echo -e "zsh\nfish" | Fzf-Menu "${FUNCNAME[0]}")"
+    myShell="$(chsh -l | awk '/\/usr\/bin\/zsh/ || /\/usr\/bin\/fish/' | sed 's/\/usr\/bin\///' | Fzf-Menu "${FUNCNAME[0]}")"
     print_prompt -y "[Shell] " -w "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
