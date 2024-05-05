@@ -494,6 +494,17 @@ show() { #? Some Hypr GUI you might want to use
 
 run() { #? Executables
     case $1 in
+    audio_idle) #? Inhibits idle when player is 'Playing'
+    local command="${0} "${FUNCNAME[0]}" ${@} --listen"
+      shift
+    if [ "--listen" = "$1" ] && playerctl -p spotify status | grep -q "Playing" ; then 
+    print_prompt -y "Player status: " "  $(playerctl status)..."
+    while playerctl -p spotify status | grep -q "Playing"; do sleep 5; done
+    exit 0    
+    fi  
+     playerctl status | grep -q "Playing" && systemd-inhibit --what=idle --mode=block ${command}
+    print_prompt -y "Player status: " " $(playerctl status)..."
+    ;;
     events) #? Watches hyprland events and executes actions
         shift
         verbose=0
