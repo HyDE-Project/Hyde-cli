@@ -11,6 +11,7 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 
 # . DEVEL
 . GLOBAL-hyde
+. DEVEL-hyde
 . FUNCTIONS-hyde
 initiate_hyde_command
 
@@ -21,7 +22,7 @@ initiate_hyde_command
 #* |Function example() { #? Example Function. this comments supports '\n'
 #* | case $1 in
 #* |      # Cases go here...
-#* |   esac; << ' ; ' is also use to parse case conditions 
+#* |   esac; << ' ; ' is also use to parse case conditions
 #* |}
 #! +----------------------------------------------------------------|
 
@@ -79,7 +80,7 @@ systeminfo() { #? System information
     repo_info
 
     if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-     print_prompt -y "\n**Hyprland system information:** (hyprctl)" 
+     print_prompt -y "\n**Hyprland system information:** (hyprctl)"
     hyprctl systeminfo
     else
     print_prompt -y "\n**GPU:** "
@@ -96,7 +97,7 @@ systeminfo() { #? System information
 branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge request branch
     repo_info
     if [[ ${1} == *"--devel"* ]]; then
-        pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf) 
+        pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
         [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
         IFS=' ' read -ra parts <<< "$pull_request"
         number="${parts[0]}"
@@ -194,7 +195,7 @@ backup() { #? Backing up commands
     esac;
 }
 
-sync() { #? Overwrite current dots from the user ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
+sync() { #? Overwrite current dots from the user \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
     source_user
     userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
     [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
@@ -497,11 +498,11 @@ run() { #? Executables
     audio_idle) #? Inhibits idle when player is 'Playing'
     local command="${0} "${FUNCNAME[0]}" ${@} --listen"
       shift
-    if [ "--listen" = "$1" ] && playerctl -p spotify status | grep -q "Playing" ; then 
+    if [ "--listen" = "$1" ] && playerctl -p spotify status | grep -q "Playing" ; then
     print_prompt -y "Player status: " "  $(playerctl status)..."
     while playerctl -p spotify status | grep -q "Playing"; do sleep 5; done
-    exit 0    
-    fi  
+    exit 0
+    fi
      playerctl status | grep -q "Playing" && systemd-inhibit --what=idle --mode=block ${command}
     print_prompt -y "Player status: " " $(playerctl status)..."
     ;;
