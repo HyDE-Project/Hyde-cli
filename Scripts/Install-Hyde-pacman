@@ -73,15 +73,18 @@ if nvidia_detect && ask_confirm "Yy"; then export fix_nvidia=true; fi
 custom_apps="${scriptDir}/custom_apps.lst"
 cust_pkg="${HYDE_RUNTIME_DIR}/custom-app-list"
 if [[ -e ${custom_apps} ]]; then
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
+    # sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
+     sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#" \
+    | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
+
     echo -e "Optional packages loaded:"
     cat "${cust_pkg}"
 fi
 
 #? Manage Configs
 [ -e $ctlFile ] && cp $ctlFile $ctl_override
-[ ! -e $ctlFile ] && Manage-Config restore_Lister
-Manage-Config list_Marker --custom
+[ ! -e $ctlFile ] && Manage-Config generate_list
+Manage-Config list_Marker "" --custom
 ask_confirm "${USER}"
 
 "${scriptDir}/install_pre.sh"

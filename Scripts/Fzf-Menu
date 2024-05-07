@@ -13,37 +13,37 @@ fzf_list_Marker_OVERWRITE() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
-        --preview "Manage-Config prev_restore_list ${ctl_override}"
+        --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_list_Marker_SYNC() {
     fzf -m --marker '' \
         --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
-        --preview "Manage-Config prev_restore_list ${ctl_override}"
+        --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_list_Marker_PRESERVE() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
-        --preview "Manage-Config prev_restore_list ${ctl_override}"
+        --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_list_Marker_BACKUP() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
-        --preview "Manage-Config prev_restore_list ${ctl_override}"
+        --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 #? restore Config
-fzf_main_config_menu() {
+fzf_menu_manage_config() {
     fzf --prompt='▶' \
         --pointer='→' \
         --marker='♡' \
         --cycle \
-        --preview "Manage-Config prev_restore_list ${ctl_override}" \
+        --preview "Manage-Config show_restore_list ${ctl_override}" \
         --preview-window 'right:80%,border-rounded'
 }
 

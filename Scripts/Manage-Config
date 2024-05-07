@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-prev_restore_list() {
+show_restore_list() {
   cat <<REVIEW
 "Please review the list..."
 $(barLine)
@@ -46,7 +46,7 @@ GROUP() {
  }' ${1}
 }
 
-main_config_menu() {
+menu_manage_config() {
   while true; do
     options=(
       "[Confirm]"
@@ -96,7 +96,7 @@ list_Backup() {
   fi
 }
 
-restore_Lister() { #* Check the content of a Directory and make a restore list
+generate_list() { #* Check the content of a Directory and make a restore list
   # restore_directory is the  Source directory for Configs
   restore_directory="${1:-${CloneDir}/Configs}"
   # echo "$restore_directory"
@@ -141,17 +141,17 @@ restore_Lister() { #* Check the content of a Directory and make a restore list
 list_Marker() {
   CloneDir=${1:-${CloneDir}}
   if [ -e "${ctlFile}" ] && [[ $* != *"--custom"* ]]; then
-    prev_restore_list "${ctlFile}"
+    show_restore_list "${ctlFile}"
 
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
     if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
       print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
-      restore_Lister "${CloneDir}/Configs"
+      generate_list "${CloneDir}/Configs"
     else
       print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
       ask_confirm "Yy"
       if [ $? -eq 1 ]; then
-        restore_Lister "${CloneDir}/Configs"
+        generate_list "${CloneDir}/Configs"
       else
         cp "${ctlFile}" "${ctl_override}"
       fi
@@ -159,12 +159,12 @@ list_Marker() {
     read
   elif [[ $* == *"--custom"* ]] && [ -e "${ctl_override}" ]; then
     #? --custom will always asume that ctl_override is already present
-    prev_restore_list "${ctl_override}"
+    show_restore_list "${ctl_override}"
   fi
 
-  main_config_menu
+  menu_manage_config
 
-  prev_restore_list "${ctl_override}"
+  show_restore_list "${ctl_override}"
 
   [[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${ctl_override}" "${ctlFile}"
 
@@ -269,7 +269,7 @@ BackUp() {
       : cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"
       print_prompt -y "Using the Backup manifest file"
     else
-      restore_Lister "${config_source}"
+      generate_list "${config_source}"
     fi
     list_Marker "" --custom
     ask_confirm "${USER}"
@@ -317,7 +317,7 @@ Clone() {
   integrity_check "${custClone}"
   echo "Generating a Restore List"
   cd $custClone/Scripts || handle_error "Cannot change directory to $custClone/Scripts"
-  #! restore_Lister "$custClone/Configs"
+  #! generate_list "$custClone/Configs"
   list_Marker "${custClone}"
   ask_confirm "$USER"
   # ./restore_fnt.sh
@@ -329,7 +329,10 @@ upgrade() {
   custom_apps="${CloneDir}/Scripts/custom_apps.lst"
   if [[ -e ${custom_apps} ]]; then
 
-    sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
+    # sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
+    # sed 's/^#//' "${custom_apps}" | grep "#"  \
+    sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#" \
+    | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
     echo -e "Optional packages loaded:"
     cat "${install_packages_list}"
   fi
@@ -350,7 +353,7 @@ if [ ! -f "${ctlFile}" ]; then
     exit 1
   fi
   awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${CloneDir}/Scripts/restore_cfg.lst >${ctlFile}
-  restore_Lister "${CloneDir}/Configs"
+  generate_list "${CloneDir}/Configs"
   cat "${ctlFile}"
 fi
 
