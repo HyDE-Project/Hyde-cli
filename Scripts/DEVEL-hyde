@@ -67,7 +67,7 @@ HEADER
         done
                 grep '_USAGE]' "${0}" | sed -e 's/\[//g' -e 's/\]//g' -e 's/ *//g' | while read -r line; do
                 echo "<${line}> ::="
-                parSEC ${line} $0  | while read -r line;do
+                parse_section ${line} $0  | while read -r line;do
                 local func=$(echo "$line" | awk -F '?' '{print $1}' )
                 local desc=$(echo "$line" | awk -F '?' '{print $2}' )
                 echo "$pipe ($func) \"$desc\""

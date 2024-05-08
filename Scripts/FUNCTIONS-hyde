@@ -21,14 +21,50 @@ initiate_hyde_command() {
     fi
 }
 
-Parameters() { #TODO: Add conditionals here like 'case'
+Parametersv2() { #TODO: Add conditionals here like 'case'
     Function="${Function// /}"
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case'; then
         # Define a variable for the tab characters
         man_params=$(awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
         echo -e "${man_params}"
-    else
-        :
+    fi
+}
+
+Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimized but it's fine!
+    . Hyde-Parser
+    Function="${Function// /}"
+    prefix=$Function
+    command=$1
+    if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case'; then
+        # Define a variable for the tab characters
+        man_params=$(
+            # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
+            awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r line; do
+                param=$(echo ${line} | awk -F ')' '{print $1}')
+                desc=$(echo ${line} | awk -F '?' '{print $2}')
+                indent="\t\t\t"
+                # echo echo -e ${line} | awk -F '?' '{print}'
+                printf "${indent}%-15s %s %s\n" "[${param}]" "﬌" "$(echo -en ${desc} | head -n 1 )"
+                # Print the remaining lines of $desc with indentation
+echo -e "$desc" | tail +2 | while IFS= read -r line; do
+    printf "  %s%-15s %s %s\n" "$indent" "" "" "$line"
+done
+echo ""
+                if echo "${desc}" | grep -q "[*]"; then
+                name_usage=${prefix^^}_${param^^}_USAGE
+                # usage_desc=${prefix^^}_${param^^}_DESCRIPTION
+                    # parse_section "${usage_desc}" "${0}"
+                    while IFS= read -r line; do
+                        local opt=$(echo $line | awk -F '?' '{print $1}')
+                        local desc=$(echo $line | awk -F '?' '{print $2}')
+                printf "\t\t\t\t\t\t%-15s %s %s\n" "[${opt}]" "﬌" "$desc"
+                    done < <(parse_section "${name_usage}" "${0}")
+                fi
+                
+            done
+
+        )
+        echo -e "${man_params}"
     fi
 }
 

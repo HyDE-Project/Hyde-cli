@@ -62,7 +62,7 @@ print_prompt() {
     echo ""
 }
 
-parSEC() {
+parse_section() {
     local section="$1"
     local file="$2"
 
