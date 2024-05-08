@@ -7,31 +7,32 @@ _Hyde () {
     local words cword
     _get_comp_words_by_ref -n "$COMP_WORDBREAKS" words cword
 
-    local -a literals=("binds" "game" "::=" "version" "all" "update" "wallpaper" "shell" "0" "Link" "reload" "--blur" "restore" "revert" "cache" "--opacity" "list" "prev" "3" "next" "control" "monitors" "save" "unset" "power" "next" "1" "2" "Config" "systeminfo" "--borderangle" "BackUp" "mode" "theme" "branch" "wallbash" "prev" "backup" "reset" "events" "select" "toggle" "--opacity" "glyph" "set" "patch" "--borderangle" "emoji" "pastebin" "set" "toggle" "clean" "rebuild" "--animations" "inject" "screencap" "select" "screencap" "reload" "sddm" "Clone" "theme" "show" "select" "waybar" "--animations" "upgrade" "run" "chaotic" "--blur" "man")
+    local -a literals=("control" "revert" "wallbash" "::=" "prev" "--opacity" "-j" "chaotic_aur" "branch" "save" "3" "--borderangle" "--animations" "unset" "backup" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "-w" "power" "d" "inject" "set" "theme" "binds" "rebuild" "0" "screencap" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "restore" "waybar" "upgrade" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "shell" "show" "audio_idle" "prev" "sync" "reload" "mode" "--opacity" "Link" "reset" "next" "--animations" "version" "next" "select" "-h" "select" "--blur" "run" "screencap" "theme" "clean" "2" "-f" "set" "patch" "select" "reload" "Clone")
 
     declare -A literal_transitions
-    literal_transitions[0]="([54]=1 [3]=3 [24]=4 [59]=5 [5]=3 [61]=6 [6]=7 [29]=3 [62]=8 [7]=9 [64]=10 [66]=3 [10]=3 [34]=3 [67]=11 [35]=12 [12]=13 [37]=14 [14]=15)"
-    literal_transitions[1]="([68]=3)"
-    literal_transitions[4]="([23]=20 [38]=3 [1]=3 [50]=3 [22]=18)"
-    literal_transitions[5]="([33]=3)"
-    literal_transitions[6]="([56]=3 [19]=3 [36]=3 [44]=3 [45]=3)"
-    literal_transitions[7]="([49]=3 [63]=3 [25]=3 [17]=3)"
-    literal_transitions[8]="([21]=3 [43]=3 [0]=3 [55]=3 [47]=3 [48]=3)"
-    literal_transitions[9]="([40]=3)"
-    literal_transitions[10]="([20]=3)"
-    literal_transitions[11]="([39]=3 [57]=3)"
-    literal_transitions[12]="([41]=3 [32]=19)"
-    literal_transitions[13]="([9]=3 [28]=3 [60]=3 [31]=3)"
-    literal_transitions[14]="([16]=3 [51]=3 [4]=3 [13]=3)"
-    literal_transitions[15]="([58]=3 [52]=3)"
-    literal_transitions[16]="([2]=17)"
-    literal_transitions[17]="([70]=3)"
-    literal_transitions[18]="([15]=3 [11]=3 [46]=3 [65]=3)"
-    literal_transitions[19]="([18]=3 [27]=3 [26]=3 [8]=3)"
-    literal_transitions[20]="([42]=3 [30]=3 [53]=3 [69]=3)"
+    literal_transitions[0]="([41]=21 [22]=22 [44]=3 [65]=4 [2]=5 [26]=6 [47]=7 [51]=9 [71]=10 [54]=13 [53]=11 [8]=12 [57]=14 [33]=15 [14]=16 [35]=17 [17]=18 [24]=19 [42]=20 [40]=1 [58]=2)"
+    literal_transitions[1]="([61]=23 [20]=23 [15]=23 [81]=23)"
+    literal_transitions[5]="([39]=23 [59]=26)"
+    literal_transitions[6]="([63]=23 [69]=23 [78]=23 [56]=23 [77]=23)"
+    literal_transitions[7]="([73]=23)"
+    literal_transitions[9]="([28]=23 [80]=23)"
+    literal_transitions[10]="([36]=23 [55]=23 [72]=23)"
+    literal_transitions[11]="([79]=23)"
+    literal_transitions[13]="([48]=23 [30]=23 [52]=23 [27]=28 [31]=24)"
+    literal_transitions[16]="([16]=23 [45]=23 [74]=23 [1]=23)"
+    literal_transitions[18]="([67]=23 [66]=23 [25]=23 [4]=23)"
+    literal_transitions[19]="([7]=23 [37]=23)"
+    literal_transitions[21]="([0]=23)"
+    literal_transitions[22]="([43]=23 [50]=23 [9]=27 [62]=23 [13]=29)"
+    literal_transitions[24]="([32]=23 [23]=23 [49]=23)"
+    literal_transitions[25]="([3]=23)"
+    literal_transitions[26]="([29]=23 [34]=23 [75]=23 [10]=23)"
+    literal_transitions[27]="([12]=23 [70]=23 [11]=23 [60]=23)"
+    literal_transitions[28]="([6]=23 [68]=23 [19]=23 [46]=23 [76]=23 [21]=23)"
+    literal_transitions[29]="([5]=23 [18]=23 [64]=23 [38]=23)"
 
     declare -A match_anything_transitions
-    match_anything_transitions=([0]=2 [2]=16)
+    match_anything_transitions=([3]=23 [12]=23 [14]=23 [2]=23 [0]=8 [17]=23 [15]=23 [20]=23 [8]=25 [4]=23)
     declare -A subword_transitions
 
     local state=0

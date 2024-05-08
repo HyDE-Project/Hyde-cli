@@ -25,7 +25,7 @@ process_input() {
 
 
 # Function to parse the ini file
-parsec() {
+parSEC() {
     local section="$1"
     local file="$2"
 
@@ -39,7 +39,7 @@ parsec() {
 }
 
 # Call the function with the section name and the path to the ini file
-#+ parsec "$1" "$FILE"
+#+ parSEC "$1" "$FILE"
 
 
 ls_sec() {
@@ -54,7 +54,7 @@ SECTION=$(ls_sec "$FILE" | fzf)
 
 # echo $SECTION
 
-parsec "$SECTION" ${FILE} | process_input
+parSEC "$SECTION" ${FILE} | process_input
 
 for item in "${DEFAULT[@]}"; do
     echo "Item in DEFAULT array: $item"

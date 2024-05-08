@@ -62,6 +62,18 @@ print_prompt() {
     echo ""
 }
 
+parSEC() {
+    local section="$1"
+    local file="$2"
+
+    # Use awk to print lines between the specified section and the next section
+    awk -v section="$section" '
+        BEGIN { in_section = 0 }
+        /^\[/ { in_section = ($0 == "[" section "]") }
+        in_section && !/^\[/ && !/^#/ && !/^$/ { print}
+    ' "$file"
+}
+
 box_me() {
     local sender="Hyde-cli: "
     local color=3
