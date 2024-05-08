@@ -7,14 +7,32 @@ _Hyde () {
     local words cword
     _get_comp_words_by_ref -n "$COMP_WORDBREAKS" words cword
 
-    local -a literals=("waybar" "update" "wallbash" "::=" "sddm" "reload" "cache" "shell" "branch" "show" "sync" "backup" "wallpaper" "inject" "power" "version" "theme" "run" "man" "shell_completion" "systeminfo" "upgrade" "restore")
+    local -a literals=("control" "revert" "wallbash" "::=" "prev" "--opacity" "-j" "chaotic_aur" "branch" "save" "3" "--borderangle" "--animations" "unset" "backup" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "-w" "power" "d" "inject" "set" "theme" "binds" "rebuild" "0" "screencap" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "restore" "waybar" "upgrade" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "shell" "show" "audio_idle" "prev" "sync" "reload" "mode" "--opacity" "Link" "reset" "next" "--animations" "version" "next" "select" "-h" "select" "--blur" "run" "screencap" "theme" "clean" "2" "-f" "set" "patch" "select" "reload" "Clone")
 
     declare -A literal_transitions
-    literal_transitions[0]="([14]=22 [5]=23 [1]=3 [15]=4 [2]=5 [4]=6 [16]=7 [6]=9 [17]=10 [9]=11 [8]=13 [7]=12 [10]=14 [18]=15 [19]=16 [11]=17 [20]=18 [12]=19 [13]=20 [21]=21 [0]=1 [22]=2)"
-    literal_transitions[25]="([3]=24)"
+    literal_transitions[0]="([41]=21 [22]=22 [44]=3 [65]=4 [2]=5 [26]=6 [47]=7 [51]=9 [71]=10 [54]=13 [53]=11 [8]=12 [57]=14 [33]=15 [14]=16 [35]=17 [17]=18 [24]=19 [42]=20 [40]=1 [58]=2)"
+    literal_transitions[1]="([61]=23 [20]=23 [15]=23 [81]=23)"
+    literal_transitions[5]="([39]=23 [59]=26)"
+    literal_transitions[6]="([63]=23 [69]=23 [78]=23 [56]=23 [77]=23)"
+    literal_transitions[7]="([73]=23)"
+    literal_transitions[9]="([28]=23 [80]=23)"
+    literal_transitions[10]="([36]=23 [55]=23 [72]=23)"
+    literal_transitions[11]="([79]=23)"
+    literal_transitions[13]="([48]=23 [30]=23 [52]=23 [27]=28 [31]=24)"
+    literal_transitions[16]="([16]=23 [45]=23 [74]=23 [1]=23)"
+    literal_transitions[18]="([67]=23 [66]=23 [25]=23 [4]=23)"
+    literal_transitions[19]="([7]=23 [37]=23)"
+    literal_transitions[21]="([0]=23)"
+    literal_transitions[22]="([43]=23 [50]=23 [9]=27 [62]=23 [13]=29)"
+    literal_transitions[24]="([32]=23 [23]=23 [49]=23)"
+    literal_transitions[25]="([3]=23)"
+    literal_transitions[26]="([29]=23 [34]=23 [75]=23 [10]=23)"
+    literal_transitions[27]="([12]=23 [70]=23 [11]=23 [60]=23)"
+    literal_transitions[28]="([6]=23 [68]=23 [19]=23 [46]=23 [76]=23 [21]=23)"
+    literal_transitions[29]="([5]=23 [18]=23 [64]=23 [38]=23)"
 
     declare -A match_anything_transitions
-    match_anything_transitions=([1]=24 [21]=24 [0]=8 [19]=24 [10]=24 [6]=24 [15]=24 [9]=24 [3]=24 [17]=24 [5]=24 [20]=24 [8]=25 [2]=24 [12]=24 [11]=24 [7]=24 [18]=24 [13]=24 [14]=24 [16]=24 [4]=24 [22]=24 [23]=24)
+    match_anything_transitions=([3]=23 [12]=23 [14]=23 [2]=23 [0]=8 [17]=23 [15]=23 [20]=23 [8]=25 [4]=23)
     declare -A subword_transitions
 
     local state=0

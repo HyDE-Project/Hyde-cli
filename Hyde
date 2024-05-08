@@ -19,10 +19,24 @@ initiate_hyde_command
 #? Add functions below this section
 #? Be careful with spaces in your Function definitions
 #? Example Function:
-#* |Function example() { #? Example Function. this comments supports '\n'
+#* |Function example() { #? Example Function. this comments supports '\n' 
+#? |                       ^^^^ Use use as description and respects
 #* | case $1 in
 #* |      # Cases go here...
-#* |   esac; << ' ; ' is also use to parse case conditions
+#* |      case1) #? Case description
+#? |                ^^^ description for case functions
+#* | #* |           commands...
+#* | : <<USAGE
+#* | [FUNCTION_CASE_USAGE ]
+#* | --flags ? Description for flags
+#* | --args  ? Desc for args
+#* | --parms ? desc for parm
+#* | [END]
+#* | USAGE
+#? | ^^^^^^ Usage block is a comment block that will be parsed by gen_completion and man  function 
+#* |        ;;
+#* |
+#* |   esac; <== ' ; ' is also use to parse case conditions
 #* |}
 #! +----------------------------------------------------------------|
 
@@ -94,7 +108,7 @@ systeminfo() { #? System information
     fi
 }
 
-branch() { #? Set preavailable Hyde branch \n ﯧ '--devel' switch to a merge request branch
+branch() { #? Set preavailable Hyde branch \n ﯦ '--devel' switch to a merge request branch
     repo_info
     if [[ ${1} == *"--devel"* ]]; then
         pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
@@ -149,12 +163,12 @@ restore() { #? Restore dots
         rename_backup "_Hyde_restore_Configs"
         Hyde reload
         ;;
-    Clone) #? Restores dots from a clone repository \n ﯧ Provide ~/path/to/clone/directory
+    Clone) #? Restores dots from a clone repository \n ﯦ Provide ~/path/to/clone/directory
         Manage-Config "$1" "$2" && rename_backup "_Hyde_restore_Clone"
         #? Meta is added inside Clone function
         ;;
 
-    BackUp) #? Restores dots from previous backup\n   Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
+    BackUp) #? Restores dots from previous backup\n   Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
         Manage-Config "${@}"
         ;;
     Link) #? Links a clone directory. Useful if you want to change your CloneDir
@@ -270,7 +284,7 @@ theme() { #? Theme commands
             ./themepatcher.sh "$@"
         fi
         ;;
-    # remove) #? Removes a theme from the system  Unrecoverable
+    # remove) #? Removes a theme from the system  Unrecoverable
     # :
 
     # ;;
@@ -311,7 +325,7 @@ wallbash() { #? Toggle to use wallpaper accent themes
     toggle) #? Cycles wallbash [0] off [1] auto [2] dark [3] light
         "${scrDir}/wallbashtoggle.sh"
         ;;
-    mode) #? Set wallbash mode. [0] [1] [2] [3] \nﯦ no args spawns a menu
+    mode) #? [*] Set wallbash mode. [0] [1] [2] [3] \nﯦ no args spawns a menu
         shift
         num_val=${1}
         [ -z "${num_val}" ] && "${scrDir}"/wallbashtoggle.sh -m && return 0
@@ -335,6 +349,14 @@ wallbash() { #? Toggle to use wallpaper accent themes
         fi
         "${scrDir}/swwwallbash.sh" "$(readlink "${hydeThemeDir}/wall.set")"
         notify-send -a "t1" -i "~/.config/dunst/icons/hyprdots.png" "${notif}"
+: <<USAGE
+[WALLBASH_MODE_USAGE]
+    0  ? wallbash disabled
+    1  ? wallbash auto
+    2  ? wallbash dark mode
+    3  ? wallbash light mode
+[END]
+USAGE
         ;;
 
     # # term) #? Toggle terminal colors into some presets
@@ -415,12 +437,28 @@ power() { #? Power Options
         ;;
     save) #? [*] Save power by disabling features
         Manage-Power "$@"
+: << USAGE
+[POWER_SAVE_USAGE]
+    --animations    ? Disable animations
+    --borderangle   ? Disable border angle animation
+    --blur          ? Disable blur
+    --opacity       ? Disable tranparency
+[END]
+USAGE
         ;;
     toggle) #? Toggle ﯦ Set/unset current changes'
         Manage-Power "$@"
         ;;
     unset) #? [*] Unset specific changes
         Manage-Power "$@"
+: <<USAGE
+[POWER_UNSET_USAGE]
+    --animations    ? Default animations
+    --borderangle   ? Default border angle animation
+    --blur          ? Default blur
+    --opacity       ? Default tranparency
+[END]
+USAGE
         ;;
     game) #? Toggle game mode
         Manage-Power "$@"
@@ -467,23 +505,40 @@ show() { #? Some Hypr GUI you might want to use
     # monitors) #? Manages monitors using nwg-displays
     #     Manage_Monitor
     # ;;
-    binds) #? [*] Show keybind hints ﯧ Click to execute
+    binds) #? [*] Show keybind hints\n ﯦ Click to execute 
         # Keybinds_Hint #! Moved to .extra
         shift
         "${scrDir}"/keybinds_hint.sh "${*}"
+: <<USAGE
+[SHOW_BINDS_USAGE]
+    -j   ?  Show the JSON format
+    -p   ?  Show the pretty format
+    -d   ?  Add custom delimiter symbol (default '>')
+    -f   ?  Add custom file
+    -w   ?  Custom width
+    -h   ?  Display this help message
+[END]
+USAGE
         ;;
     emoji) #? Emoji selector
         Launch-Emoji
         ;;
-    pastebin) #? [*] Pastebin manager \n ﯧ pass [only once] '--ignore=initialclass' to disable autopaste
+    pastebin) #? [*] Pastebin manager \n ﯦ pass [only once] '--ignore=initialclass' to disable autopaste
         [[ $* == *"--ignore"* ]] && pasteIt "${*}"
         shift
         Launch-Pastebin "$@"
+: <<USAGE
+[SHOW_PASTEBIN_USAGE]
+    c  ? cliphist list and copy selected
+    d  ? cliphist list and delete selected
+    w  ? cliphist wipe database
+[END]
+USAGE
         ;;
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-    screencap) #? Use rofi to select screenshot options \n  kills another rofi session
+    screencap) #? Use rofi to select screenshot options \n ﯦ \n  kills another rofi session
         Launch-Screencap
         ;;
     *)
@@ -528,7 +583,7 @@ run() { #? Executables
         done
         Hypr-Events
         ;;
-    screencap) #? [*] Screenshot and screenrecord tool
+    screencap) #? Screenshot and screenrecord tool
         shift
         Run-Screencap "$@"
         ;;
