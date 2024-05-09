@@ -42,9 +42,10 @@ initiate_hyde_command
 
 man() { #? Show Manual
     . "${meta_file}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
-    [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
     manPage=$(
-        echo -e "Hyde-cli: ${hyde_cli_version}\nUsage: Hyde [Function] [options]\n"
+        echo -e "Hyde-cli: ${hyde_cli_version}"
+    [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
+        echo -e "Usage: Hyde [Function] [options]\n"
         grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
             Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
             desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t", $5); print $5 }')
@@ -52,14 +53,16 @@ man() { #? Show Manual
             Parameters "${Function}"
         done
     )
+    (
     [ "${clean_man}" = true ] || box_me "Manual Page"
     echo -e "${manPage}" |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
             -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
             -e "s|\${ctlFile}|$ctlFile|g"
-    # barLine
-    # print_prompt -y "\nDescriptions with [*] can be expanded to show more information. Append [--help]"
+    barLine
+    print_prompt -y "\nDescriptions with [*] can be expanded to show more information. Append [--help]"
+    ) | { less || more || cat - ;} 2> /dev/null 
 }
 
 version() { #? Hyde-cli version
@@ -112,9 +115,10 @@ systeminfo() { #? System information
 control() { #? Interactive control file
     case $1 in
     Config) #? Manage restore control list 
+        shift
         navigate_clone
         . Manage-Config
-         list_Marker "${CloneDir}" --edit
+         make_List "${CloneDir}" --edit
     ;;
     *) Parameters "$Function" ;;
     esac;
@@ -167,7 +171,7 @@ restore() { #? Restore dots
         repo_info
         # ask_confirm
         . Manage-Config
-        list_Marker
+        make_List
         #  cat ${ctl_override}
         ask_confirm "${USER}"
         ./restore_fnt.sh
@@ -181,7 +185,7 @@ restore() { #? Restore dots
         #? Meta is added inside Clone function
         ;;
 
-    BackUp) #? Restores dots from previous backup\n   Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
+    BackUp) #? Restores dots from previous backup\n !! Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
         Manage-Config "${@}"
         ;;
     Link) #? Links a clone directory. Useful if you want to change your CloneDir
@@ -297,7 +301,7 @@ theme() { #? Theme commands
             ./themepatcher.sh "$@"
         fi
         ;;
-    # remove) #? Removes a theme from the system  Unrecoverable
+    # remove) #? Removes a theme from the system !!  Unrecoverable
     # :
 
     # ;;
@@ -417,21 +421,22 @@ waybar() { #? Waybar commands
 }
 
 sddm() { #? Sddm commands
+    check_package sddm
     navigate_clone
     case $1 in
     theme) #? Select sddm theme
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
         sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-        sddm_theme_list=("Candy" "Corners")
-
-        sddm_theme="$(for theme in "${sddm_theme_list[@]}"; do
-            echo -e "$theme"
-        done | Fzf-Menu "${FUNCNAME[0]}")"
+        sddm_theme=$(
+        find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
+        | awk -F 'Sddm_' '{print $2}' |\
+         awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
+        )
         [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"
         [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
-        SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C /usr/share/sddm/themes/
+        SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
         SUPER touch "${sddm_conf}"
         SUPER cp "${sddm_conf}" "${sddm_bak}"
         SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
@@ -567,7 +572,7 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-    screencap) #? Use rofi to select screenshot options \n  kills another rofi session
+    screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
         Launch-Screencap
         ;;
     *)

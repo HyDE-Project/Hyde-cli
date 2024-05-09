@@ -31,10 +31,10 @@ EOF
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 
-
-if [ -d "${PREVIEW}" ]; then
+if [ -e "${PREVIEW}" ]; then
     img_preview "$PREVIEW"
-elif [ -f "${PREVIEW}" ]; then
-    img_preview "$PREVIEW"
+elif [ ! -e "${PREVIEW}" ]; then
+    echo "${PREVIEW}"
+    img_preview /usr/share/hyde-cli/no_preview.png
 fi
 

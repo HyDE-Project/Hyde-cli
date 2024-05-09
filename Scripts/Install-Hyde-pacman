@@ -84,7 +84,7 @@ fi
 #? Manage Configs
 [ -e $ctlFile ] && cp $ctlFile $ctl_override
 [ ! -e $ctlFile ] && Manage-Config generate_list
-Manage-Config list_Marker "" --custom
+Manage-Config make_List "" --existed
 ask_confirm "${USER}"
 
 "${scriptDir}/install_pre.sh"

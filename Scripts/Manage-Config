@@ -62,16 +62,16 @@ menu_manage_config() {
     # Call the selected function or return to the main menu
     case $selected_option in
     "[Overwrite]")
-      list_Marker_OVERWRITE
+      make_List_OVERWRITE
       ;;
     "[Sync]")
-      list_Marker_SYNC
+      make_List_SYNC
       ;;
     "[Preserve/Populate]")
-      list_Marker_PRESERVE
+      make_List_PRESERVE
       ;;
     "[Back Up]")
-      list_Marker_BACKUP
+      make_List_BACKUP
       ;;
     "[Confirm]")
       # Add your logic here for confirmation
@@ -138,12 +138,68 @@ generate_list() { #* Check the content of a Directory and make a restore list
 }
 
 # shellcheck disable=SC2120
+#* assumes the 1st param is directory
+#* The rest are decisional flags
+#* --existed  ? asume that ctl_override is already present
+#* --edit ?  Modifies the control file then exit
+make_List() {
+  # check_package md5sum
+  CloneDir=${1:-"${CloneDir}"}
+  [ ! -d ${CloneDir}  ] && exit 0
+  if [ -e "${ctlFile}" ] && [[ $* != *"--existed"* ]]; then
+      show_restore_list "${ctlFile}"
+    now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
+
+      if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
+        generate_list "${CloneDir}/Configs"
+        print_prompt -g "\n\n\nNew Files has been added/removed!" "\nCreate a new control file to avoid conflicts!\n"
+      else
+        print_prompt -g "Found existing: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
+        ask_confirm "Yy"
+          if [ $? -eq 1 ]; then
+            generate_list "${CloneDir}/Configs"
+          else
+            cp "${ctlFile}" "${ctl_override}"
+          fi
+      fi
+      read
+  elif [[ $* == *"--existed"* ]] && [ -e "${ctl_override}" ]; then
+    #? --existed will always asume that ctl_override is already present
+    show_restore_list "${ctl_override}"
+  else
+  cat <<MISSING
+  Missing?
+  "${ctlFile}" 
+  "${ctl_override}"
+MISSING
+  exit 0
+  fi
+
+  menu_manage_config
+  show_restore_list "${ctl_override}"
+  if [[ $* != *"--existed"* ]]; then
+    print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" &&
+      [ $? -ne 1 ] &&
+      cp "${ctl_override}" "${ctlFile}"
+    [[ $* = *"--edit"* ]] && exit 0
+  fi
+  print_prompt -w '[ctrl + c]' -r ' Cancel'
+  print_prompt -w "Continue?"
+
+}
+
+#! Deprecated
+#* assumes the 1st param is directory
+#* The rest are decisional flags
+#* --existeds  ? asume that ctl_override is already present
+#* --edit ?  Modifies the control file then exit
 list_Marker() {
   CloneDir=${1:-${CloneDir}}
-  if [ -e "${ctlFile}" ] && [[ $* != *"--custom"* ]]; then
+  if [ -e "${ctlFile}" ] && [[ $* != *"--existed"* ]]; then
     show_restore_list "${ctlFile}"
 
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
+
     if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
       print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
       generate_list "${CloneDir}/Configs"
@@ -157,28 +213,23 @@ list_Marker() {
       fi
     fi
     read
-  elif [[ $* == *"--custom"* ]] && [ -e "${ctl_override}" ]; then
-    #? --custom will always asume that ctl_override is already present
+  elif [[ $* == *"--existed"* ]] && [ -e "${ctl_override}" ]; then
+    #? --existed will always asume that ctl_override is already present
     show_restore_list "${ctl_override}"
   fi
-
   menu_manage_config
-
   show_restore_list "${ctl_override}"
-
-  if [[ $* != *"--custom"* ]]; then
+  if [[ $* != *"--existed"* ]]; then
     print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" &&
       [ $? -ne 1 ] &&
       cp "${ctl_override}" "${ctlFile}"
     [[ $* = *"--edit"* ]] && exit 0
   fi
-
   print_prompt -w '[ctrl + c]' -r ' Cancel'
   print_prompt -w "Continue?"
-
 }
 
-list_Marker_OVERWRITE() {
+make_List_OVERWRITE() {
   OVERWRITE="$(
     echo -e "[CONFIRM]\n$(awk -F'|' '!/^O/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
@@ -187,7 +238,7 @@ list_Marker_OVERWRITE() {
   awk -v ignore="$(echo "$OVERWRITE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "O"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
-list_Marker_SYNC() {
+make_List_SYNC() {
   SYNC="$(
     echo -e "[CONFIRM]\n$(awk -F'|' '!/^S/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
@@ -196,7 +247,7 @@ list_Marker_SYNC() {
   awk -v ignore="$(echo "$SYNC" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "S"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
-list_Marker_PRESERVE() {
+make_List_PRESERVE() {
   PRESERVE="$(
     echo -e "[CONFIRM]\n$(awk -F'|' '!/^P/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
@@ -205,7 +256,7 @@ list_Marker_PRESERVE() {
   awk -v ignore="$(echo "$PRESERVE" | sed '/^[[:space:]]*$/d')" -F'|' -v OFS='|' 'BEGIN{split(ignore, a, "\n")} {for(i in a) if(index($0, a[i]) != 0) {$1 = "P"; print; next} {print}}' "${ctl_override}" >./temp.lst && mv ./temp.lst "${ctl_override}"
 }
 
-list_Marker_BACKUP() {
+make_List_BACKUP() {
   BACKUP="$(
     echo -e "[CONFIRM]\n$(awk -F'|' '!/^B/ {for(i=2; i<=NF; i++) printf $i (i==NF ? "\n" : "|")}' "${ctl_override}")" |
       Fzf-Menu "${FUNCNAME[0]}"
@@ -231,6 +282,7 @@ all() {
 }
 
 revert() {
+  clear
   list_Backup || exit 1
   barLine
   print_prompt -y "Restoring a backup will not create a backup of the current dots.\nExecute 'Hyde backup all' to save the current Dots"
@@ -242,6 +294,7 @@ revert() {
     echo "Operation Cancelled"
     exit 0
   fi
+  ask_confirm "$USER"
   Restore-Config --only "${HYDE_RUNTIME_DIR}/" "$BkpDir/$selected_backup"
   bak=$(ls -td -- $BkpDir/* | head -n 1)
   if [[ "$last_bak" != $bak ]]; then
@@ -255,7 +308,7 @@ revert() {
 BackUp() {
   if [[ -z ${1} ]]; then
     list_Backup
-    print_prompt -r "WARNING! " -y "Not all Dots may have been fully backed up, You might encounter errors!"
+    print_prompt -y "WARNING! " "Not all Dots may have been fully backed up, You might encounter errors!"
     ask_confirm
     selected_backup=$(ls -l -r $BkpDir |
       awk '{print $6,$7,$8,$9}' |
@@ -275,9 +328,10 @@ BackUp() {
       cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"
       print_prompt -y "Using the Backup manifest file"
     else
-      generate_list "${config_source}"
+      echo "Generating list..."
+      generate_list
     fi
-    list_Marker "" --custom
+    make_List "${config_source}" --existed
     ask_confirm "${USER}"
     if [[ -z $selected_backup ]]; then
       echo "Nothing Selected"
@@ -300,8 +354,12 @@ clean() {
   list_Backup || exit 1
   selected_backup=$(ls -l -r $BkpDir | awk '{for(i=6; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | grep -v '^[[:space:]]*$' | Fzf-Menu "${FUNCNAME[0]}")
   if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]]; then
-    print_prompt -r "To Be Removed:" -n "\n$selected_backup"
-    print_prompt -r "WARNING! " -y "Removed backup is not recoverable, are you sure?"
+    clear
+    print_prompt -r "To Be Removed:" 
+    barLine
+    print_prompt "$selected_backup"
+    barLine
+    print_prompt -r "WARNING! " -y "Deleted backups are not recoverable, are you sure?"
     ask_confirm "$USER"
     echo -e "$selected_backup" | awk '{for(i=4; i<=NF; ++i) printf $i (i==NF ? "\n" : OFS)}' | while read -r line; do
       if [ -n "$line" ]; then rm -r "${BkpDir}/${line}"; fi
@@ -324,7 +382,7 @@ Clone() {
   echo "Generating a Restore List"
   cd $custClone/Scripts || handle_error "Cannot change directory to $custClone/Scripts"
   #! generate_list "$custClone/Configs"
-  list_Marker "${custClone}"
+  make_List "${custClone}"
   ask_confirm "$USER"
   # ./restore_fnt.sh
   Restore-Config "${HYDE_RUNTIME_DIR}/" "${custClone}/Configs" && set_metadata "${custClone}"
@@ -343,7 +401,7 @@ upgrade() {
     cat "${install_packages_list}"
   fi
 
-  list_Marker
+  make_List
   ./install.sh -i "${install_packages_list}"
   ./restore_fnt.sh
 

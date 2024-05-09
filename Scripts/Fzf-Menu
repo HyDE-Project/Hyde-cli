@@ -9,28 +9,28 @@
 #? Add common variables
 menu_height="--height 60%"
 
-fzf_list_Marker_OVERWRITE() {
-    fzf -m --marker ' ' \
+fzf_make_List_OVERWRITE() {
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
-fzf_list_Marker_SYNC() {
+fzf_make_List_SYNC() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
-fzf_list_Marker_PRESERVE() {
+fzf_make_List_PRESERVE() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
-fzf_list_Marker_BACKUP() {
+fzf_make_List_BACKUP() {
     fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
@@ -39,7 +39,8 @@ fzf_list_Marker_BACKUP() {
 
 #? restore Config
 fzf_menu_manage_config() {
-    fzf --prompt='▶' \
+    fzf --prompt='Options: ' \
+        --disabled \
         --pointer='→' \
         --marker='♡' \
         --cycle \
@@ -47,11 +48,13 @@ fzf_menu_manage_config() {
         --preview-window 'right:80%,border-rounded'
 }
 
+#? backup revert
 fzf_revert() {
     fzf --prompt 'List of explicit Backup, Run by Hyde backup all' \
         --preview 'lsd -a --tree --depth 4 '"$BkpDir"'/$(echo {} | awk "{print \$4}")'
 }
 
+#? backup clean
 fzf_clean() {
     fzf -m \
         --marker='X' \
@@ -61,6 +64,7 @@ fzf_clean() {
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all'
 }
 
+#? restore BackUp
 fzf_BackUp() {
     fzf \
         --prompt='Restoring from a Backup Directory.' \
@@ -69,9 +73,10 @@ fzf_BackUp() {
 
 }
 
+#? shell select
 fzf_shell_select() {
     fzf --prompt='Select default shell: ' \
-        --marker='X' \
+        --marker='' \
         --cycle \
         --pointer='→' \
         --disabled \
@@ -85,7 +90,7 @@ fzf_theme_menu() {
         --cycle \
         --preview 'Manage-Themes preview_theme {}' \
         -m \
-        --marker ' ' \
+        --marker '' \
         --pointer='→' \
         --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
@@ -93,10 +98,11 @@ fzf_theme_menu() {
 
 }
 
+#? sddm theme
 fzf_sddm() {
 
     fzf --prompt='Select SDDM theme: ' \
-        --marker='X' \
+        --marker=' ' \
         --cycle \
         --pointer='→' \
         --disabled \
