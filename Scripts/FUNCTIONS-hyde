@@ -230,7 +230,7 @@ shell_select() {
     print_prompt -y "[Shell] " -w "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
-        check_package zsh oh-my-zsh-git
+        check_package zsh oh-my-zsh-git zsh-theme-powerlevel10k
         # add zsh plugins
         # set variables
         Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
