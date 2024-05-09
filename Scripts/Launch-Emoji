@@ -2,7 +2,7 @@
 
 rofi_pos
 
-CHECK wtype noto-fonts-emoji
+check_package wtype noto-fonts-emoji
 # trap 'killall wtype' EXIT
 
 emojiData="${etcDir}/emoji.db"

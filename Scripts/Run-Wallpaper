@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-CHECK variety
+check_package variety
 
 varietyDir=$confDir/variety/hyprdots
 varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"

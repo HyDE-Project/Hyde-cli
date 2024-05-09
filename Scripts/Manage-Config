@@ -117,22 +117,22 @@ generate_list() { #* Check the content of a Directory and make a restore list
     # Iterate over each file or directory in the 4th column
     for file in "${files_array[@]}"; do
       case "$restore_directory" in
-        "BACKUP") 
+      "BACKUP")
         echo "B|$dir|$file|$pkg" >>"${ctl_override}"
         ;;
       "OVERWRITE")
         echo "O|$dir|$file|$pkg" >>"${ctl_override}"
-      ;;
+        ;;
       *)
-      if [ -e "$restore_directory$curr/$file" ]; then
-           if [ "${flg}" == "NY" ]; then
-                echo "P|$dir|$file|$pkg" >>"${ctl_override}"              
-            else 
-                echo "S|$dir|$file|$pkg" >>"${ctl_override}"              
-           fi
-      fi
-      ;;
-    esac
+        if [ -e "$restore_directory$curr/$file" ]; then
+          if [ "${flg}" == "NY" ]; then
+            echo "P|$dir|$file|$pkg" >>"${ctl_override}"
+          else
+            echo "S|$dir|$file|$pkg" >>"${ctl_override}"
+          fi
+        fi
+        ;;
+      esac
     done
   done <"$(dirname ${restore_directory})/Scripts/restore_cfg.lst"
 }
@@ -166,10 +166,16 @@ list_Marker() {
 
   show_restore_list "${ctl_override}"
 
-  [[ $* != *"--custom"* ]] && print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" && [ $? -ne 1 ] && cp "${ctl_override}" "${ctlFile}"
+  if [[ $* != *"--custom"* ]]; then
+    print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" &&
+      [ $? -ne 1 ] &&
+      cp "${ctl_override}" "${ctlFile}"
+    [[ $* = *"--edit"* ]] && exit 0
+  fi
 
   print_prompt -w '[ctrl + c]' -r ' Cancel'
   print_prompt -w "Continue?"
+
 }
 
 list_Marker_OVERWRITE() {
@@ -266,7 +272,7 @@ BackUp() {
     print_prompt -y "Restoring from:" -w "${config_source}"
     echo "Please Review files to be re-populated to your Dots"
     if [ -e "${config_source}/$(basename ${ctlFile})" ]; then
-      : cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"
+      cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"
       print_prompt -y "Using the Backup manifest file"
     else
       generate_list "${config_source}"
@@ -331,8 +337,8 @@ upgrade() {
 
     # sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
     # sed 's/^#//' "${custom_apps}" | grep "#"  \
-    sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#" \
-    | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
+    sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#" |
+      fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
     echo -e "Optional packages loaded:"
     cat "${install_packages_list}"
   fi

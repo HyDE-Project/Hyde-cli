@@ -25,7 +25,7 @@ Parametersv2() { #TODO: Add conditionals here like 'case'
     Function="${Function// /}"
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case'; then
         # Define a variable for the tab characters
-        man_params=$(awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
+        man_params=$(awk "/^$Function\(\) \{/,/;; esac/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
         echo -e "${man_params}"
     fi
 }
@@ -151,7 +151,7 @@ WARN
 
 rofi_pos() {
     pkill -x rofi && exit
-    package_check rofi jq
+    check_package rofi jq
     source_user
     roFile="${confDir}/rofi/clipboard.rasi"
 
@@ -232,7 +232,7 @@ shell_select() {
     print_prompt -y "[Shell] " -w "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
-        CHECK zsh oh-my-zsh-git
+        check_package zsh oh-my-zsh-git
         # add zsh plugins
         # set variables
         Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
@@ -258,7 +258,7 @@ shell_select() {
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
-        package_check fish lsd starship
+        check_package fish lsd starship
         (
             echo 'P|${HOME}/.config|fish|fish'
             echo 'P|${HOME}/.config|lsd|lsd'

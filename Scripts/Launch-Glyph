@@ -4,7 +4,7 @@ pkill -x rofi && exit
 
 rofi_pos
 
-CHECK wtype
+check_package wtype
 # trap 'killall wtype' EXIT
 
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`

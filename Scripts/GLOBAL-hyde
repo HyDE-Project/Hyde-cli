@@ -256,7 +256,7 @@ pkg_installed() {
     fi
 }
 
-CHECK() {
+CHECK() { #! Deprecated
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
 
     if [[ -n "${Pkg_Dep}" ]]; then
@@ -267,7 +267,7 @@ CHECK() {
     fi
 }
 
-package_check() {
+check_package() {
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
     if [[ -n "${Pkg_Dep}" ]]; then
         echo -e "$0 Dependencies:\n$Pkg_Dep"

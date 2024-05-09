@@ -17,21 +17,21 @@ fzf_list_Marker_OVERWRITE() {
 }
 
 fzf_list_Marker_SYNC() {
-    fzf -m --marker '' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_list_Marker_PRESERVE() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_list_Marker_BACKUP() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"

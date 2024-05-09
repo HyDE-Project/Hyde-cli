@@ -14,7 +14,7 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 . DEVEL-hyde
 . FUNCTIONS-hyde
 initiate_hyde_command
-
+#! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols  
 #! +----------------------------------------------------------------|
 #? Add functions below this section
 #? Be careful with spaces in your Function definitions
@@ -107,6 +107,18 @@ systeminfo() { #? System information
     print_prompt -y "\n**OS:** "
     cat /etc/os-release
     fi
+}
+
+manage() { #? Interactive control file
+    case $1 in
+    Config) #? Manage restore control list 
+        navigate_clone
+        . Manage-Config
+         list_Marker "${CloneDir}" --edit
+    ;;
+    *) Parameters "$Function" ;;
+    esac;
+
 }
 
 branch() { #? Set preavailable Hyde branch \n ﯦ '--devel' switch to a merge request branch
@@ -551,18 +563,16 @@ USAGE
 
 run() { #? Executables
     case $1 in
-    audio_idle) #? Inhibits idle when player is 'Playing'
+    audio_idle) #? Inhibits idle when player state: 'Playing
+    check_package systemd
     local command="${0} "${FUNCNAME[0]}" ${@} --listen"
       shift
-    if [ "--listen" = "$1" ] && playerctl -p spotify status | grep -q "Playing" ; then
-    print_prompt -y "Player status: " "  $(playerctl status)..."
-    while playerctl -p spotify status | grep -q "Playing"; do sleep 5; done
-    exit 0
-    fi
+     [ "--listen" = "$1" ] && while playerctl status | grep -q "Playing"; do sleep 5; done && exit 
      playerctl status | grep -q "Playing" && systemd-inhibit --what=idle --mode=block ${command}
     print_prompt -y "Player status: " " $(playerctl status)..."
     ;;
     events) #? Watches hyprland events and executes actions
+    check_package
         shift
         verbose=0
         event_config=""
@@ -584,9 +594,22 @@ run() { #? Executables
         done
         Hypr-Events
         ;;
-    screencap) #? Screenshot and screenrecord tool
+    screencap) #? [*] Screenshot and screenrecord tool
         shift
         Run-Screencap "$@"
+: <<USAGE
+[RUN_SCREENCAP_USAGE]
+    --print-all     ?  Print all outputs
+    --record-focus  ?  Record focused monitor
+    --print-snip    ?  Drag to manually snip an area
+    --record-snip   ?  Drag to manually snip an area to screen record it
+    -freeze         ?  Frozen screen, drag to manually snip an area
+    --print-monitor ?  Print focused monitor
+    --scan          ?  Use 'tesseract' to scan image then add to clipboard
+    --stop          ?  Stop every instance of Screencap
+    --reset         ?  Reinitialize screencap
+[END]
+USAGE
         ;;
     *)
         Parameters "$Function"
@@ -613,7 +636,7 @@ inject() { #? User/Device specific scripts that might be useful
     # Add in pacman.conf
     echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | SUPER tee -a /etc/pacman.conf
 
-    package_check asusctl supergfxctl rog-control-center power-profiles-daemon
+    check_package asusctl supergfxctl rog-control-center power-profiles-daemon
 
     #Check First before enabling
     service_check power-profiles-daemon.service supergfxd
