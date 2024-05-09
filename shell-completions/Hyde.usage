@@ -9,7 +9,7 @@ Hyde <COMMANDS>
 		|  (man <MAN_FUNCTION> )                              " Show Manual"
 		|  (version <VERSION_FUNCTION> )                      " Hyde-cli version"
 		|  (systeminfo <SYSTEMINFO_FUNCTION> )                " System information"
-		|  (manage <MANAGE_FUNCTION> )                        " Interactive way to manage control files"
+		|  (control <CONTROL_FUNCTION> )                      " Interactive control file"
 		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch "
 		|  (update <UPDATE_FUNCTION> )                        " Pull updates from Hyde repository"
 		|  (upgrade <UPGRADE_FUNCTION> )                      " Upgrades dots from the repository"
@@ -30,8 +30,8 @@ Hyde <COMMANDS>
 		|  (reload <RELOAD_FUNCTION> )                        " Just reload";
 
 
-<MANAGE_FUNCTION> ::=
-			  (Config) 	  " Manage restore control"
+<CONTROL_FUNCTION> ::=
+			  (Config) 	  " Manage restore control list"
 ;
 
 
@@ -82,6 +82,8 @@ Hyde <COMMANDS>
 
 <WAYBAR_FUNCTION> ::=
 			  (control) 	  " Edit waybar control file"
+			 | (reload) 	  " Reloads waybar"
+			 | (size) 	  " Set waybar size"
 ;
 
 
