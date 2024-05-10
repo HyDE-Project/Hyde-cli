@@ -10,7 +10,7 @@ Hyde <COMMANDS>
 		|  (version <VERSION_FUNCTION> )                      " Hyde-cli version"
 		|  (systeminfo <SYSTEMINFO_FUNCTION> )                " System information"
 		|  (control <CONTROL_FUNCTION> )                      " Interactive control file"
-		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch "
+		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch"
 		|  (update <UPDATE_FUNCTION> )                        " Pull updates from Hyde repository"
 		|  (upgrade <UPGRADE_FUNCTION> )                      " Upgrades dots from the repository"
 		|  (restore <RESTORE_FUNCTION> )                      " Restore dots"
