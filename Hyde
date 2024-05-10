@@ -112,6 +112,82 @@ systeminfo() { #? System information
     fi
 }
 
+check() { #? Hyde health Checker
+    case $1 in
+        Config) #? Check missing File/Directory\nﯦ 
+        navigate_clone
+        # echo $ctlFile
+
+        ConfigDir="${CloneDir}/Configs"
+            autogen=(
+            ".t2"
+            ".config/dunst/dunstrc"
+            ".config/qt6ct/colors.conf"
+            ".config/waybar/config.jsonc"
+            ".config/waybar/style.css"
+            ".config/hypr/themes/theme.conf"
+
+            )
+
+                PRESERVE="$(awk -F'|' '/^P/ {print $2"/" $3}' $ctlFile)"
+
+
+                WALLBASH="$(find $hydeConfDir -type f -name "*.theme*" -o -name "*.dcol*" -print0 | \
+                xargs -0 head -n 1 | \
+                 sed '/==>/d;/<==/d' | \
+                  awk -F '|' '{print $1}')"
+
+            find "$ConfigDir" -type f | while read -r file; do
+                relativeFile=$(echo "$file" | sed "s|^$ConfigDir/||")
+                targetDir=${HOME}/$(dirname "$relativeFile")
+                targetFile=${HOME}/${relativeFile}
+
+                if [ ! -d "$targetDir" ]; then
+                    print_prompt -b "[do not exist]" " Directory: $targetDir do not exist..."
+                    continue
+                fi
+                if [  ! -f "${targetFile}" ]; then
+                    print_prompt -b "[do not exist]" " File: $targetFile do not exist..."
+                continue
+                fi
+                if [[ "$(md5sum "${targetFile}" | awk -F ' ' '{print $1}')" != "$(md5sum "${file}" | awk -F ' ' '{print $1}')" ]] ; then
+                
+                                    while IFS= read -r line; do
+                    pFile="$(eval echo "${line}")"
+                    if [[ ${pFile} = $targetFile ]] ; then 
+                        print_prompt -g "[wallbash]" " ${targetFile}"
+                    # diff -y "${targetFile}" "$file" && barLine 
+                    continue 2
+                    fi
+                done <<< "$WALLBASH"
+                
+                for keyword in "${autogen[@]}"; do
+                    if  grep -q "$keyword" <<< "$targetFile"; then
+                        print_prompt -c "[autogen] " "$targetFile"
+                        continue 2
+                    fi
+                done
+                    while IFS= read -r line; do
+                    pFile="$(eval echo "${line}")"
+                    if [[ ${pFile} = $targetFile ]] ; then 
+                        print_prompt -y "[preserved]" " ${targetFile}"
+                    # diff -y "${targetFile}" "$file" && barLine 
+                    continue 2
+                    fi
+                done <<< "$PRESERVE"
+
+                barLine
+                print_prompt -r "[not matched]" " ${targetFile}" -r " != " "$file"
+                diff -y "${targetFile}" "$file" 
+                barLine
+                
+                fi
+            done
+        ;;
+    esac;
+
+}
+
 control() { #? Interactive control file
     case $1 in
     Config) #? Manage restore control list 

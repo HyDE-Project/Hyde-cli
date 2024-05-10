@@ -9,6 +9,7 @@ Hyde <COMMANDS>
 		|  (man <MAN_FUNCTION> )                              " Show Manual"
 		|  (version <VERSION_FUNCTION> )                      " Hyde-cli version"
 		|  (systeminfo <SYSTEMINFO_FUNCTION> )                " System information"
+		|  (check <CHECK_FUNCTION> )                          " Hyde health Checker"
 		|  (control <CONTROL_FUNCTION> )                      " Interactive control file"
 		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch"
 		|  (update <UPDATE_FUNCTION> )                        " Pull updates from Hyde repository"
@@ -28,6 +29,11 @@ Hyde <COMMANDS>
 		|  (run <RUN_FUNCTION> )                              " Executables"
 		|  (inject <INJECT_FUNCTION> )                        " User/Device specific scripts that might be useful"
 		|  (reload <RELOAD_FUNCTION> )                        " Just reload";
+
+
+<CHECK_FUNCTION> ::=
+			  (Config) 	  " Check missing File/Directory"
+;
 
 
 <CONTROL_FUNCTION> ::=
