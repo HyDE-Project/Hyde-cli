@@ -125,19 +125,8 @@ control() { #? Interactive control file
 
 }
 
-branch() { #? Set preavailable Hyde branch \n ﯦ '--patch' switch to a merge request branch
+branch() { #? Set preavailable Hyde branch
     repo_info
-    if [[ ${1} == *"--patch"* ]]; then
-        pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
-        [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
-        IFS=' ' read -ra parts <<< "$pull_request"
-        number="${parts[0]}"
-        branchname=$(printf "%s" "${parts[@]:1}" | sed -e 's/[^a-zA-Z0-9_-]//g')
-        echo -e "\n$number $branchname"
-        git fetch origin pull/${number}/head:${branchname}
-        git switch "${branchname}"
-        exit 1
-    fi
     set_branch
 }
 

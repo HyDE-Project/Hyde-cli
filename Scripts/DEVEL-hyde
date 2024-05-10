@@ -85,19 +85,50 @@ HEADER
     exit 0
 }
 
+patch_PR() {
+        pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
+        [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
+        IFS=' ' read -ra parts <<< "$pull_request"
+        number="${parts[0]}"
+        branchname=$(printf "%s" "${parts[@]:1}" | sed -e 's/[^a-zA-Z0-9_-]//g')
+        echo -e "\n$number $branchname"
+        # Delete the local branch if it exists
+        if git rev-parse --verify "${branchname}" &>/dev/null; then
+            # Attempt to delete the branch
+            git branch -D "${branchname}" || {
+                # If deletion fails, switch to main and then delete the branch
+                git switch main
+                git branch -D "${branchname}"
+            }
+        fi
+        
+        if git fetch origin pull/${number}/head:${branchname}; then
+            git switch "${branchname}" || git checkout -b "${branchname}"
+            # git pull origin "${branchname}"
+        else
+            echo "Failed to fetch pull request $number."
+        fi
+        exit 1
+}
+
 OPT=(
-    "Generate completion ? Click me to generate shell completion ? gen_completion"
+"Pull Request  ? Useful if you want to Test/Patch PRs  ? patch_PR "
+"Generate completion ? Click me to generate shell completion ? gen_completion "
 )
+
 
 case $1 in
 gen_completion) #? Generate Shell Completions
     gen_completion
-    exit 0
+    exit 0    
+    ;;
+patch_PR)
+    pacth_PR Patch a PR
     ;;
 *)
     echo -e "\033[35mYou are on development mode, I assume you know what you are doing.\033[0m"
     read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key
     [[ -z "$key" ]] || exit 0
-    select_exec "${OPT[*]}"
+    select_exec "${OPT[@]}"
     ;;
 esac

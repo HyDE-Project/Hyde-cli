@@ -24,14 +24,14 @@ source_section() {
 # Define the function
 #* [select_exec] Accepts an array[@]
 #* Usefull for level 1 selection without preview
-#* Might be useless use selector instead
 select_exec() {
-    local selected_opt="$(printf '%s\n' "${@:1}" | awk -F '?' '{printf "%-40s %s\n", $1, $2}' |
+    local selected_opt="$(printf '%s\n' "${@:1}" \
+    | awk -F '?' '{printf "%-40s %s\n", $1, $2}' |
         fzf --cycle --tac \
             --prompt=': ' \
             --pointer='→' |
         cut -d ' ' -f1)"
-    eval "$(printf '%s\n' "${@:1}" | grep "${selected_opt}" | awk -F '?' '{print $3}')"
+    [  -n "${selected_opt}" ] && eval "$(printf '%s\n' "${@:1}" | grep "${selected_opt}" | awk -F '?' '{print $3}')"
 }
 
 # select_version() {
