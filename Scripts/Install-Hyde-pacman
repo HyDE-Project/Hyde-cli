@@ -47,7 +47,7 @@ git stash >/dev/null
 git pull
 git stash pop 2>/dev/null
 set_branch
-integrity_check "${newCloneDir}"
+check_integrity "${newCloneDir}"
 
 # export ctlFile="${cacheDir}/manage_cfg.lst"
 

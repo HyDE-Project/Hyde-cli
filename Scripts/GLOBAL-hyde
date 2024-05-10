@@ -225,18 +225,23 @@ set_metadata() {
     git_url=$(git remote get-url origin)
     # check changes on the restore lst
     restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
+    Configs_hash=$(git rev-parse HEAD)
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
     # commit_message="'$(git show -s --format='%B')'"
     commit_message="$(git show -s --format='%B' | tr -d '`')"
-    touch "${meta_file}"
+    [ ! -f "${meta_file}" ] && touch "${meta_file}"
+    SUPER chattr -i "${meta_file}"
+    trap 'SUPER chattr +i "${meta_file}"' EXIT
     cat <<METADATA >"${meta_file}"
 #? This is a meta file generated for hyde-cli
-#! Do not touch this
+#! Do not touch this!
+#* Use 'chattr -i "${meta_file}"' to lift protection attributes   
 export CloneDir="$CloneDir"
 export current_branch="${current_branch}"
 export git_url="${git_url}"
 export restore_cfg_hash="${restore_cfg_hash}"
+export Configs_hash="${Configs_hash}"
 export hyde_version="${hyde_version}"
 export modify_date="${modify_date}"
 export commit_message="${commit_message}"
@@ -283,7 +288,7 @@ check_package() {
     fi
 }
 
-integrity_check() {
+check_integrity() {
     # CheckDir="${1:-${CloneDir}}"
     # #! Requirements
     # config=(

@@ -183,7 +183,7 @@ restore() { #? Restore dots
         shift
         new_CloneDir=${1}
         [[ -z "${1}" ]] && new_CloneDir=${CloneDir} && print_prompt -r "Missing /path/to/CloneDir"
-        integrity_check
+        check_integrity
         print_prompt -y "\n[LINKING]:" -w "${CloneDir}"
         ask_confirm
         set_metadata "${new_CloneDir}"

@@ -378,7 +378,7 @@ Clone() {
     exit 1
   fi
   custClone="$1"
-  integrity_check "${custClone}"
+  check_integrity "${custClone}"
   echo "Generating a Restore List"
   cd $custClone/Scripts || handle_error "Cannot change directory to $custClone/Scripts"
   #! generate_list "$custClone/Configs"
