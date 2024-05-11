@@ -88,7 +88,7 @@ fzf_shell_select() {
 fzf_theme_menu() {
     fzf \
         --cycle \
-        --preview 'Manage-Themes preview_theme {}' \
+        --preview '[ {} = "[Confirm]" ] || Manage-Themes preview_theme {}' \
         -m \
         --marker '' \
         --pointer='→' \

@@ -181,9 +181,10 @@ Manage-Themes theme_patcher
 
 
 # "${scriptDir}/install_pst.sh"
+export defaultTheme="Catppuccin Mocha"
 shell_select
 sddm_select
-
+# TODO Flatpak installation 
 
 #------------------------#
 # enable system services #

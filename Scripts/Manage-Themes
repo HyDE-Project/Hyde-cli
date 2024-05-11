@@ -115,8 +115,10 @@ preview_theme() {
 }
 
 theme_menu() {
-    patchList=$(sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}" | Fzf-Menu "${FUNCNAME[0]}")
-    [ -z "${patchList}" ] && exit 1
+    patchList=$({ echo [Confirm] ; sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}" ;} | Fzf-Menu "${FUNCNAME[0]}")
+    patchList=$(sed '/\[Confirm\]/d' <<< "${patchList}")
+    patchList=${patchList:-${defaultTheme}}
+    [ -z "${patchList}" ] && exit 0
     readonly patchList
     export patchList
 }
