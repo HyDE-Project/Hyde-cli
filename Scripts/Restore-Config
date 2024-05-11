@@ -111,7 +111,7 @@ while read lst; do
         else
             if [ "${ctlFlag}" != "B" ]; then
                 cp -r "${CfgDir}$tgt/${cfg_chk}" "${pth}"
-                print_prompt -y "[no to backup]" " > " -g "[*populate*]" -b " :: " "${pth}" -r " <--  " "${CfgDir}$tgt/${cfg_chk}"
+                print_prompt -y -g "[*populate*]" -b " :: " "${pth}" -r " <--  " "${CfgDir}$tgt/${cfg_chk}"
             fi
         fi
 

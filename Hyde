@@ -724,10 +724,6 @@ USAGE
 inject() { #? User/Device specific scripts that might be useful
 
     case $1 in
-    chaotic_aur) #? Add chaotic aur to you mirror
-        shift
-        SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
-        ;;
     asus_patch) #? Fixes issues for asus devices
     # Add Keys of asus repository
     SUPER pacman-key --recv-keys 8F654886F17D497FEFE3DB448B15A6B0E9A3FA35
@@ -743,9 +739,26 @@ inject() { #? User/Device specific scripts that might be useful
     #Check First before enabling
     service_check power-profiles-daemon.service supergfxd
     ;;
-    # test)
-    # service_check sddm
-    # ;;
+    chaotic_aur) #? Add chaotic aur to you mirror
+        shift
+        SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
+        ;;
+    flatpak) #? Flatpak setup for HyDE
+        check_package flatpak
+        flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        # flats=$(awk -F '#' '{print $1}' "${baseDir}/custom_flat.lst" | sed 's/ //g' | xargs)
+
+        # flatpak install --user -y flathub ${flats}
+        # flatpak remove --unused
+        gtkTheme=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g")
+        gtkIcon=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
+
+        flatpak --user override --filesystem=~/.themes
+        flatpak --user override --filesystem=~/.icons
+
+        flatpak --user override --env=GTK_THEME=${gtkTheme}
+        flatpak --user override --env=ICON_THEME=${gtkIcon}
+    ;;
     *)
         Parameters "$Function"
         ;;

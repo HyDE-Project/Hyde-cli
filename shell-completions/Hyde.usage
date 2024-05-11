@@ -129,8 +129,9 @@ Hyde <COMMANDS>
 
 
 <INJECT_FUNCTION> ::=
-			  (chaotic_aur) 	  " Add chaotic aur to you mirror"
-			 | (asus_patch) 	  " Fixes issues for asus devices"
+			  (asus_patch) 	  " Fixes issues for asus devices"
+			 | (chaotic_aur) 	  " Add chaotic aur to you mirror"
+			 | (flatpak) 	  " Flatpak setup for HyDE"
 ;
 
 
