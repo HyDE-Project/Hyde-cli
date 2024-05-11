@@ -218,6 +218,7 @@ branch() { #? Set preavailable Hyde branch
 
 update() { #? Pull updates from Hyde repository
     trap 'rm -f "${cacheDir}/landing/update.check"' EXIT
+    (
     repo_info
     barLine
     get_aurhlpr
@@ -228,6 +229,8 @@ update() { #? Pull updates from Hyde repository
     print_prompt -y "Checking Hyde CLI updates..."
     curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
     inform_updates
+    ) &
+    loading_spinner $! $?
 }
 
 upgrade() { #? Upgrades dots from the repository
