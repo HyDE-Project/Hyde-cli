@@ -38,29 +38,30 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
         # Define a variable for the tab characters
         man_params=$(
             # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
-            awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r line; do
-                param=$(echo ${line} | awk -F ')' '{print $1}')
-                desc=$(echo ${line} | awk -F '?' '{print $2}')
+            awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r pline; do
+                    # echo $pline 
+                param=$(echo ${pline} | awk -F ')' '{print $1}')
+                desc=$(echo ${pline} | awk -F '?' '{print $2}')
                 indent="\t\t\t"
                 # echo echo -e ${line} | awk -F '?' '{print}'
-                printf "${indent}%-15s %s %s\n" "[${param}]" "﬌" "$(echo -en ${desc} | head -n 1)"
+                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en ${desc} | head -n 1)")"
                 # Print the remaining lines of $desc with indentation
                 echo -e "$desc" | tail +2 | while IFS= read -r line; do
-                    printf "  %s%-15s %s %s\n" "$indent" "" "" "$line"
+                    printf "  %s%-15s %s %s\n" "$indent" "" "" "$(print_prompt "$line")"
                 done
                 echo ""
                 if echo "${desc}" | grep -q "[*]"; then
                     name_usage=${prefix^^}_${param^^}_USAGE
-                    while IFS= read -r line; do
-                        local opt=$(echo $line | awk -F '?' '{print $1}')
-                        local desc=$(echo $line | awk -F '?' '{print $2}')
-                        printf "\t\t\t\t\t\t%-15s %s %s\n" "[${opt}]" "﬌" "$desc"
+                    while IFS= read -r uline; do
+                        local opt=$(awk -F '?' '{print $1}' <<< "${uline}")
+                        local desc=$(awk -F '?' '{print $2}' <<< "${uline}")
+                        opt=${opt// /}
+                        printf "\t\t\t\t\t\t%-15s %s %s\n" "$(print_prompt -y "[" "${opt}" -y "]")" "$(print_prompt -c "﬌" )" "$(print_prompt "$desc")"
                     done < <(parse_section "${name_usage}" "${0}")
                     echo ""
                 fi
 
             done
-
         )
         echo -e "${man_params}"
     fi
@@ -213,7 +214,7 @@ IGNOREWTYPE
     fi
 
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
-    [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" -w "'$ignore_class'" && exit 0
+    [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" "'$ignore_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
     if ! grep -q "${class}" "${ignore_paste_file}"; then
         hyprctl dispatch exec 'wtype -M ctrl V -m ctrl'
@@ -225,7 +226,7 @@ rename_backup() {
     if [[ "$last_bak" != $bak ]]; then
         mv "$bak" "$bak-$1"
     fi
-    print_prompt -y "Backup directory: " -w "$bak-$1"
+    print_prompt -y "Backup directory: " "$bak-$1"
     [ -e "$install_packages_list" ] && cp -f "$install_packages_list" "$bak-$1/install_pkg.lst"
 }
 
@@ -233,7 +234,7 @@ shell_select() {
     #TODO for now the original script requires deletion of 1 of the shell to change shell therefore I should create a different approach
     navigate_clone
     myShell="$(echo -e "zsh\nfish" | Fzf-Menu "${FUNCNAME[0]}")"
-    print_prompt -y "[Shell] " -w "${myShell}"
+    print_prompt -y "[Shell] " "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
         check_package zsh oh-my-zsh-git zsh-theme-powerlevel10k
@@ -258,7 +259,7 @@ shell_select() {
         done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
 
         # update plugin array in zshrc
-        print_prompt -y "[SHELL]" -w " intalling plugins (${w_plugin})"
+        print_prompt -y "[SHELL]" " intalling plugins (${w_plugin})"
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
@@ -273,10 +274,10 @@ shell_select() {
     # set shell
     [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
     if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
-        print_prompt -y "[SHELL] " -w "changing shell to ${myShell}..."
+        print_prompt -y "[SHELL] " "changing shell to ${myShell}..."
         chsh -s "$(which ${myShell})"
     else
-        print_prompt -g "[SKIP] " -w "${myShell} is already set as shell..."
+        print_prompt -g "[SKIP] " "${myShell} is already set as shell..."
     fi
 
 }
@@ -294,9 +295,9 @@ help=$(
 
 if [ -z "$1" ]; then
     box_me -s "Hyde-cli $hyde_cli_version"
-    print_prompt -w "$help"
+    print_prompt "${help}"
     exit 1
-elif ! (echo "$help" | awk '{print $1}' | grep -w "$Function" 1>/dev/null); then
-    echo -e "[Function unknown]: '$*'\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
+elif ! (echo "$help" | awk '{print $1}' | grep "$Function" 1>/dev/null); then
+    print_prompt -r "[unknown]:" -y "'$*'"  "\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
     exit 1
 fi

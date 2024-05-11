@@ -99,7 +99,7 @@ fi
 #? add nvidia drivers to the list
 
 if [ ${fix_nvidia} = true ]; then
-    print_prompt -g "[nvidia]" -w "Configuring nvidia drivers"
+    print_prompt -g "[nvidia]" "Configuring nvidia drivers"
     cat /usr/lib/modules/*/pkgbase | while read krnl; do
         echo "${krnl}-headers" >>"${install_packages_list}"
     done

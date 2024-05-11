@@ -53,6 +53,14 @@ print_prompt() {
             echo -ne "\e[96m$2\e[0m"
             shift 2
             ;; # Neon
+        -crit)
+            echo -ne "\e[38;5;160m$2\e[0m"
+            shift 2
+            ;; # Neon            
+        +)
+            echo -ne "\e[38;5;$2m$3\e[0m"
+            shift 3
+            ;;
         *)
             echo -ne "$1"
             shift

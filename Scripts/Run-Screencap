@@ -57,7 +57,7 @@ first_setup() {
                 else
                     {
                         echo -e "${vaMsg}"
-                        echo "screen_recorder=\"wl-screenrec\""
+                        echo "export screen_recorder=\"wl-screenrec\""
                     } >>"${cacheFile}"
                     notify-send -a "ScreenCap" "wl-screenrec will use \"${libva_Driver}\" for screen recording." -t 5000 -r 56789
                     killall wl-screenrec
@@ -73,7 +73,7 @@ first_setup() {
             vaMsg="#! Oh no! wl-screenrec is not working for you. Do not worry we will use wf-recorder instead. Try to run 'wl-screenrec' in termianl."
             {
                 echo "${vaMsg}"
-                echo "screen_recorder=\"wf-recorder\""
+                echo "export screen_recorder=\"wf-recorder\""
             } >>"${cacheFile}"
             check_package wf-recorder
         fi
@@ -185,8 +185,11 @@ case ${OPTION} in
     ;;
 --reset) #?  Reinitialize screencap
     rm -f "${cacheFile}"
+    first_setup "${*}"
     ;;
 GUI) : ;;
 *) # invalid option
-    print_error ;;
+    . "${cacheFile}"
+    print_error
+    ;;
 esac

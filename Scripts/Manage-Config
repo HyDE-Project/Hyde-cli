@@ -154,7 +154,7 @@ make_List() {
         generate_list "${CloneDir}/Configs"
         print_prompt -g "\n\n\nNew Files has been added/removed!" "\nCreate a new control file to avoid conflicts!\n"
       else
-        print_prompt -g "Found existing: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
+        print_prompt -g "Found existing: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
         ask_confirm "Yy"
           if [ $? -eq 1 ]; then
             generate_list "${CloneDir}/Configs"
@@ -184,7 +184,7 @@ MISSING
     [[ $* = *"--edit"* ]] && exit 0
   fi
   print_prompt -w '[ctrl + c]' -r ' Cancel'
-  print_prompt -w "Continue?"
+  print_prompt "Continue?"
 
 }
 
@@ -201,10 +201,10 @@ list_Marker() {
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
 
     if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
-      print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" -w "\nCreate a new control file to avoid conflicts"
+      print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" "\nCreate a new control file to avoid conflicts"
       generate_list "${CloneDir}/Configs"
     else
-      print_prompt -y "Existing Control file: '${ctlFile}'" -w "\nWould you like to use your last prefered selection?"
+      print_prompt -y "Existing Control file: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
       ask_confirm "Yy"
       if [ $? -eq 1 ]; then
         generate_list "${CloneDir}/Configs"
@@ -226,7 +226,7 @@ list_Marker() {
     [[ $* = *"--edit"* ]] && exit 0
   fi
   print_prompt -w '[ctrl + c]' -r ' Cancel'
-  print_prompt -w "Continue?"
+  print_prompt "Continue?"
 }
 
 make_List_OVERWRITE() {
@@ -322,7 +322,7 @@ BackUp() {
   fi
 
   if [[ ! -z "$selected_backup" && "$selected_backup" != " " ]] || [[ -e ${config_source} ]]; then
-    print_prompt -y "Restoring from:" -w "${config_source}"
+    print_prompt -y "Restoring from:" "${config_source}"
     echo "Please Review files to be re-populated to your Dots"
     if [ -e "${config_source}/$(basename ${ctlFile})" ]; then
       cp -f "${config_source}/$(basename ${ctlFile})" "${ctl_override}"

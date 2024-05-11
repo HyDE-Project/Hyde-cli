@@ -59,16 +59,27 @@ save() {
         if [ "${processed_flags[$arg]}" != "true" ]; then
             case $arg in
                 -a|--animations) #? Disable animations
-                    append "animations:enabled = 0" "DISABLE Animations"
+                    append 'animations:enabled = 0' "[disable] all window animations"
+                    append 'layerrule=noanim,waybar' "[disable] waybar animations"
+                    append 'layerrule=noanim,rofi' "[disable] rofi animations"
+                    append 'layerrule=noanim,notifications' "[disable] notifications animations"
                 ;;
                 -ba|--borderangle) #? Disable border angle animation
-                    append "animation = borderangle, 0" "DISABLE Border angle animation"
+                    append "animation = borderangle, 0" "[disable] Borderangle animation"
+                
                 ;;
                 -b|--blur) #? Disable blur
-                    append "decoration:blur:enabled = 0" "DISABLE Blur"
+                    append "decoration:blur:enabled = 0" "[disable] window blur"
+                    append 'layerrule=unset,waybar'  "[disable] waybar opacity"
+                    append 'layerrule=unset,rofi' "[disable] rofi opacity"
+                    append 'layerrule=unset,notifications' "[disable] notifications opacity"
+
                 ;;
                 -o|--opacity) #? Disable tranparency
-                    append 'windowrule=opacity 1 override 1 override,title:(.*)' "DISABLE Transparent opacity"
+                    append 'windowrule=opacity 1 override 1 override,title:(.*)' "[disable] window transparency"
+                    # append 'layerrule=xray[off],waybar'  "[disable] waybar opacity"
+                    # append 'layerrule=xray[off],rofi' "[disable] rofi opacity"
+                    # append 'layerrule=xray[off],notifications' "[disable] notifications opacity"
                     #! DEPRECATED if grep -q '^[^#]*windowrule.*opacity' "$windowRules" "$userPrefs"; then
                     #! DEPRECATED     sed -i '/^[^#]*windowrule.*opacity/s/^/#!/' "$windowRules" "$userPrefs" && echo "DISABLE Transparent opacity"
                     #! DEPRECATED fi
@@ -92,17 +103,24 @@ unset() {
         if [ "${processed_flags[$arg]}" != "true" ]; then
             case $arg in
                 -a|--animations) #? Default animations
-                    remove "animations:enabled = 0" "ENABLE Animations"
+                    remove "animations:enabled = 0" "[enable] Animations"
+                    remove 'layerrule=noanim,waybar' "[enable] waybar animations"
+                    remove 'layerrule=noanim,rofi' "[enable] rofi animations"
+                    remove 'layerrule=noanim,notifications' "[enable] notifications animations"
+
                 ;;
                 -ba|--borderangle) #? Default border angle animation
-                    remove "animation = borderangle, 0" "ENABLE Border angle animation"
+                    remove "animation = borderangle, 0" "[enable] Border angle animation"
                     sed -i 's/\(animation = borderangle,\) 0,/\1 1,/' "$animFile" "$userPrefs"
                 ;;
                 -b|--blur) #? Default blur
-                    remove "decoration:blur:enabled = 0" "ENABLE Blur"
+                    remove "decoration:blur:enabled = 0" "[enable] Blur"
+                    remove 'layerrule=unset,waybar'  "[enable] waybar rules"
+                    remove 'layerrule=unset,rofi' "[enable] rofi rules"
+                    remove 'layerrule=unset,notifications' "[enable] notifications rules"
                 ;;
                 -o|--opacity) #? Default tranparency
-                    remove "windowrule=opacity 1 override 1 override,title:(.*)" "ENABLE Tranparency"
+                    remove "windowrule=opacity 1 override 1 override,title:(.*)" "[enable] Tranparency"
                     #! DEPRECATED sed -i 's/^\s*#!\(.*windowrule.*opacity\)/\1/' "$windowRules" "$userPrefs"
                 ;;
                 *) echo "Unknown flag: $arg"; print_help; exit 1;;

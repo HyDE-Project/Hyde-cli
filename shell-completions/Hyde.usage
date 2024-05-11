@@ -9,7 +9,7 @@ Hyde <COMMANDS>
 		|  (man <MAN_FUNCTION> )                              " Show Manual"
 		|  (version <VERSION_FUNCTION> )                      " Hyde-cli version"
 		|  (systeminfo <SYSTEMINFO_FUNCTION> )                " System information"
-		|  (check <CHECK_FUNCTION> )                          " Hyde health Checker"
+		|  (check <CHECK_FUNCTION> )                          " health checker"
 		|  (control <CONTROL_FUNCTION> )                      " Interactive control file"
 		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch"
 		|  (update <UPDATE_FUNCTION> )                        " Pull updates from Hyde repository"
@@ -32,7 +32,7 @@ Hyde <COMMANDS>
 
 
 <CHECK_FUNCTION> ::=
-			  (Config) 	  " Check missing File/Directory"
+			  (Config <CHECK_CONFIG_USAGE> ) 	  " [*] check up Config File/Directory"
 ;
 
 
@@ -122,17 +122,23 @@ Hyde <COMMANDS>
 
 
 <RUN_FUNCTION> ::=
-			  (audio_idle) 	  " Inhibits idle when player state: 'Playing"
+			  (audio_idle) 	  " Inhibits idle when player status: 'Playing"
 			 | (events) 	  " Watches hyprland events and executes actions"
 			 | (screencap <RUN_SCREENCAP_USAGE> ) 	  " [*] Screenshot and screenrecord tool"
 ;
 
 
 <INJECT_FUNCTION> ::=
-			  (chaotic_aur) 	  " Add chaotic aur"
+			  (chaotic_aur) 	  " Add chaotic aur to you mirror"
 			 | (asus_patch) 	  " Fixes issues for asus devices"
 ;
 
+
+<CHECK_CONFIG_USAGE> ::=
+ (--mismatch  ) "   Diff mismatched dotfiles"
+| (--presrve  ) "   Diff preserved dotfiles"
+| (--less  ) "   Pipes stdouts to less"
+;
 
 <WALLBASH_MODE_USAGE> ::=
  (0  ) " wallbash disabled"

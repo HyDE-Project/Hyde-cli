@@ -111,9 +111,20 @@ patch_PR() {
         exit 1
 }
 
+term_colors() {
+# Iterate through the color codes from 0 to 255
+for color in $(seq 0 255); do
+    # Use ANSI escape codes to set the text color and reset it after printing
+    # Format the output with tabs for alignment
+    printf "\e[38;5;%sm %3d |\e[0m" $color $color
+done
+exit 0
+}
+
 OPT=(
 "Pull Request  ? Useful if you want to Test/Patch PRs  ? patch_PR "
 "Generate completion ? Click me to generate shell completion ? gen_completion "
+"Real Terminal Colors ? Show real 256 colors in terminal ?term_colors"
 )
 
 

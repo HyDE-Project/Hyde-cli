@@ -7,7 +7,7 @@ varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"
 
 # Pass arguments here
 if [[ -n ${*} ]]; then
-    print_prompt -y "Command:" -w "${@}"
+    print_prompt -y "Command:" "${@}"
     variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}" "${@}"
     exit 0
 fi

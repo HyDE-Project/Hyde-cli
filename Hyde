@@ -49,19 +49,19 @@ man() { #? Show Manual
         grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
             Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
             desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t", $5); print $5 }')
-            printf " \n%-45s %s\n\n" "$(print_prompt -y "[" -w "${Function}" -y "]")" "$(print_prompt -y "﬌${desc}")"
+            printf " \n%-45s %s\n\n" "$(print_prompt -y "[" "${Function}" -y "]")" "$(print_prompt -c "﬌" "${desc}")"
             Parameters "${Function}"
         done
     )
     (
-    [ "${clean_man}" = true ] || box_me "Manual Page"
+    [ "${clean_man}" = true ] || box_me "Manual Page" -c 220
     echo -e "${manPage}" |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
             -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
             -e "s|\${ctlFile}|$ctlFile|g"
     barLine
-    print_prompt -y "\nDescriptions with [*] can be expanded to show more information. Append [--help]"
+    print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
     ) | { less || more || cat - ;} 2> /dev/null 
 }
 
@@ -78,12 +78,11 @@ version() { #? Hyde-cli version
        ░░▒▒▓▓   ▓▓  //____/
 EOF
 
-    box_me -s "Hyde-cli version" -c 77
-    barLine
+    box_me -s "Hyde-cli version" -c 209
     cat "${etcDir}/.hyde-cli.ver"
     barLine
     {
-        . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 154 && barLine
+        . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
         repo_info
         barLine
         inform_updates
@@ -112,30 +111,22 @@ systeminfo() { #? System information
     fi
 }
 
-check() { #? Hyde health Checker
+check() { #? health checker
     case $1 in
-        Config) #? Check missing File/Directory\nﯦ 
+        Config) #? [*] check up Config File/Directory
         navigate_clone
-        # echo $ctlFile
-
         ConfigDir="${CloneDir}/Configs"
-            autogen=(
+            dynamic=(
             ".t2"
             ".config/dunst/dunstrc"
             ".config/qt6ct/colors.conf"
             ".config/waybar/config.jsonc"
             ".config/waybar/style.css"
             ".config/hypr/themes/theme.conf"
-
+            ".local/share/dolphin/dolphinstaterc"
             )
-
-                PRESERVE="$(awk -F'|' '/^P/ {print $2"/" $3}' $ctlFile)"
-
-
-                WALLBASH="$(find $hydeConfDir -type f -name "*.theme*" -o -name "*.dcol*" -print0 | \
-                xargs -0 head -n 1 | \
-                 sed '/==>/d;/<==/d' | \
-                  awk -F '|' '{print $1}')"
+                preserve="$(awk -F'|' '/^P/ {print $2"/" $3}' $ctlFile)"
+                wallbash="$(find $hydeConfDir -type f -name "*.theme*" -o -name "*.dcol*" -print0 | xargs -0 head -n 1 | sed '/==>/d;/<==/d' | awk -F '|' '{print $1}')"
 
             find "$ConfigDir" -type f | while read -r file; do
                 relativeFile=$(echo "$file" | sed "s|^$ConfigDir/||")
@@ -143,47 +134,66 @@ check() { #? Hyde health Checker
                 targetFile=${HOME}/${relativeFile}
 
                 if [ ! -d "$targetDir" ]; then
-                    print_prompt -b "[do not exist]" " Directory: $targetDir do not exist..."
+                    print_prompt -b "[missing]" " Directory: $targetDir"
                     continue
                 fi
                 if [  ! -f "${targetFile}" ]; then
-                    print_prompt -b "[do not exist]" " File: $targetFile do not exist..."
+                    print_prompt -b "[missing]" " File: $targetFile"
                 continue
                 fi
                 if [[ "$(md5sum "${targetFile}" | awk -F ' ' '{print $1}')" != "$(md5sum "${file}" | awk -F ' ' '{print $1}')" ]] ; then
                 
-                                    while IFS= read -r line; do
+                    while IFS= read -r line; do
                     pFile="$(eval echo "${line}")"
                     if [[ ${pFile} = $targetFile ]] ; then 
                         print_prompt -g "[wallbash]" " ${targetFile}"
                     # diff -y "${targetFile}" "$file" && barLine 
                     continue 2
                     fi
-                done <<< "$WALLBASH"
+                done <<< "$wallbash"
                 
-                for keyword in "${autogen[@]}"; do
+                for keyword in "${dynamic[@]}"; do
                     if  grep -q "$keyword" <<< "$targetFile"; then
-                        print_prompt -c "[autogen] " "$targetFile"
+                        print_prompt -c "[dynamic] " "$targetFile"
                         continue 2
                     fi
                 done
-                    while IFS= read -r line; do
-                    pFile="$(eval echo "${line}")"
+                    while IFS= read -r line; do pFile="$(eval echo "${line}")"
                     if [[ ${pFile} = $targetFile ]] ; then 
-                        print_prompt -y "[preserved]" " ${targetFile}"
-                    # diff -y "${targetFile}" "$file" && barLine 
+                    grep -q -e '--preserve' <<< $@ && barLine
+                    print_prompt -y "[preserved]" " ${targetFile}"
+                    grep -q -e '--preserve' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine 
                     continue 2
                     fi
-                done <<< "$PRESERVE"
-
-                barLine
-                print_prompt -r "[not matched]" " ${targetFile}" -r " != " "$file"
-                diff -y "${targetFile}" "$file" 
-                barLine
-                
+                done <<< "$preserve"
+                grep -q -e '--mismatch' <<< $@ && barLine
+                print_prompt -crit "[mismatch]" " ${targetFile}" -crit " != " "$file"
+                grep -q -e '--mismatch' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine
                 fi
-            done
-        ;;
+            done | { \
+                    grep -q -e '--less' <<< $@ && less  || \
+                    grep -q -e '--clip' <<< $@ && wl-copy  || \
+                     cat - ;}  
+            barLine
+cat <<NOTE
+*mismatch               Files that mismatched from upstream but not preserved
+                            ﯦ check diff by appending '--mismatch'
+*preserve               Posible incosistency may occur for preserving files
+                            ﯦ check diff by appending '--preserve'
+*wallbash & *dynamic     Constantly changing files
+                            ﯦ pointless to diff
+*missing     Missing files/Not installed
+
+NOTE
+: <<USAGE
+[CHECK_CONFIG_USAGE]
+    --mismatch  ?   Diff mismatched dotfiles
+    --presrve  ?   Diff preserved dotfiles
+    --less  ?   Pipes stdouts to less 
+[END]
+USAGE
+    ;;
+    *) Parameters "$Function" ;;
     esac;
 
 }
@@ -260,7 +270,7 @@ restore() { #? Restore dots
         new_CloneDir=${1}
         [[ -z "${1}" ]] && new_CloneDir=${CloneDir} && print_prompt -r "Missing /path/to/CloneDir"
         check_integrity
-        print_prompt -y "\n[LINKING]:" -w "${CloneDir}"
+        print_prompt -y "\n[LINKING]:" "${CloneDir}"
         ask_confirm
         set_metadata "${new_CloneDir}"
         Hyde reload
@@ -649,7 +659,7 @@ USAGE
 
 run() { #? Executables
     case $1 in
-    audio_idle) #? Inhibits idle when player state: 'Playing
+    audio_idle) #? Inhibits idle when player status: 'Playing
     check_package systemd
     local command="${0} "${FUNCNAME[0]}" ${@} --listen"
       shift
@@ -708,7 +718,7 @@ USAGE
 inject() { #? User/Device specific scripts that might be useful
 
     case $1 in
-    chaotic_aur) #? Add chaotic aur
+    chaotic_aur) #? Add chaotic aur to you mirror
         shift
         SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
         ;;
