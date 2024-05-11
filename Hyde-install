@@ -98,6 +98,7 @@ else
 fi
 set_metadata "${newCloneDir}"
 print_prompt -c "\nRestart now?"
+ service_check sddm
 if ask_confirm "Yy" && pkg_installed sddm &> /dev/null ; then
  systemctl restart sddm
 fi
