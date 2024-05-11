@@ -183,7 +183,7 @@ set_branch() {
         git remote set-branches origin '*'
     fi
     git fetch --all
-    git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+    git_branch=$(git branch -a | fzf --prompt='Choose a branch (default main): ')
     [[ -z ${git_branch} ]] && print_prompt -r "Operation cancelled" && exit 0
     if [[ $git_branch == *"*"* ]]; then
         export current_branch="${git_branch//\* /}"
@@ -192,6 +192,7 @@ set_branch() {
     else
         # Extract the branch name without the remote prefix and trim leading whitespace
         export current_branch=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        current_branch=${current_branch:-main}
         # Switch to the selected branch
         git checkout "${current_branch}"
         echo "On branch: ${current_branch}"
@@ -240,7 +241,6 @@ set_metadata() {
     commit_message="$(git show -s --format='%B' | tr -d '`')"
     [ ! -f "${meta_file}" ] && touch "${meta_file}"
     SUPER chattr -i "${meta_file}"
-    trap 'SUPER chattr +i "${meta_file}"' EXIT
     cat <<METADATA >"${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this!
@@ -254,6 +254,7 @@ export hyde_version="${hyde_version}"
 export modify_date="${modify_date}"
 export commit_message="${commit_message}"
 METADATA
+    SUPER chattr +i "${meta_file}"
 }
 
 pkg_installed() {

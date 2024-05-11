@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+    . GLOBAL-hyde
+
 # Git_Repo="https://github.com/kRHYME7/hyde-gallery"
 Git_Repo="https://github.com/kRHYME7/hyde-gallery.git"
 hyde_gallery_dir="${cacheDir}/landing/hyde-gallery"
@@ -135,6 +137,7 @@ theme_patcher() {
     done <"${themepatcher_lst}"
     parallel --bar --link "${CloneDir}/Scripts/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
     print_prompt -g "\n[cache]" " generating cache files..."
+    #TODO Clean the ScrDir
     "${scrDir}/swwwallcache.sh" -t ""
     if printenv HYPRLAND_INSTANCE_SIGNATURE &>/dev/null; then
         "${scrDir}/themeswitch.sh" &>/dev/null

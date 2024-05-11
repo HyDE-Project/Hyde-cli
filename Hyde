@@ -179,7 +179,7 @@ cat <<NOTE
 *mismatch               Mismatched files compared to upstream and not preserved
                             ﯦ check diff by appending '--mismatch'
 *preserve               Incosistency may occur if preserving files
-                            ﯦ check diff by appending '--preserve' regularly
+                            ﯦ check diff regularly by appending '--preserve'
 *wallbash & *dynamic     Constantly changing files
                             ﯦ pointless to diff
 *missing                Missing/not installed files

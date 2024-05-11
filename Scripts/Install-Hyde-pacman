@@ -46,7 +46,8 @@ print_prompt -y "Pulling Hyde repo..."
 git stash >/dev/null
 git pull
 git stash pop 2>/dev/null
-set_branch
+# set_branch
+current_branch=main
 check_integrity "${newCloneDir}"
 
 # export ctlFile="${cacheDir}/manage_cfg.lst"
@@ -74,10 +75,10 @@ custom_apps="${scriptDir}/custom_apps.lst"
 cust_pkg="${HYDE_RUNTIME_DIR}/custom-app-list"
 if [[ -e ${custom_apps} ]]; then
     # sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
-     sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#" \
-    | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${install_packages_list}"
-
+     { echo [Confirm] ; sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#"  ;} \
+    | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
     echo -e "Optional packages loaded:"
+    sed -i '/\[Confirm\]/d' "${cust_pkg}"
     cat "${cust_pkg}"
 fi
 
