@@ -176,13 +176,13 @@ check() { #? health checker
                      cat - ;}  
             barLine
 cat <<NOTE
-*mismatch               Files that mismatched from upstream but not preserved
+*mismatch               Mismatched files compared to upstream and not preserved
                             ﯦ check diff by appending '--mismatch'
-*preserve               Posible incosistency may occur for preserving files
-                            ﯦ check diff by appending '--preserve'
+*preserve               Incosistency may occur if preserving files
+                            ﯦ check diff by appending '--preserve' regularly
 *wallbash & *dynamic     Constantly changing files
                             ﯦ pointless to diff
-*missing     Missing files/Not installed
+*missing                Missing/not installed files
 
 NOTE
 : <<USAGE
