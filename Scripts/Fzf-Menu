@@ -99,7 +99,7 @@ fzf_theme_menu() {
 }
 
 #? sddm theme
-fzf_sddm() {
+fzf_sddm_select() {
 
     fzf --prompt='Select SDDM theme: ' \
         --marker=' ' \

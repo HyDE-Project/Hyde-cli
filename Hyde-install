@@ -6,6 +6,7 @@ export PATH="$libDir:$PATH"
 export is_fresh_install=true
 
 . GLOBAL-hyde
+. FUNCTIONS-hyde
 
 #? One time set up on terminal
 install_distro() {

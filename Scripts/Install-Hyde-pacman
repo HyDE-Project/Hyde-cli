@@ -178,7 +178,11 @@ Manage-Themes theme_patcher
 # post-install script #
 #---------------------#
 
-"${scriptDir}/install_pst.sh"
+
+
+# "${scriptDir}/install_pst.sh"
+shell_select
+sddm_select
 
 #------------------------#
 # enable system services #

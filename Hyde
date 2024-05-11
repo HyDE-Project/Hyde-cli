@@ -13,6 +13,25 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 . GLOBAL-hyde
 . DEVEL-hyde
 . FUNCTIONS-hyde
+
+#??? Handle Syntax errors
+help=$(
+    grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"
+)
+
+if [ -z "$1" ]; then
+    box_me -s "Hyde-cli $hyde_cli_version"
+    print_prompt "${help}"
+    exit 1
+elif ! (echo "$help" | awk '{print $1}' | grep "$Function" 1>/dev/null); then
+    print_prompt -r "[unknown]:" -y "'$*'"  "\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
+    exit 1
+fi
+
 initiate_hyde_command
 #! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols  
 #! +----------------------------------------------------------------|
@@ -499,25 +518,12 @@ waybar() { #? Waybar commands
 }
 
 sddm() { #? Sddm commands
+
     check_package sddm
     navigate_clone
     case $1 in
     theme) #? Select sddm theme
-        sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
-        sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-        sddm_theme=$(
-        find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
-        | awk -F 'Sddm_' '{print $2}' |\
-         awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
-        )
-        [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
-        print_prompt -y "Setting into '${sddm_theme} theme'..."
-        ask_confirm "${USER}"
-        [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
-        SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
-        SUPER touch "${sddm_conf}"
-        SUPER cp "${sddm_conf}" "${sddm_bak}"
-        SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
+        sddm_select
         ;;
     #   set) #? Directory   Lockscreen
     # :    #  "${scrDir}"/sddmwall.sh
