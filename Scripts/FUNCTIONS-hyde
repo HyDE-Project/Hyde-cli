@@ -245,6 +245,11 @@ shell_select() {
         Zsh_Plugins="$Zsh_Path/custom/plugins"
         Fix_Completion=""
 
+        (
+            echo 'P|${HOME}|.zshrc|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git'
+            echo 'P|${HOME}|.p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git'
+        ) >${ctl_override}
+
         # generate plugins from list
         while read r_plugin; do
             z_plugin=$(echo $r_plugin | awk -F '/' '{print $NF}')
