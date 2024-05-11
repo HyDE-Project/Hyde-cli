@@ -169,7 +169,8 @@ Manage-Themes theme_patcher
 
 # "${scriptDir}/install_pst.sh"
 export defaultTheme="Catppuccin Mocha"
-shell_select
+shell_select || Hyde theme patch "${defaultTheme}" "https://github.com/prasanthrangan/hyde-themes/tree/Catppuccin-Mocha"
+
 sddm_select
 # TODO Flatpak installation 
 
