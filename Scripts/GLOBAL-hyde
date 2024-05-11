@@ -270,6 +270,17 @@ pkg_installed() {
     fi
 }
 
+get_aurhlpr()
+{
+    if pkg_installed yay
+    then
+        aurhlpr="yay"
+    elif pkg_installed paru
+    then
+        aurhlpr="paru"
+    fi
+}
+
 CHECK() { #! Deprecated
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
 
