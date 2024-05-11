@@ -130,20 +130,7 @@ if ! chk_list "aurhlpr" "${aurList[@]}"; then
     esac
 fi
 
-if ! chk_list "myShell" "${shlList[@]}"; then
-    echo -e "Select shell:\n[1] zsh\n[2] fish"
-    prompt_timer 120 "Enter option number"
 
-    case "${promptIn}" in
-    1) export myShell="zsh" ;;
-    2) export myShell="fish" ;;
-    *)
-        echo -e "...Invalid option selected..."
-        exit 1
-        ;;
-    esac
-    echo "${myShell}" >>"${install_packages_list}"
-fi
 
 #? install packages from the list
 
