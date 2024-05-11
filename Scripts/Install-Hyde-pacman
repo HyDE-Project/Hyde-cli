@@ -84,7 +84,7 @@ fi
 
 #? Manage Configs
 [ -e $ctlFile ] && cp $ctlFile $ctl_override
-[ ! -e $ctlFile ] && Manage-Config generate_list
+[ ! -e $ctlFile ] && Manage-Config generate_config_list
 Manage-Config make_List "" --existed
 ask_confirm "${USER}"
 

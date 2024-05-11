@@ -57,7 +57,7 @@ parse_ini() {
     done <"${file_DB}"
 }
 
-generate_list() {
+generate_theme_list() {
     theme_menu
     # echo -e "${patchList}"
     : >"${themepatcher_lst}"
@@ -124,7 +124,7 @@ theme_menu() {
 }
 
 theme_patcher() {
-    generate_list
+    generate_theme_list
     [ ! -f "${themepatcher_lst}" ] && return
     # print_prompt -g "[themepatcher]" " Patching the following themes..."
     print_prompt "${patchList}"

@@ -96,7 +96,7 @@ list_Backup() {
   fi
 }
 
-generate_list() { #* Check the content of a Directory and make a restore list
+generate_config_list() { #* Check the content of a Directory and make a restore list
   # restore_directory is the  Source directory for Configs
   restore_directory="${1:-${CloneDir}/Configs}"
   # echo "$restore_directory"
@@ -151,13 +151,13 @@ make_List() {
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
 
       if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
-        generate_list "${CloneDir}/Configs"
+        generate_config_list "${CloneDir}/Configs"
         print_prompt -g "\n\n\nNew Files has been added/removed!" "\nCreate a new control file to avoid conflicts!\n"
       else
         print_prompt -g "Found existing: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
         ask_confirm "Yy"
           if [ $? -eq 1 ]; then
-            generate_list "${CloneDir}/Configs"
+            generate_config_list "${CloneDir}/Configs"
           else
             cp "${ctlFile}" "${ctl_override}"
           fi
@@ -202,12 +202,12 @@ list_Marker() {
 
     if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
       print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" "\nCreate a new control file to avoid conflicts"
-      generate_list "${CloneDir}/Configs"
+      generate_config_list "${CloneDir}/Configs"
     else
       print_prompt -y "Existing Control file: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
       ask_confirm "Yy"
       if [ $? -eq 1 ]; then
-        generate_list "${CloneDir}/Configs"
+        generate_config_list "${CloneDir}/Configs"
       else
         cp "${ctlFile}" "${ctl_override}"
       fi
@@ -329,7 +329,7 @@ BackUp() {
       print_prompt -y "Using the Backup manifest file"
     else
       echo "Generating list..."
-      generate_list
+      generate_config_list
     fi
     make_List "${config_source}" --existed
     ask_confirm "${USER}"
@@ -381,7 +381,7 @@ Clone() {
   check_integrity "${custClone}"
   echo "Generating a Restore List"
   cd $custClone/Scripts || handle_error "Cannot change directory to $custClone/Scripts"
-  #! generate_list "$custClone/Configs"
+  #! generate_config_list "$custClone/Configs"
   make_List "${custClone}"
   ask_confirm "$USER"
   # ./restore_fnt.sh
@@ -417,7 +417,7 @@ if [ ! -f "${ctlFile}" ]; then
     exit 1
   fi
   awk -F'|' '{print "P|"$(NF-2)"|"$(NF-1)"|"$NF}' ${CloneDir}/Scripts/restore_cfg.lst >${ctlFile}
-  generate_list "${CloneDir}/Configs"
+  generate_config_list "${CloneDir}/Configs"
   cat "${ctlFile}"
 fi
 
