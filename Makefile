@@ -53,6 +53,7 @@ backup:
 install:
 	install -m 755 ./Hyde $(DESTDIR)$(bindir) 
 	install -m 755 ./Hyde-install $(DESTDIR)$(bindir)
+	install -m 755 ./Hyde-tool $(DESTDIR)$(bindir) 
 
 	@echo "Version: $(VERSION)" > .$(pkgname).ver
 	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
@@ -89,6 +90,7 @@ clean: purge
 purge : 
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-install)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-tool)
 
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)

@@ -62,7 +62,7 @@ initiate_hyde_command
 man() { #? Show Manual
     . "${meta_file}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
     manPage=$(
-        echo -e "Hyde-cli: ${hyde_cli_version}"
+        echo -e "Hyde-cli ${hyde_cli_version}"
     [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
         echo -e "Usage: Hyde [Function] [options]\n"
         grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
@@ -73,7 +73,7 @@ man() { #? Show Manual
         done
     )
     (
-    [ "${clean_man}" = true ] || box_me "Manual Page" -c 220
+    [ "${clean_man}" = true ] || box_me -c 220 "Manual Page" 
     echo -e "${manPage}" |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \

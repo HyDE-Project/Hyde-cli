@@ -234,13 +234,14 @@ set_metadata() {
     git_url=$(git remote get-url origin)
     # check changes on the restore lst
     restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
-    Configs_hash=$(git rev-parse HEAD)
+    git_hash=$(git rev-parse HEAD)
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
     # commit_message="'$(git show -s --format='%B')'"
     commit_message="$(git show -s --format='%B' | tr -d '`')"
     [ ! -f "${meta_file}" ] && touch "${meta_file}"
-    SUPER chattr -i "${meta_file}"
+    SUPER chattr -i "${meta_file}" || { print_prompt -crit "Setting metadata failed" && exit 1 ;}
+    trap 'SUPER chattr +i "${meta_file}"' RETURN
     cat <<METADATA >"${meta_file}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this!
@@ -249,12 +250,12 @@ export CloneDir="$CloneDir"
 export current_branch="${current_branch}"
 export git_url="${git_url}"
 export restore_cfg_hash="${restore_cfg_hash}"
-export Configs_hash="${Configs_hash}"
+export git_hash="${git_hash}"
 export hyde_version="${hyde_version}"
 export modify_date="${modify_date}"
 export commit_message="${commit_message}"
 METADATA
-    SUPER chattr +i "${meta_file}"
+echo "Metadata updated."
 }
 
 pkg_installed() {
@@ -391,12 +392,20 @@ loading_spinner() {
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
 
+# Cache-dir
+export cacheDir="${HOME}/.cache/hyde"
+export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to dissable perms
+export settingDir="${cacheDir}/hyde-settings"
+
+#! Temporary
+[ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
+
 # HYDE-CLI
 export libDir=/usr/lib/hyde-cli
 export PATH=${PATH}:${libDir}
 export HYDE_RUNTIME_DIR=$XDG_RUNTIME_DIR/hyde
 
-# CONFIGS
+# Cli Configs
 export etcDir="/etc/hyde-cli"
 export usrDir="/usr/share/hyde-cli"
 
@@ -406,13 +415,6 @@ export hydeConfDir="${confDir}/hyde"
 export BkpDir="${confDir}/cfg_backups"
 export wallbashDir="${hydeConfDir}/wallbash"
 export themeDir="${hydeConfDir}/themes"
-
-# Cache-dir
-export cacheDir="${HOME}/.cache/hyde"
-export meta_file="${cacheDir}/hyde.meta"
-
-#! Temporary
-[ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
 install_packages_list="${HYDE_RUNTIME_DIR}/temporary-apps"
 export install_packages_list
@@ -432,7 +434,7 @@ export scrDir
 make_dir=(
     "${BkpDir}"
     "${cacheDir}"
-    "${cacheDir}"
+    "${settingDir}"
     "${etcDir}"
     "${HYDE_RUNTIME_DIR}"
 )

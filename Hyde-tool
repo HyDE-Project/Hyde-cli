@@ -1,0 +1,84 @@
+#!/bin/env bash
+
+export PATH=$PATH:/usr/lib/hyde-cli/
+hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
+
+#! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols  
+#! +----------------------------------------------------------------|
+#? Add functions below this section
+#? Be careful with spaces in your Function definitions
+#? Example Function:
+#* |Function example() { #? Example Function. this comments supports '\n' 
+#? |                       ^^^^ Use use as description and respects
+#* | case $1 in
+#* |      # Cases go here...
+#* |      case1) #? Case description
+#? |                ^^^ description for case functions
+#* | #* |           commands...
+#* | : <<USAGE
+#* | [FUNCTION_CASE_USAGE ]
+#* | --flags ? Description for flags
+#* | --args  ? Desc for args
+#* | --parms ? desc for parm
+#* | [END]
+#* | USAGE
+#? | ^^^^^^ Usage block is a comment block that will be parsed by gen_completion and man  function 
+#* |        ;;
+#* |
+#* |   esac; <== ' ; ' is also use to parse case conditions
+#* |}
+#! +----------------------------------------------------------------|
+
+
+man() { #? Show Manual
+. FUNCTIONS-hyde
+. GLOBAL-hyde
+    . "${meta_file}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+    manPage=$(
+        echo -e "Hyde-cli ${hyde_cli_version}"
+    [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
+        echo -e "Usage: Hyde-tool [Function] [options]\n"
+        grep -E '^\w+ *\( *\)\s*\{ #\?' $0 | while read -r line; do
+            Function=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { print $1 }')
+            desc=$(echo "$line" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t", $5); print $5 }')
+            printf " \n%-45s %s\n\n" "$(print_prompt -y "[" "${Function}" -y "]")" "$(print_prompt -c "﬌" "${desc}")"
+            Parameters "${Function}"
+        done
+    )
+    (
+    [ "${clean_man}" = true ] || box_me -c 220 "Tools Manual Page" 
+    echo -e "${manPage}" |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"
+    barLine
+    print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
+    ) | { less || more || cat - ;} 2> /dev/null 
+}
+
+zoom() { #? Zoom in/out the Hyprland  
+    # case
+    zoom_factor=${2:-0.1}
+    case $1 in 
+    in) #? Zoom in
+    hyprctl keyword cursor:zoom_factor \
+    $(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$zoom_factor" '.float + ($zoomFactor | tonumber)')
+    ;;
+    out) #? Zoom out
+    hyprctl keyword cursor:zoom_factor \
+    $(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$zoom_factor" '.float - ($zoomFactor | tonumber)')
+    ;;
+    *)
+    . FUNCTIONS-hyde
+     Parameters "$Function" ;;
+    esac;
+}
+
+
+
+
+[ -z "${1}" ] && $0 man | cat && exit 0
+#! +----------------------------------------------------------------|
+"${@}" #? Call the appropriate Function based on the first argument.  |
+#! +----------------------------------------------------------------|
