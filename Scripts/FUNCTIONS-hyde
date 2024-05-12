@@ -1,7 +1,5 @@
 #!/bin/env bash
 
-export Function="${1}"
-
 initiate_hyde_command() {
 
     if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/landing/update.check" ] || [[ $(find "${cacheDir}/landing/update.check" -mmin +4320) ]]; }; then
@@ -22,6 +20,7 @@ initiate_hyde_command() {
 }
 
 Parametersv2() { #TODO: Add conditionals here like 'case'
+    export Function="${1}"
     Function="${Function// /}"
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep >/dev/null 'case $'; then
         # Define a variable for the tab characters
@@ -32,6 +31,7 @@ Parametersv2() { #TODO: Add conditionals here like 'case'
 
 Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimized but it's fine!
     . Hyde-Parser
+    export Function="${1}"
     Function="${Function// /}"
     prefix=$Function
     if awk "/^$Function\(\) \{/,/}/" "$0" | grep -q 'case'; then
