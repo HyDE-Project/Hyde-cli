@@ -9,7 +9,7 @@ function _Hyde
         set COMP_CWORD (count $COMP_WORDS)
     end
 
-    set --local literals "control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "-w" "power" "d" "--scan" "inject" "--record-focus" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "--blur" "-h" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert"
+    set --local literals "control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "power" "-w" "d" "--scan" "--record-focus" "inject" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "-h" "--blur" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert"
 
     set --local descriptions
     set descriptions[1] " Edit waybar control file"
@@ -34,12 +34,12 @@ function _Hyde
     set descriptions[21] " Default border angle animation"
     set descriptions[22] "  Show the pretty format"
     set descriptions[23] " Only restores dots from default '/Configs'"
-    set descriptions[24] "  Custom width"
-    set descriptions[25] " Power Options"
+    set descriptions[24] " Power Options"
+    set descriptions[25] "  Custom width"
     set descriptions[26] " cliphist list and delete selected"
     set descriptions[27] "  Use 'tesseract' to scan image then add to clipboard"
-    set descriptions[28] " User/Device specific scripts that might be useful"
-    set descriptions[29] "  Record focused monitor"
+    set descriptions[28] "  Record focused monitor"
+    set descriptions[29] " User/Device specific scripts that might be useful"
     set descriptions[30] " Set /Path/to/Wallpapers as new wallpaper directory"
     set descriptions[31] " Theme commands"
     set descriptions[32] " [*] Show keybind hints"
@@ -95,8 +95,8 @@ function _Hyde
     set descriptions[82] " Wallpaper selector"
     set descriptions[83] " Set preavailable Hyde branch"
     set descriptions[84] " Theme selector"
-    set descriptions[85] " Disable blur"
-    set descriptions[86] "  Display this help message"
+    set descriptions[85] "  Display this help message"
+    set descriptions[86] " Disable blur"
     set descriptions[87] " Executables"
     set descriptions[88] " Flatpak setup for HyDE"
     set descriptions[89] " [*] Screenshot and screenrecord tool"
@@ -114,33 +114,33 @@ function _Hyde
     set descriptions[101] " Revert to a previous backup run by 'Hyde backup all'. "
 
     set --local literal_transitions
-    set literal_transitions[1] "set inputs 49 25 51 80 3 31 54 83 58 87 62 60 61 66 40 16 42 20 70 28 48 47 68; set tos 24 25 4 5 6 7 8 9 11 12 15 13 14 16 17 18 19 20 21 22 23 2 3"
+    set literal_transitions[1] "set inputs 49 24 51 80 3 31 54 83 58 87 62 60 61 66 40 16 42 20 70 29 48 47 68; set tos 24 25 4 5 6 7 8 9 10 11 14 12 13 15 16 17 18 19 20 21 23 2 3"
     set literal_transitions[2] "set inputs 74 37 1; set tos 27 27 27"
     set literal_transitions[6] "set inputs 46 69; set tos 27 31"
     set literal_transitions[7] "set inputs 78 84 96 63 95; set tos 27 27 27 27 27"
     set literal_transitions[8] "set inputs 91; set tos 27"
-    set literal_transitions[11] "set inputs 33 100; set tos 27 27"
-    set literal_transitions[12] "set inputs 75 43 89; set tos 27 27 26"
-    set literal_transitions[13] "set inputs 10; set tos 27"
-    set literal_transitions[14] "set inputs 97; set tos 27"
-    set literal_transitions[15] "set inputs 55 35 59 32 38; set tos 27 27 27 32 33"
-    set literal_transitions[18] "set inputs 19 52 92 101; set tos 27 27 27 27"
-    set literal_transitions[20] "set inputs 82 81 30 6; set tos 27 27 27 27"
-    set literal_transitions[21] "set inputs 12; set tos 34"
-    set literal_transitions[22] "set inputs 44 88 99; set tos 27 27 27"
+    set literal_transitions[10] "set inputs 33 100; set tos 27 27"
+    set literal_transitions[11] "set inputs 75 43 89; set tos 27 27 30"
+    set literal_transitions[12] "set inputs 10; set tos 27"
+    set literal_transitions[13] "set inputs 97; set tos 27"
+    set literal_transitions[14] "set inputs 55 35 59 32 38; set tos 27 27 27 33 32"
+    set literal_transitions[17] "set inputs 19 52 92 101; set tos 27 27 27 27"
+    set literal_transitions[19] "set inputs 82 81 30 6; set tos 27 27 27 27"
+    set literal_transitions[20] "set inputs 12; set tos 34"
+    set literal_transitions[21] "set inputs 44 88 99; set tos 27 27 27"
     set literal_transitions[24] "set inputs 73 23 18 2; set tos 27 27 27 27"
-    set literal_transitions[25] "set inputs 50 57 9 76 15; set tos 27 27 29 27 30"
-    set literal_transitions[26] "set inputs 17 90 29 67 36 72 98 77 27; set tos 27 27 27 27 27 27 27 27 27"
+    set literal_transitions[25] "set inputs 50 57 9 76 15; set tos 27 27 26 27 29"
+    set literal_transitions[26] "set inputs 13 86 14 71; set tos 27 27 27 27"
     set literal_transitions[28] "set inputs 4; set tos 27"
-    set literal_transitions[29] "set inputs 13 85 14 71; set tos 27 27 27 27"
-    set literal_transitions[30] "set inputs 7 21 79 45; set tos 27 27 27 27"
+    set literal_transitions[29] "set inputs 7 21 79 45; set tos 27 27 27 27"
+    set literal_transitions[30] "set inputs 17 90 28 67 36 72 98 77 27; set tos 27 27 27 27 27 27 27 27 27"
     set literal_transitions[31] "set inputs 34 41 93 11; set tos 27 27 27 27"
-    set literal_transitions[32] "set inputs 8 86 22 53 94 24; set tos 27 27 27 27 27 27"
-    set literal_transitions[33] "set inputs 39 26 56; set tos 27 27 27"
+    set literal_transitions[32] "set inputs 39 26 56; set tos 27 27 27"
+    set literal_transitions[33] "set inputs 8 85 22 53 94 25; set tos 27 27 27 27 27 27"
     set literal_transitions[34] "set inputs 64 65 5; set tos 27 27 27"
 
-    set --local match_anything_transitions_from 4 19 3 17 1 16 10 9 5 23
-    set --local match_anything_transitions_to 27 27 27 27 10 27 28 27 27 27
+    set --local match_anything_transitions_from 4 15 3 1 18 16 9 22 5 23
+    set --local match_anything_transitions_to 27 27 27 22 27 27 27 28 27 27
 
     set --local state 1
     set --local word_index 2

@@ -1,5 +1,5 @@
 _Hyde () {
-    local -a literals=("control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "-w" "power" "d" "--scan" "inject" "--record-focus" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "--blur" "-h" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert")
+    local -a literals=("control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "power" "-w" "d" "--scan" "--record-focus" "inject" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "-h" "--blur" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert")
 
     local -A descriptions
     descriptions[1]=" Edit waybar control file"
@@ -24,12 +24,12 @@ _Hyde () {
     descriptions[21]=" Default border angle animation"
     descriptions[22]="  Show the pretty format"
     descriptions[23]=" Only restores dots from default '/Configs'"
-    descriptions[24]="  Custom width"
-    descriptions[25]=" Power Options"
+    descriptions[24]=" Power Options"
+    descriptions[25]="  Custom width"
     descriptions[26]=" cliphist list and delete selected"
     descriptions[27]="  Use 'tesseract' to scan image then add to clipboard"
-    descriptions[28]=" User/Device specific scripts that might be useful"
-    descriptions[29]="  Record focused monitor"
+    descriptions[28]="  Record focused monitor"
+    descriptions[29]=" User/Device specific scripts that might be useful"
     descriptions[30]=" Set /Path/to/Wallpapers as new wallpaper directory"
     descriptions[31]=" Theme commands"
     descriptions[32]=" [*] Show keybind hints"
@@ -85,8 +85,8 @@ _Hyde () {
     descriptions[82]=" Wallpaper selector"
     descriptions[83]=" Set preavailable Hyde branch"
     descriptions[84]=" Theme selector"
-    descriptions[85]=" Disable blur"
-    descriptions[86]="  Display this help message"
+    descriptions[85]="  Display this help message"
+    descriptions[86]=" Disable blur"
     descriptions[87]=" Executables"
     descriptions[88]=" Flatpak setup for HyDE"
     descriptions[89]=" [*] Screenshot and screenrecord tool"
@@ -104,33 +104,33 @@ _Hyde () {
     descriptions[101]=" Revert to a previous backup run by 'Hyde backup all'. "
 
     local -A literal_transitions
-    literal_transitions[1]="([49]=24 [25]=25 [51]=4 [80]=5 [3]=6 [31]=7 [54]=8 [83]=9 [58]=11 [87]=12 [62]=15 [60]=13 [61]=14 [66]=16 [40]=17 [16]=18 [42]=19 [20]=20 [70]=21 [28]=22 [48]=23 [47]=2 [68]=3)"
+    literal_transitions[1]="([49]=24 [24]=25 [51]=4 [80]=5 [3]=6 [31]=7 [54]=8 [83]=9 [58]=10 [87]=11 [62]=14 [60]=12 [61]=13 [66]=15 [40]=16 [16]=17 [42]=18 [20]=19 [70]=20 [29]=21 [48]=23 [47]=2 [68]=3)"
     literal_transitions[2]="([74]=27 [37]=27 [1]=27)"
     literal_transitions[6]="([46]=27 [69]=31)"
     literal_transitions[7]="([78]=27 [84]=27 [96]=27 [63]=27 [95]=27)"
     literal_transitions[8]="([91]=27)"
-    literal_transitions[11]="([33]=27 [100]=27)"
-    literal_transitions[12]="([75]=27 [43]=27 [89]=26)"
-    literal_transitions[13]="([10]=27)"
-    literal_transitions[14]="([97]=27)"
-    literal_transitions[15]="([55]=27 [35]=27 [59]=27 [32]=32 [38]=33)"
-    literal_transitions[18]="([19]=27 [52]=27 [92]=27 [101]=27)"
-    literal_transitions[20]="([82]=27 [81]=27 [30]=27 [6]=27)"
-    literal_transitions[21]="([12]=34)"
-    literal_transitions[22]="([44]=27 [88]=27 [99]=27)"
+    literal_transitions[10]="([33]=27 [100]=27)"
+    literal_transitions[11]="([75]=27 [43]=27 [89]=30)"
+    literal_transitions[12]="([10]=27)"
+    literal_transitions[13]="([97]=27)"
+    literal_transitions[14]="([55]=27 [35]=27 [59]=27 [32]=33 [38]=32)"
+    literal_transitions[17]="([19]=27 [52]=27 [92]=27 [101]=27)"
+    literal_transitions[19]="([82]=27 [81]=27 [30]=27 [6]=27)"
+    literal_transitions[20]="([12]=34)"
+    literal_transitions[21]="([44]=27 [88]=27 [99]=27)"
     literal_transitions[24]="([73]=27 [23]=27 [18]=27 [2]=27)"
-    literal_transitions[25]="([50]=27 [57]=27 [9]=29 [76]=27 [15]=30)"
-    literal_transitions[26]="([17]=27 [90]=27 [29]=27 [67]=27 [36]=27 [72]=27 [98]=27 [77]=27 [27]=27)"
+    literal_transitions[25]="([50]=27 [57]=27 [9]=26 [76]=27 [15]=29)"
+    literal_transitions[26]="([13]=27 [86]=27 [14]=27 [71]=27)"
     literal_transitions[28]="([4]=27)"
-    literal_transitions[29]="([13]=27 [85]=27 [14]=27 [71]=27)"
-    literal_transitions[30]="([7]=27 [21]=27 [79]=27 [45]=27)"
+    literal_transitions[29]="([7]=27 [21]=27 [79]=27 [45]=27)"
+    literal_transitions[30]="([17]=27 [90]=27 [28]=27 [67]=27 [36]=27 [72]=27 [98]=27 [77]=27 [27]=27)"
     literal_transitions[31]="([34]=27 [41]=27 [93]=27 [11]=27)"
-    literal_transitions[32]="([8]=27 [86]=27 [22]=27 [53]=27 [94]=27 [24]=27)"
-    literal_transitions[33]="([39]=27 [26]=27 [56]=27)"
+    literal_transitions[32]="([39]=27 [26]=27 [56]=27)"
+    literal_transitions[33]="([8]=27 [85]=27 [22]=27 [53]=27 [94]=27 [25]=27)"
     literal_transitions[34]="([64]=27 [65]=27 [5]=27)"
 
     local -A match_anything_transitions
-    match_anything_transitions=([4]=27 [19]=27 [3]=27 [17]=27 [1]=10 [16]=27 [10]=28 [9]=27 [5]=27 [23]=27)
+    match_anything_transitions=([4]=27 [15]=27 [3]=27 [1]=22 [18]=27 [16]=27 [9]=27 [22]=28 [5]=27 [23]=27)
 
     declare -A subword_transitions
 

@@ -66,10 +66,17 @@ install:
 	install -m 644 ./Extras/* $(DESTDIR)$(usrdir) 
 	install -m 644 ./shell-completions/Hyde.bash $(DESTDIR)$(usrdir)
 	install -m 644 ./shell-completions/Hyde.zsh $(DESTDIR)$(usrdir)
+	install -m 644 ./shell-completions/Hyde-tool.bash $(DESTDIR)$(usrdir)
+	install -m 644 ./shell-completions/Hyde-tool.zsh $(DESTDIR)$(usrdir)
+
 
 	install -m 644 ./shell-completions/Hyde.bash ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde
 	install -m 644 ./shell-completions/Hyde.fish ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde.fish
 	install -m 644 ./shell-completions/Hyde.zsh ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde
+
+	install -m 644 ./shell-completions/Hyde-tool.bash ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde-tool
+	install -m 644 ./shell-completions/Hyde-tool.fish ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde-tool.fish
+	install -m 644 ./shell-completions/Hyde-tool.zsh ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde-tool
 
 restore:
 	make clean
@@ -99,6 +106,11 @@ purge :
 	-rm -f ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde
 	-rm -f ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde.fish
 	-rm -f ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde
+
+	-rm -f ${DESTDIR}$(prefix)/share/bash-completion/completions/Hyde-tool
+	-rm -f ${DESTDIR}$(prefix)/share/fish/vendor_completions.d/Hyde-tool.fish
+	-rm -f ${DESTDIR}$(prefix)/share/zsh/site-functions/_Hyde-tool
+
 
 old:
 

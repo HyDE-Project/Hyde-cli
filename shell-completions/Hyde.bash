@@ -7,36 +7,36 @@ _Hyde () {
     local words cword
     _get_comp_words_by_ref -n "$COMP_WORDBREAKS" words cword
 
-    local -a literals=("control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "-w" "power" "d" "--scan" "inject" "--record-focus" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "--blur" "-h" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert")
+    local -a literals=("control" "Clone" "wallbash" "::=" "--mismatch" "prev" "--opacity" "-j" "save" "Config" "3" "Config" "--animations" "--borderangle" "unset" "backup" "--stop" "BackUp" "list" "wallpaper" "--borderangle" "-p" "Config" "power" "-w" "d" "--scan" "--record-focus" "inject" "set" "theme" "binds" "rebuild" "0" "screencap" "-freeze" "size" "pastebin" "c" "man" "1" "systeminfo" "events" "asus_patch" "--blur" "toggle" "waybar" "upgrade" "restore" "toggle" "update" "all" "-d" "sddm" "emoji" "w" "game" "cache" "glyph" "control" "shell" "show" "prev" "--less" "--presrve" "sync" "--print-monitor" "reload" "mode" "check" "--opacity" "--reset" "Link" "reload" "audio_idle" "reset" "--print-all" "next" "--animations" "version" "next" "select" "branch" "select" "-h" "--blur" "run" "flatpak" "screencap" "--record-snip" "theme" "clean" "2" "-f" "set" "patch" "select" "--print-snip" "chaotic_aur" "reload" "revert")
 
     declare -A literal_transitions
-    literal_transitions[0]="([48]=23 [24]=24 [50]=3 [79]=4 [2]=5 [30]=6 [53]=7 [82]=8 [57]=10 [86]=11 [61]=14 [59]=12 [60]=13 [65]=15 [39]=16 [15]=17 [41]=18 [19]=19 [69]=20 [27]=21 [47]=22 [46]=1 [67]=2)"
+    literal_transitions[0]="([48]=23 [23]=24 [50]=3 [79]=4 [2]=5 [30]=6 [53]=7 [82]=8 [57]=9 [86]=10 [61]=13 [59]=11 [60]=12 [65]=14 [39]=15 [15]=16 [41]=17 [19]=18 [69]=19 [28]=20 [47]=22 [46]=1 [67]=2)"
     literal_transitions[1]="([73]=26 [36]=26 [0]=26)"
     literal_transitions[5]="([45]=26 [68]=30)"
     literal_transitions[6]="([77]=26 [83]=26 [95]=26 [62]=26 [94]=26)"
     literal_transitions[7]="([90]=26)"
-    literal_transitions[10]="([32]=26 [99]=26)"
-    literal_transitions[11]="([74]=26 [42]=26 [88]=25)"
-    literal_transitions[12]="([9]=26)"
-    literal_transitions[13]="([96]=26)"
-    literal_transitions[14]="([54]=26 [34]=26 [58]=26 [31]=31 [37]=32)"
-    literal_transitions[17]="([18]=26 [51]=26 [91]=26 [100]=26)"
-    literal_transitions[19]="([81]=26 [80]=26 [29]=26 [5]=26)"
-    literal_transitions[20]="([11]=33)"
-    literal_transitions[21]="([43]=26 [87]=26 [98]=26)"
+    literal_transitions[9]="([32]=26 [99]=26)"
+    literal_transitions[10]="([74]=26 [42]=26 [88]=29)"
+    literal_transitions[11]="([9]=26)"
+    literal_transitions[12]="([96]=26)"
+    literal_transitions[13]="([54]=26 [34]=26 [58]=26 [31]=32 [37]=31)"
+    literal_transitions[16]="([18]=26 [51]=26 [91]=26 [100]=26)"
+    literal_transitions[18]="([81]=26 [80]=26 [29]=26 [5]=26)"
+    literal_transitions[19]="([11]=33)"
+    literal_transitions[20]="([43]=26 [87]=26 [98]=26)"
     literal_transitions[23]="([72]=26 [22]=26 [17]=26 [1]=26)"
-    literal_transitions[24]="([49]=26 [56]=26 [8]=28 [75]=26 [14]=29)"
-    literal_transitions[25]="([16]=26 [89]=26 [28]=26 [66]=26 [35]=26 [71]=26 [97]=26 [76]=26 [26]=26)"
+    literal_transitions[24]="([49]=26 [56]=26 [8]=25 [75]=26 [14]=28)"
+    literal_transitions[25]="([12]=26 [85]=26 [13]=26 [70]=26)"
     literal_transitions[27]="([3]=26)"
-    literal_transitions[28]="([12]=26 [84]=26 [13]=26 [70]=26)"
-    literal_transitions[29]="([6]=26 [20]=26 [78]=26 [44]=26)"
+    literal_transitions[28]="([6]=26 [20]=26 [78]=26 [44]=26)"
+    literal_transitions[29]="([16]=26 [89]=26 [27]=26 [66]=26 [35]=26 [71]=26 [97]=26 [76]=26 [26]=26)"
     literal_transitions[30]="([33]=26 [40]=26 [92]=26 [10]=26)"
-    literal_transitions[31]="([7]=26 [85]=26 [21]=26 [52]=26 [93]=26 [23]=26)"
-    literal_transitions[32]="([38]=26 [25]=26 [55]=26)"
+    literal_transitions[31]="([38]=26 [25]=26 [55]=26)"
+    literal_transitions[32]="([7]=26 [84]=26 [21]=26 [52]=26 [93]=26 [24]=26)"
     literal_transitions[33]="([63]=26 [64]=26 [4]=26)"
 
     declare -A match_anything_transitions
-    match_anything_transitions=([3]=26 [18]=26 [2]=26 [16]=26 [0]=9 [15]=26 [9]=27 [8]=26 [4]=26 [22]=26)
+    match_anything_transitions=([3]=26 [14]=26 [2]=26 [0]=21 [17]=26 [15]=26 [8]=26 [21]=27 [4]=26 [22]=26)
     declare -A subword_transitions
 
     local state=0

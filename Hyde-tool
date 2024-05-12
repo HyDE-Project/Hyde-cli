@@ -3,6 +3,8 @@
 export PATH=$PATH:/usr/lib/hyde-cli/
 hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 
+. DEVEL-hyde
+
 #! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols  
 #! +----------------------------------------------------------------|
 #? Add functions below this section
@@ -57,25 +59,28 @@ man() { #? Show Manual
     ) | { less || more || cat - ;} 2> /dev/null 
 }
 
-zoom() { #? Zoom in/out the Hyprland  
+zoom() { #? Zoom in/out Hyprland  
     # case
-    zoom_factor=${2:-0.1}
+    intensity=${2:-0.1}
+    hyprctl keyword cursor:no_hardware_cursors 1
     case $1 in 
     in) #? Zoom in
-    hyprctl keyword cursor:zoom_factor \
-    $(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$zoom_factor" '.float + ($zoomFactor | tonumber)')
+    hyprctl keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '.float + ($zoomFactor | tonumber)')
     ;;
     out) #? Zoom out
-    hyprctl keyword cursor:zoom_factor \
-    $(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$zoom_factor" '.float - ($zoomFactor | tonumber)')
+        hyprctl keyword cursor:zoom_factor $(\
+        hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '
+    if (.float - ($zoomFactor | tonumber)) < 1 then 1 else (.float - ($zoomFactor | tonumber)) end'\ 
+        )
+    ;;
+    reset) #? Reset Zoom
+    hyprctl keyword cursor:zoom_factor 1
     ;;
     *)
     . FUNCTIONS-hyde
      Parameters "$Function" ;;
     esac;
 }
-
-
 
 
 [ -z "${1}" ] && $0 man | cat && exit 0
