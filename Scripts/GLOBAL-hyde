@@ -1,6 +1,9 @@
 #! /bin/env bash
 
 # Function to execute a command with elevated privileges
+
+. Package-Manager
+
 SUPER() {
     local command="$*"
     print_prompt -y "[ROOT] " "${command}"
@@ -256,30 +259,6 @@ export modify_date="${modify_date}"
 export commit_message="${commit_message}"
 METADATA
 echo "Metadata updated."
-}
-
-pkg_installed() {
-    local PkgIn=$1
-
-    if pacman -Qi $PkgIn &>/dev/null; then
-        #echo "${PkgIn} is already installed..."
-
-        return 0
-    else
-        #echo "${PkgIn} is not installed..."
-        return 1
-    fi
-}
-
-get_aurhlpr()
-{
-    if pkg_installed yay
-    then
-        aurhlpr="yay"
-    elif pkg_installed paru
-    then
-        aurhlpr="paru"
-    fi
 }
 
 CHECK() { #! Deprecated

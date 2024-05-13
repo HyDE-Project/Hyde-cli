@@ -86,6 +86,7 @@ HEADER
 }
 
 patch_PR() {
+        navigate_clone
         pull_request=$(curl -s https://api.github.com/repos/prasanthrangan/hyprdots/pulls | jq -r '.[] | "\(.number) \(.title)"' | fzf)
         [ -z "$pull_request" ] && print_prompt -r "Operation Cancelled" && exit 1
         IFS=' ' read -ra parts <<< "$pull_request"
