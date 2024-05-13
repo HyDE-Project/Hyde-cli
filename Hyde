@@ -212,7 +212,7 @@ NOTE
 [END]
 USAGE
     ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 
 }
@@ -225,7 +225,7 @@ control() { #? Interactive control file
         . Manage-Config
          make_List "${CloneDir}" --edit
     ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 
 }
@@ -294,7 +294,7 @@ restore() { #? Restore dots
         set_metadata "${new_CloneDir}"
         Hyde reload
         ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 }
 
@@ -316,7 +316,7 @@ backup() { #? Backing up commands
     clean) #? Clear some storage by deleting old backups
         Manage-Config "$1"
         ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 }
 
@@ -364,7 +364,7 @@ cache() { #? Manages Hyde's cache
     #     swwwallcache.sh -t
     #  ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 }
@@ -399,7 +399,7 @@ theme() { #? Theme commands
     # :
 
     # ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
 
     esac;
 }
@@ -426,7 +426,7 @@ wallpaper() { #? Wallpaper commands
     #     shift
     #     /usr/lib/hyde-cli/Run-Wallpaper "${@}"
     # ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
 
     esac;
 }
@@ -482,7 +482,7 @@ USAGE
     # # spotify) #? Toggle 'spotify'
     #     Manage-Wallbash "${@}"
     # # ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 }
 
@@ -502,7 +502,7 @@ waybar() { #? Waybar commands
         wbar_size=${1}
         all=${2}
     if [ -z "${wbar_size}" ] || [[ $wbar_size =~ ^[0-9]+$ && $wbar_size -ge 1 && $wbar_size -le 100 ]]; then
-        if [[ "${all}" ]] && [[ "${all}" == "--all" ]]; then
+        if [[ "${all}" == "--all" ]]; then
             sed -i "s/^\([01]|\)\([0-9]*|\)\?/1|${wbar_size}|/" "${waybar_ctl}"
         else 
             sed -i "s/^\(1|\)\([0-9]*|\)\?/1|${wbar_size}|/" "${waybar_ctl}"
@@ -515,7 +515,7 @@ waybar() { #? Waybar commands
     fi
     ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 }
@@ -532,7 +532,7 @@ sddm() { #? Sddm commands
     # :    #  "${scrDir}"/sddmwall.sh
     # #
     #   ;;
-    *) Parameters "$Function" ;;
+    *) Parameters "${FUNCNAME[0]}" ;;
 
     esac;
 }
@@ -545,7 +545,7 @@ shell() { #? Shell commands
         ;;
 
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 }
@@ -585,7 +585,7 @@ USAGE
         Manage-Power "$@"
         ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 
@@ -616,7 +616,7 @@ code() { #! Modify Vscode Extensions
         fi
         ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 }
@@ -663,7 +663,7 @@ USAGE
         Launch-Screencap
         ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
 
     esac;
@@ -720,7 +720,7 @@ run() { #? Executables
 USAGE
         ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
 
     esac;
@@ -766,7 +766,7 @@ inject() { #? User/Device specific scripts that might be useful
         flatpak --user override --env=ICON_THEME=${gtkIcon}
     ;;
     *)
-        Parameters "$Function"
+        Parameters "${FUNCNAME[0]}"
         ;;
     esac;
 
