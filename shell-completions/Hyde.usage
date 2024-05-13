@@ -89,7 +89,7 @@ Hyde <FUNCTIONS>
 <WAYBAR_FUNCTION> ::=
 			  (control) 	  " Edit waybar control file"
 			 | (reload) 	  " Reloads waybar"
-			 | (size) 	  " Set waybar size"
+			 | (size <WAYBAR_SIZE_USAGE> ) 	  " [*]Set waybar size"
 ;
 
 
@@ -146,6 +146,10 @@ Hyde <FUNCTIONS>
 | (1  ) " wallbash auto"
 | (2  ) " wallbash dark mode"
 | (3  ) " wallbash light mode"
+;
+
+<WAYBAR_SIZE_USAGE> ::=
+ (--all ) " Change all the pre-set sizes"
 ;
 
 <POWER_SAVE_USAGE> ::=
