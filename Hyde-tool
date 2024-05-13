@@ -3,10 +3,13 @@
 export PATH=$PATH:/usr/lib/hyde-cli/
 hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 
+Function=${1}
+
 . DEVEL-hyde
 
 #??? Handle Syntax errors
-help=$(
+help=$( 
+    . GLOBAL-hyde;
     grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
@@ -20,7 +23,8 @@ if [ -z "$1" ]; then
     print_prompt "${help}"
     exit 1
 elif ! (echo "$help" | awk '{print $1}' | grep "$Function" 1>/dev/null); then
-    print_prompt -r "[unknown]:" -y "'$*'"  "\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
+    . GLOBAL-hyde
+    print_prompt -crit "[unknown command]:" -y " $* "  "\nUsage: Hyde-tool [function] [args|params]\n$help"
     exit 1
 fi
 

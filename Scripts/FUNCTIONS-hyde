@@ -144,8 +144,8 @@ WARN
 echo "${git_hash}"
         if [ -n "${git_hash}" ]; then
             # Check if there are changes in the Configs directory since the commit identified by git_hash
-            git diff --quiet "${git_hash}" -- ./Configs || print_prompt -y "Exec: " "[ Hyde restore Config ]" -y " to apply 'Configs' changes from to local"
-            git diff --quiet "${git_hash}" -- ./ || print_prompt -y "Exec: " "[ Hyde upgrade ]" -y " to apply 'Full' upstream changes to local"
+            git diff --quiet "${git_hash}" -- ./Configs && print_prompt -y "Exec: " "[ Hyde restore Config ]" -y " to apply 'Configs' changes from to local"
+            git diff --quiet "${git_hash}" -- ./ && print_prompt -y "Exec: " "[ Hyde upgrade ]" -y " to apply 'Full' upstream changes to local"
 
             # print_prompt -r "Your local Hyde version is outdated!"
             # print_prompt -y "Exec: 'Hyde upgrade' to apply upstream changes to local"
