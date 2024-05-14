@@ -130,7 +130,7 @@ Hyde <FUNCTIONS>
 
 <INJECT_FUNCTION> ::=
 			  (asus_patch) 	  " Fixes issues for asus devices"
-			 | (chaotic_aur) 	  " Add chaotic aur to you mirror"
+			 | (chaotic_aur <INJECT_CHAOTIC_AUR_USAGE> ) 	  " [*] Add chaotic aur to you mirror"
 			 | (flatpak) 	  " Flatpak setup for HyDE"
 ;
 
@@ -191,4 +191,10 @@ Hyde <FUNCTIONS>
 | (--scan          ) "  Use 'tesseract' to scan image then add to clipboard"
 | (--stop          ) "  Stop every instance of Screencap"
 | (--reset         ) "  Reinitialize screencap"
+;
+
+<INJECT_CHAOTIC_AUR_USAGE> ::=
+ (--install ) " Setup Choatic Aur, append [fresh] to run in fresh install mode"
+| (--uninstall ) " Removes Chaotic Aur"
+| (--revert  ) " Converts chaotic aur packages to AUR"
 ;

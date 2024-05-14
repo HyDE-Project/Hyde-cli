@@ -752,9 +752,16 @@ inject() { #? User/Device specific scripts that might be useful
     #Check First before enabling
     service_check power-profiles-daemon.service supergfxd
     ;;
-    chaotic_aur) #? Add chaotic aur to you mirror
+    chaotic_aur) #? [*] Add chaotic aur to you mirror
         shift
         SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
+: <<USAGE
+[INJECT_CHAOTIC_AUR_USAGE]
+    --install ? Setup Choatic Aur, append [fresh] to run in fresh install mode
+    --uninstall ? Removes Chaotic Aur 
+    --revert  ? Converts chaotic aur packages to AUR
+[END]
+USAGE
         ;;
     flatpak) #? Flatpak setup for HyDE
         check_package flatpak

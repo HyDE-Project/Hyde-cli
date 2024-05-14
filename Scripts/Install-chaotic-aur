@@ -5,12 +5,6 @@ execName="$0 $*"
 rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs to be in sudo
 vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
 
-distro_ID() { #? I'll reuse in the future.
-    local input=$(echo "$1" | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-    local target=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-    [[ "$input" == *"$target"* ]]
-}
-
 box_me() {
     local s="Hyprdots: $*"
     tput setaf 3
@@ -33,7 +27,6 @@ check_Ping() {
         exit 1
     fi
 }
-
 write_ChaticAUR() {
     is_ChaoticAUR=$(
         grep "chaotic-aur" /etc/pacman.conf >/dev/null 2>&1
@@ -170,7 +163,7 @@ revertAUR() {
 
 fresh() {
     clear
-    if distro_ID "Arch Linux"; then
+    # if distro_ID "Arch Linux"; then
         echo "Detected: Arch Linux"
         cat <<CHAOS
 
@@ -201,8 +194,13 @@ CHAOS
             echo -e "$(tput setaf 1) Skipping Chaotic AUR$(tput sgr0)"
             exit 0
         fi
-    fi
 }
+
+
+if ! command -v pacman > /dev/null 2>&1; then
+box_me "Error: pacman not detected"
+exit 1
+fi
 
 for option in "${rootOpts[@]}"; do
     if [ "$1" == "$option" ]; then
@@ -211,6 +209,7 @@ for option in "${rootOpts[@]}"; do
         break
     fi
 done
+
 
 case "$1" in
 --install)
