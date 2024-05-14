@@ -225,7 +225,7 @@ case "$1" in
     fi
     install
     ;;
---purge)
+--uninstall)
     purge
     revertAUR
     ;;
