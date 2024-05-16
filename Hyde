@@ -14,21 +14,14 @@ hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
 . DEVEL-hyde
 . FUNCTIONS-hyde
 
-#??? Handle Syntax errors
-help=$(
-    grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
-        sed -e "s|\${CloneDir}|$CloneDir|g" \
-            -e "s|\${HOME}|${HOME}|g" \
-            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
-            -e "s|\${ctlFile}|$ctlFile|g"
-)
-
+#? Handle Syntax errors
 if [ -z "$1" ]; then
     box_me -s "Hyde-cli $hyde_cli_version"
-    print_prompt "${help}"
+    print_prompt "$(main_help_content)"
     exit 1
-elif ! (echo "$help" | awk '{print $1}' | grep "$Function" 1>/dev/null); then
-    print_prompt -r "[unknown]:" -y "'$*'"  "\nUsage: Hyde [Function] [Arguments] [Parameter]\n$help"
+elif ! (awk '{print $1}' <<< $(main_help_content) | grep -q "$1" ); then
+    print_prompt -crit "[unknown]: " -y "$*"  "\nUsage: Hyde [Function] [Arguments] [Parameter]\n"
+    print_prompt "$(main_help_content)"
     exit 1
 fi
 

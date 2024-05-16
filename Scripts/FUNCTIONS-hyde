@@ -306,4 +306,12 @@ sddm_select() {
         service_check sddm
 }
 
+main_help_content() {
+    grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"
+} 
+
 eval "$(declare -F | sed -e 's/-f /-fx /')"
