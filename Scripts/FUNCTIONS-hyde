@@ -39,7 +39,7 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
         man_params=$(
             # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
             awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r pline; do
-                    # echo $pline 
+                    # echo $pline
                 param=$(echo ${pline} | awk -F ')' '{print $1}')
                 desc=$(echo ${pline} | awk -F '?' '{print $2}')
                 indent="\t\t\t"
@@ -304,7 +304,25 @@ sddm_select() {
         SUPER cp "${sddm_conf}" "${sddm_bak}"
         SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
         service_check sddm
-}     
+}
+
+
+packages_info() {
+
+latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
+
+echo "██╗  ██╗██╗   ██╗██████╗ ███████╗"
+echo "██║  ██║╚██╗ ██╔╝██╔══██╗██╔════╝"
+echo "███████║ ╚████╔╝ ██║  ██║█████╗  "
+echo "██╔══██║  ╚██╔╝  ██║  ██║██╔══╝  "
+echo "██║  ██║   ██║   ██████╔╝███████╗"
+echo "╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚══════╝"
+echo "                                 "
+echo "                    $hyde_version"
+echo "                                 "
+pacman -Qe | grep -wE "hyprland|hypr|wayland|rofi|fish|zsh|fastfetch|waybar|swaylock|code|kitty|dunst|nwg-look|eza|lsd" | awk 'BEGIN { printf "%-40s %-35s\n", "Package", "Version"; print "--------------------------------------------------------" }
+{ printf "%-40s %-35s\n", $1, $2 }'
+}
 
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
