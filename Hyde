@@ -33,12 +33,12 @@ elif ! (echo "$help" | awk '{print $1}' | grep "$Function" 1>/dev/null); then
 fi
 
 initiate_hyde_command
-#! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols  
+#! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols
 #! +----------------------------------------------------------------|
 #? Add functions below this section
 #? Be careful with spaces in your Function definitions
 #? Example Function:
-#* |Function example() { #? Example Function. this comments supports '\n' 
+#* |Function example() { #? Example Function. this comments supports '\n'
 #? |                       ^^^^ Use use as description and respects
 #* | case $1 in
 #* |      # Cases go here...
@@ -52,7 +52,7 @@ initiate_hyde_command
 #* | --parms ? desc for parm
 #* | [END]
 #* | USAGE
-#? | ^^^^^^ Usage block is a comment block that will be parsed by gen_completion and man  function 
+#? | ^^^^^^ Usage block is a comment block that will be parsed by gen_completion and man  function
 #* |        ;;
 #* |
 #* |   esac; <== ' ; ' is also use to parse case conditions
@@ -73,7 +73,7 @@ man() { #? Show Manual
         done
     )
     (
-    [ "${clean_man}" = true ] || box_me -c 220 "Manual Page" 
+    [ "${clean_man}" = true ] || box_me -c 220 "Manual Page"
     echo -e "${manPage}" |
         sed -e "s|\${CloneDir}|$CloneDir|g" \
             -e "s|\${HOME}|${HOME}|g" \
@@ -81,7 +81,7 @@ man() { #? Show Manual
             -e "s|\${ctlFile}|$ctlFile|g"
     barLine
     print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
-    ) | { less || more || cat - ;} 2> /dev/null 
+    ) | { less || more || cat - ;} 2> /dev/null
 }
 
 version() { #? Hyde-cli version
@@ -130,6 +130,11 @@ systeminfo() { #? System information
     fi
 }
 
+
+info(){ #? Information about Hyde and its components
+    packages_info
+}
+
 check() { #? health checker
     case $1 in
         Config) #? [*] check up Config File/Directory
@@ -161,16 +166,16 @@ check() { #? health checker
                 continue
                 fi
                 if [[ "$(md5sum "${targetFile}" | awk -F ' ' '{print $1}')" != "$(md5sum "${file}" | awk -F ' ' '{print $1}')" ]] ; then
-                
+
                     while IFS= read -r line; do
                     pFile="$(eval echo "${line}")"
-                    if [[ ${pFile} = $targetFile ]] ; then 
+                    if [[ ${pFile} = $targetFile ]] ; then
                         print_prompt -g "[wallbash]" " ${targetFile}"
-                    # diff -y "${targetFile}" "$file" && barLine 
+                    # diff -y "${targetFile}" "$file" && barLine
                     continue 2
                     fi
                 done <<< "$wallbash"
-                
+
                 for keyword in "${dynamic[@]}"; do
                     if  grep -q "$keyword" <<< "$targetFile"; then
                         print_prompt -c "[dynamic] " "$targetFile"
@@ -178,10 +183,10 @@ check() { #? health checker
                     fi
                 done
                     while IFS= read -r line; do pFile="$(eval echo "${line}")"
-                    if [[ ${pFile} = $targetFile ]] ; then 
+                    if [[ ${pFile} = $targetFile ]] ; then
                     grep -q -e '--preserve' <<< $@ && barLine
                     print_prompt -y "[preserved]" " ${targetFile}"
-                    grep -q -e '--preserve' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine 
+                    grep -q -e '--preserve' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine
                     continue 2
                     fi
                 done <<< "$preserve"
@@ -192,7 +197,7 @@ check() { #? health checker
             done | { \
                     grep -q -e '--less' <<< $@ && less  || \
                     grep -q -e '--clip' <<< $@ && wl-copy  || \
-                     cat - ;}  
+                     cat - ;}
             barLine
 cat <<NOTE
 *mismatch               Mismatched files compared to upstream and not preserved
@@ -208,7 +213,7 @@ NOTE
 [CHECK_CONFIG_USAGE]
     --mismatch  ?   Diff mismatched dotfiles
     --presrve  ?   Diff preserved dotfiles
-    --less  ?   Pipes stdouts to less 
+    --less  ?   Pipes stdouts to less
 [END]
 USAGE
     ;;
@@ -219,7 +224,7 @@ USAGE
 
 control() { #? Interactive control file
     case $1 in
-    Config) #? Manage restore control list 
+    Config) #? Manage restore control list
         shift
         navigate_clone
         . Manage-Config
@@ -503,10 +508,10 @@ waybar() { #? Waybar commands
         all=${2}
     if [ -z "${wbar_size}" ] || [[ $wbar_size =~ ^[0-9]+$ && $wbar_size -ge 1 && $wbar_size -le 100 ]]; then
         if [[ "${all}" == "--all" ]]; then
-        # TODO I can't make sed do the work so awk for now. 
+        # TODO I can't make sed do the work so awk for now.
             # sed -i "s/^\([01]|\)\([0-9]*|\)\?/1|${wbar_size}|/" "${waybar_ctl}"
         awk -v new_size="${wbar_size}" 'BEGIN{FS=OFS="|"} { $2 = new_size } 1' "${waybar_ctl}" > temp_file && mv temp_file "${waybar_ctl}"
-        else 
+        else
             sed -i "s/^\(1|\)\([0-9]*|\)\?/1|${wbar_size}|/" "${waybar_ctl}"
         fi
 
@@ -517,7 +522,7 @@ waybar() { #? Waybar commands
     fi
 : << USAGE
 [WAYBAR_SIZE_USAGE]
-    --all ? Change all the pre-set sizes 
+    --all ? Change all the pre-set sizes
 [END]
 USAGE
     ;;
@@ -633,7 +638,7 @@ show() { #? Some Hypr GUI you might want to use
     # monitors) #? Manages monitors using nwg-displays
     #     Manage_Monitor
     # ;;
-    binds) #? [*] Show keybind hints\n ﯦ Click to execute 
+    binds) #? [*] Show keybind hints\n ﯦ Click to execute
         # Keybinds_Hint #! Moved to .extra
         shift
         "${scrDir}"/keybinds_hint.sh "${*}"
@@ -682,7 +687,7 @@ run() { #? Executables
     check_package systemd
     local command="${0} "${FUNCNAME[0]}" ${@} --listen"
       shift
-     [ "--listen" = "$1" ] && while playerctl status | grep -q "Playing"; do sleep 5; done && exit 
+     [ "--listen" = "$1" ] && while playerctl status | grep -q "Playing"; do sleep 5; done && exit
      playerctl status | grep -q "Playing" && systemd-inhibit --what=idle --mode=block ${command}
     print_prompt -y "Player status: " " $(playerctl status)..."
     ;;
@@ -758,7 +763,7 @@ inject() { #? User/Device specific scripts that might be useful
 : <<USAGE
 [INJECT_CHAOTIC_AUR_USAGE]
     --install ? Setup Choatic Aur, append [fresh] to run in fresh install mode
-    --uninstall ? Removes Chaotic Aur 
+    --uninstall ? Removes Chaotic Aur
     --revert  ? Converts chaotic aur packages to AUR
 [END]
 USAGE
