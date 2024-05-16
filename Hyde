@@ -85,18 +85,7 @@ man() { #? Show Manual
 }
 
 version() { #? Hyde-cli version
-
-    cat <<EOF
-       ░▒▒▒▒▒▒▒░░░
-     ░░▒▒▒▒▒▒░░░░▓▓          ____________
-    ░░▒▒▒▒▒░░░░░▓▓        //____________/
-   ░░░▒▒▒░░░░░░▓▓     _   _ _     _ ______
-   ░░░▒▒▒░░░░░▓▓▓▓▓▓ | | | | |   | |  ___/
-    ░░░▒▒░░░░▓▓   ▓▓ | |_| | |__/ /| |_____
-     ░░░▒▒░░▓▓   ▓▓   \__  |_____/ |______/
-       ░░▒▒▓▓   ▓▓  //____/
-EOF
-
+    hyde_header
     box_me -s "Hyde-cli version" -c 209
     cat "${etcDir}/.hyde-cli.ver"
     barLine
@@ -109,36 +98,33 @@ EOF
 }
 
 systeminfo() { #? System information
-    print_prompt -y "**Hyde-cli version:**"
+    echo -e "**Hyde-cli version:**"
     cat "${etcDir}/.hyde-cli.ver"
 
-    print_prompt -y "\n**Hyde repository:**"
+    echo -e "\n**Hyde repository:**"
     repo_info
 
     if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-     print_prompt -y "\n**Hyprland system information:** (hyprctl)"
+     echo -e "\n**Hyprland system information:** (hyprctl)"
     hyprctl systeminfo
     else
-    print_prompt -y "\n**GPU:** "
+    echo -e "\n**GPU:** "
     lspci -nn | grep -Ei "VGA|3d"
 
-    print_prompt -y "\n**CPU:** "
+    echo -e "\n**CPU:** "
     lscpu | awk -F': ' '/Model name/ {gsub(/^ *| *$| CPU.*/,"",$2); print $2}'
 
-    print_prompt -y "\n**OS:** "
+    echo -e "\n**OS:** "
     cat /etc/os-release
     fi
 }
 
-
-info(){ #? Information about Hyde and its components
-    packages_info
-}
-
-check() { #? health checker
+check() { #? Information about Hyde and its components
     case $1 in
-        Config) #? [*] check up Config File/Directory
+        Config) #? [*] Hyde Config File & Directory status
         navigate_clone
+        hyde_header
+        barLine
         ConfigDir="${CloneDir}/Configs"
             dynamic=(
             ".t2"
@@ -217,6 +203,15 @@ NOTE
 [END]
 USAGE
     ;;
+    Package) #? Hyde core Package status
+    # TODO revert this back to a funtion if needed to be reused like hwo rubiin did.  
+    navigate_clone
+    hyde_header
+    # TODO Read the main package list then compare the locally installed packages
+    # TODO Should not be hardcoded and should rely on the core packages handled by Hyde-install soon
+    pacman -Qe | grep -wE "hyprland|hypr|wayland|rofi|fish|zsh|fastfetch|waybar|swaylock|code|kitty|dunst|nwg-look|eza|lsd" | awk 'BEGIN { printf "%-40s %-35s\n", "Package", "Version"; print "--------------------------------------------------------" }
+    { printf "%-40s %-35s\n", $1, $2 }'
+    ;;
     *) Parameters "${FUNCNAME[0]}" ;;
     esac;
 
@@ -224,7 +219,7 @@ USAGE
 
 control() { #? Interactive control file
     case $1 in
-    Config) #? Manage restore control list
+    Config) #? Manage users restore control list
         shift
         navigate_clone
         . Manage-Config

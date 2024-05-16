@@ -202,15 +202,32 @@ set_branch() {
     fi
 }
 
+hyde_header() {
+cat << HYDER
+           ░░░░
+         ░▒▒▒▒░░░
+       ░▒▒▒▒▒▒▒░░░
+     ░░▒▒▒▒▒▒░░░░▓▓          ____________
+    ░░▒▒▒▒▒░░░░░▓▓        //____________/
+   ░░░▒▒▒░░░░░░▓▓     _   _ _     _ ______
+   ░░░▒▒▒░░░░░▓▓▓▓▓▓ | | | | |   | |  ___/
+    ░░░▒▒░░░░▓▓   ▓▓ | |_| | |__/ /| |_____
+     ░░░▒▒░░▓▓   ▓▓   \__  |_____/ |______/
+       ░░▒▒▓▓   ▓▓  //____/                       
+                            $hyde_version
+                                 
+HYDER
+}
+
 repo_info() {
-    [[ $* != *"--local"* ]] &&
-        navigate_clone
-    print_prompt -g "CloneDirectory: " -n "${CloneDir}"
-    print_prompt -g "Git URL: " -n "${git_url}"
-    print_prompt -g "Git Branch: " -n "${current_branch}"
-    print_prompt -g "Hyde version: " -n "${hyde_version}"
-    print_prompt -g "Modified: " -n "${modify_date}"
-    print_prompt -g "Commit message: " -n "${commit_message}"
+    # [[ $* != *"--local"* ]] &&
+    navigate_clone
+    echo -e "CloneDirectory: ${CloneDir}"
+    echo -e "Git URL: ${git_url}"
+    echo -e "Git Branch: ${current_branch}"
+    echo -e "Hyde version: ${hyde_version}"
+    echo -e "Modified: ${modify_date}"
+    echo -e "Commit message: ${commit_message}"
 }
 
 # shellcheck disable=SC2120

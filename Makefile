@@ -87,9 +87,10 @@ restore:
 	cp -r $(BACKUPDIR)/extras/* $(DESTDIR)$(usrdir)
 
 completion:
+#?	exec: make completion
 	@echo "Checking complgen is installed..."
 	@complgen -h >/dev/null 2>&1 || (echo "ERROR: complgen is required, install using yay -S complgen."; exit 1)
-	complgen aot --bash-script ./shell-completions/Hyde.bash --fish-script ./shell-completions/Hyde.fish --zsh-script ./shell-completions/Hyde.zsh ./shell-completions/Hyde.usage
+	bash ./shell-completions/complgen.sh
 
 
 uninstall: purge
