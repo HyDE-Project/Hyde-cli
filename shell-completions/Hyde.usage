@@ -138,8 +138,8 @@ Hyde <FUNCTIONS>
 
 <CHECK_CONFIG_USAGE> ::=
  (--mismatch  ) "   Diff mismatched dotfiles"
-| (--presrve  ) "   Diff preserved dotfiles"
-| (--less  ) "   Pipes stdouts to less"
+| (--preserve  ) "   Diff preserved dotfiles"
+| (--less  ) "   Pipes STDOUT to less"
 ;
 
 <WALLBASH_MODE_USAGE> ::=

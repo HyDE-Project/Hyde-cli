@@ -123,8 +123,6 @@ check() { #? Information about Hyde and its components
     case $1 in
         Config) #? [*] Hyde Config File & Directory status
         navigate_clone
-        hyde_header
-        barLine
         ConfigDir="${CloneDir}/Configs"
             dynamic=(
             ".t2"
@@ -137,7 +135,9 @@ check() { #? Information about Hyde and its components
             )
                 preserve="$(awk -F'|' '/^P/ {print $2"/" $3}' $ctlFile)"
                 wallbash="$(find $hydeConfDir -type f -name "*.theme*" -o -name "*.dcol*" -print0 | xargs -0 head -n 1 | sed '/==>/d;/<==/d' | awk -F '|' '{print $1}')"
-
+            {
+        hyde_header
+        barLine
             find "$ConfigDir" -type f | while read -r file; do
                 relativeFile=$(echo "$file" | sed "s|^$ConfigDir/||")
                 targetDir=${HOME}/$(dirname "$relativeFile")
@@ -180,7 +180,7 @@ check() { #? Information about Hyde and its components
                 print_prompt -crit "[mismatch]" " ${targetFile}" -crit " != " "$file"
                 grep -q -e '--mismatch' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine
                 fi
-            done | { \
+            done ;} |  { \
                     grep -q -e '--less' <<< $@ && less  || \
                     grep -q -e '--clip' <<< $@ && wl-copy  || \
                      cat - ;}
@@ -198,8 +198,8 @@ NOTE
 : <<USAGE
 [CHECK_CONFIG_USAGE]
     --mismatch  ?   Diff mismatched dotfiles
-    --presrve  ?   Diff preserved dotfiles
-    --less  ?   Pipes stdouts to less
+    --preserve  ?   Diff preserved dotfiles
+    --less  ?   Pipes STDOUT to less
 [END]
 USAGE
     ;;
