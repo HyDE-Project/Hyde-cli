@@ -318,8 +318,19 @@ echo "██╔══██║  ╚██╔╝  ██║  ██║██╔�
 echo "██║  ██║   ██║   ██████╔╝███████╗"
 echo "╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚══════╝"
 echo "                                 "
-echo "                    $hyde_version"
+echo "     [$latest_hyde_version]      "
 echo "                                 "
+echo "                                 "
+
+echo "[System Information]"
+echo "--------------------------------------------------------"
+echo "Kernel: $(uname -r)"
+echo "OS: $(cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f 2)"
+echo "Shell: $SHELL"
+echo "Resolution: $(xdpyinfo | grep dimensions | awk '{print $2}')"
+echo "CPU: $(lscpu | grep 'Model name' | cut -d ':' -f 2 | sed 's/^[ \t]*//')"
+
+
 pacman -Qe | grep -wE "hyprland|hypr|wayland|rofi|fish|zsh|fastfetch|waybar|swaylock|code|kitty|dunst|nwg-look|eza|lsd" | awk 'BEGIN { printf "%-40s %-35s\n", "Package", "Version"; print "--------------------------------------------------------" }
 { printf "%-40s %-35s\n", $1, $2 }'
 }
