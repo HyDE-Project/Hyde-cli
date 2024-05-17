@@ -9,7 +9,7 @@ Hyde <FUNCTIONS>
 		|  (man <MAN_FUNCTION> )                              " Show Manual"
 		|  (version <VERSION_FUNCTION> )                      " Hyde-cli version"
 		|  (systeminfo <SYSTEMINFO_FUNCTION> )                " System information"
-		|  (check <CHECK_FUNCTION> )                          " health checker"
+		|  (check <CHECK_FUNCTION> )                          " Information about Hyde and its components"
 		|  (control <CONTROL_FUNCTION> )                      " Interactive control file"
 		|  (branch <BRANCH_FUNCTION> )                        " Set preavailable Hyde branch"
 		|  (update <UPDATE_FUNCTION> )                        " Pull updates from Hyde repository"
@@ -32,12 +32,13 @@ Hyde <FUNCTIONS>
 
 
 <CHECK_FUNCTION> ::=
-			  (Config <CHECK_CONFIG_USAGE> ) 	  " [*] check up Config File/Directory"
+			  (Config <CHECK_CONFIG_USAGE> ) 	  " [*] Hyde Config File & Directory status"
+			 | (Package) 	  " Hyde core Package status"
 ;
 
 
 <CONTROL_FUNCTION> ::=
-			  (Config) 	  " Manage restore control list"
+			  (Config) 	  " Manage users restore control list"
 ;
 
 
@@ -137,8 +138,8 @@ Hyde <FUNCTIONS>
 
 <CHECK_CONFIG_USAGE> ::=
  (--mismatch  ) "   Diff mismatched dotfiles"
-| (--presrve  ) "   Diff preserved dotfiles"
-| (--less  ) "   Pipes stdouts to less"
+| (--preserve  ) "   Diff preserved dotfiles"
+| (--less  ) "   Pipes STDOUT to less"
 ;
 
 <WALLBASH_MODE_USAGE> ::=

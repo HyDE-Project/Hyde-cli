@@ -306,23 +306,12 @@ sddm_select() {
         service_check sddm
 }
 
-
-packages_info() {
-
-latest_hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
-
-echo "██╗  ██╗██╗   ██╗██████╗ ███████╗"
-echo "██║  ██║╚██╗ ██╔╝██╔══██╗██╔════╝"
-echo "███████║ ╚████╔╝ ██║  ██║█████╗  "
-echo "██╔══██║  ╚██╔╝  ██║  ██║██╔══╝  "
-echo "██║  ██║   ██║   ██████╔╝███████╗"
-echo "╚═╝  ╚═╝   ╚═╝   ╚═════╝ ╚══════╝"
-echo "                                 "
-echo "                    $hyde_version"
-echo "                                 "
-pacman -Qe | grep -wE "hyprland|hypr|wayland|rofi|fish|zsh|fastfetch|waybar|swaylock|code|kitty|dunst|nwg-look|eza|lsd" | awk 'BEGIN { printf "%-40s %-35s\n", "Package", "Version"; print "--------------------------------------------------------" }
-{ printf "%-40s %-35s\n", $1, $2 }'
-}
-
+main_help_content() {
+    grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"
+} 
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"
