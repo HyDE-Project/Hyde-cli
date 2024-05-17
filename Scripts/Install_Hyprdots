@@ -36,14 +36,18 @@ install_distro() {
     
     # echo -e "$(tput setaf 5)\nHyprdots-ctl Cannot find the Hyprdots Directory, Will proceed to default installation!$(tput sgr0)"
     # read -n 1 -s -r -p "[ENTER:yes ANY:no] Proceed? " key ; [[ -z "$key" ]] || exit 0
-    distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
-    
-    case "${distro_ID}" in
-        "fedora")
+    PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
+echo "Package manager: $PACKAGE_MANAGER"
+
+    case "${PACKAGE_MANAGER}" in
+        dnf)
             echo "This is Fedora"
             Install_Hyprdots-DNF "${CloneDir}" "${GIT}"
         ;;
-        "arch")
+        pacman)
             Install_Hyprdots-PACMAN "${CloneDir}" "${GIT}"
         ;;
         *)

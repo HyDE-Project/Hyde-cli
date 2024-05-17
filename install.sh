@@ -3,7 +3,7 @@
 SUPER() {
     local command="$*"
     echo -ne "\e[33m[ROOT]\e[0m ${command}"
-    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ] ; then
+    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ]; then
         doas sh -c "$command"
     else
         sudo sh -c "$command"
@@ -11,40 +11,68 @@ SUPER() {
 }
 export -f SUPER
 
-distro_ID=$(cat /etc/*release | grep -oP '^ID=\K[^"]+' | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+check_deps() {
+    for cmd in "${@}"; do
+        echo $cmd
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "'$cmd' not found."
+            export requirements+="${cmd} "
+        fi
+    done
+
+    [ -n "${requirements}" ] && echo -e "Depedencies: ${requirements}\nInstall them using your package manager"
+}
+export -f check_deps
+
+PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
+# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
+echo "Package manager: $PACKAGE_MANAGER"
+
 clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
 mkdir -p "${clone_hyde_cli}"
-case "${distro_ID}" in
-    "fedora")
-        :
-        #Yes posible! But I'm Lazy
+
+case "${PACKAGE_MANAGER}" in
+dnf)
+    :
+    #Yes posible! But I'm Lazy
     ;;
-        *)
-        pkgname=hyde-cli-git
-        if pacman -Q yay &> /dev/null ; then aurhlpr="yay"
-            elif pacman -Q paru &> /dev/null ; then aurhlpr="paru"
+pacman)
+    pkgname=hyde-cli-git
+    if pacman -Q yay &>/dev/null; then
+        aurhlpr="yay"
+    elif pacman -Q paru &>/dev/null; then
+        aurhlpr="paru"
+    else
+        select opt in "yay" "paru"; do if [[ -n $opt ]]; then
+            aurhlpr=$opt
+            break
+        fi; done
+        SUPER pacman -S --needed git base-devel
+        rm -fr ${clone_hyde_cli}/${aurhlpr}
+        git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
+        cd ${clone_hyde_cli}/${aurhlpr}
+        makepkg -si --noconfirm
+    fi
+
+    if ! pacman -Q "${aurhlpr}" &>/dev/null; then echo "Please try to rerun script!" && exit 0; fi
+
+    if pacman -Q "${pkgname}" 2>/dev/null; then
+        if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
+            ${aurhlpr} -Sy "${pkgname}" --noconfirm
         else
-            select opt in "yay" "paru"; do if [[ -n $opt ]]; then aurhlpr=$opt ; break ; fi ;done
-            SUPER pacman -S --needed git base-devel
-            rm -fr ${clone_hyde_cli}/${aurhlpr}
-            git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
-            cd ${clone_hyde_cli}/${aurhlpr}
-            makepkg -si --noconfirm
+            echo "Already up to date"
         fi
-        
-        if ! pacman -Q "${aurhlpr}" &> /dev/null; then echo "Please try to rerun script!" && exit 0 ;fi
-        
-        if pacman -Q "${pkgname}" 2> /dev/null; then
-            if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
-                ${aurhlpr} -Sy "${pkgname}" --noconfirm
-            else echo "Already up to date"
-            fi
-            exit 0
-        else "${aurhlpr}" -Sy "${pkgname}" --noconfirm
-            if pacman -Q "${pkgname}" 2> /dev/null ; then exit 0 ; fi
-        fi
+        exit 0
+    else
+        "${aurhlpr}" -Sy "${pkgname}" --noconfirm
+        if pacman -Q "${pkgname}" 2>/dev/null; then exit 0; fi
+    fi
     ;;
 esac
+
+check_deps jq git kitty
 
 mkdir -p "${clone_hyde_cli}"
 rm -fr "${clone_hyde_cli}"
@@ -57,14 +85,16 @@ fi
 git fetch --all
 Git_Repo="$(git remote get-url origin)"
 
-branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name') ; branches=($branches)
+branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
+branches=($branches)
 if [[ ${#branches[@]} -le 1 ]]; then
     branch=${branches[0]}
-else echo "Select a Branch"
-    if command -v fzf ; then
+else
+    echo "Select a Branch"
+    if command -v fzf; then
         git_branch=$(git branch -a | fzf --prompt='Choose a branch')
     else
-        select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again." ; done
+        select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again."; done
     fi
 fi
 

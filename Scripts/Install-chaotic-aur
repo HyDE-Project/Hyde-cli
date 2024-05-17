@@ -163,7 +163,6 @@ revertAUR() {
 
 fresh() {
     clear
-    # if distro_ID "Arch Linux"; then
         echo "Detected: Arch Linux"
         cat <<CHAOS
 
