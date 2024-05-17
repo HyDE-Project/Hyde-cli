@@ -125,6 +125,9 @@ check() { #? Information about Hyde and its components
             ".config/waybar/style.css"
             ".config/hypr/themes/theme.conf"
             ".local/share/dolphin/dolphinstaterc"
+            ".config/qt6ct/qt6ct.conf"
+            ".config/qt5ct/qt5ct.conf"
+            "/.config/gtk-3.0/settings.ini"
             )
                 preserve="$(awk -F'|' '/^P/ {print $2"/" $3}' $ctlFile)"
                 wallbash="$(find $hydeConfDir -type f -name "*.theme*" -o -name "*.dcol*" -print0 | xargs -0 head -n 1 | sed '/==>/d;/<==/d' | awk -F '|' '{print $1}')"
@@ -164,7 +167,7 @@ check() { #? Information about Hyde and its components
                     while IFS= read -r line; do pFile="$(eval echo "${line}")"
                     if [[ ${pFile} = $targetFile ]] ; then
                     grep -q -e '--preserve' <<< $@ && barLine
-                    print_prompt -y "[preserved]" " ${targetFile}"
+                    print_prompt -y "[preserved]" " ${targetFile}" -y " != " "$file"
                     grep -q -e '--preserve' <<< $@ && barLine  && diff -y --color=always "${targetFile}" "$file" && barLine
                     continue 2
                     fi
