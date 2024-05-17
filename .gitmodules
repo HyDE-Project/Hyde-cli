@@ -1,3 +1,6 @@
 [submodule "aur/hyprdots-ctl"]
 	path = aur/hyprdots-ctl
 	url = ssh://aur@aur.archlinux.org/hyprdots-ctl.git
+[submodule "aur/hyde-cli-git"]
+	path = aur/hyde-cli-git
+	url = ssh://aur@aur.archlinux.org/hyde-cli-git.git
