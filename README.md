@@ -103,6 +103,13 @@ View: `USAGE` in this repository.
     Hyde-install
     ```
 
+> [!Important]
+>  _Already  have HyDE before you discover this CLI?_
+> Simply run this command 
+> ` Hyde-intall --link --dir ~/HyDE ` 
+>  Note that the ` ~/HydE ` is the path to the clone directory. 
+> See **Advanced Installation** below for more info.
+
 2) **Advanced Installation**
 
   - For more control over the installation process, you can use the following options: 
@@ -124,6 +131,7 @@ View: `USAGE` in this repository.
       ```
       Hyde-install --link
       ```
+
 
 > [!Important]
 > If you have previously installed HyDE without using the CLI, you can still use the CLI to manage your installation.
