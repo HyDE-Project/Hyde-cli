@@ -140,13 +140,15 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
 # shellcheck disable=SC2120
 #* assumes the 1st param is directory
 #* The rest are decisional flags
-#* --existed  ? asume that ctl_override is already present
+#* --reuse  ? asume that ctl_override is already present
 #* --edit ?  Modifies the control file then exit
 make_List() {
   # check_package md5sum
   CloneDir=${1:-"${CloneDir}"}
   [ ! -d ${CloneDir}  ] && exit 0
-  if [ -e "${ctlFile}" ] && [[ $* != *"--existed"* ]]; then
+
+  #? If the ctlFile is present and no reuse flag do this
+  if [ -e "${ctlFile}" ] && [[ $* != *"--reuse"* ]]; then
       show_restore_list "${ctlFile}"
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
 
@@ -163,8 +165,8 @@ make_List() {
           fi
       fi
       read
-  elif [[ $* == *"--existed"* ]] && [ -e "${ctl_override}" ]; then
-    #? --existed will always asume that ctl_override is already present
+  elif [[ $* == *"--reuse"* ]] && [ -e "${ctl_override}" ]; then
+    #? --reuse will always asume that ctl_override is already present
     show_restore_list "${ctl_override}"
   else
   cat <<MISSING
@@ -177,7 +179,7 @@ MISSING
 
   menu_manage_config
   show_restore_list "${ctl_override}"
-  if [[ $* != *"--existed"* ]]; then
+  if [[ $* != *"--reuse"* ]]; then
     print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" &&
       [ $? -ne 1 ] &&
       cp "${ctl_override}" "${ctlFile}"
@@ -191,11 +193,11 @@ MISSING
 #! Deprecated
 #* assumes the 1st param is directory
 #* The rest are decisional flags
-#* --existeds  ? asume that ctl_override is already present
+#* --reuses  ? asume that ctl_override is already present
 #* --edit ?  Modifies the control file then exit
 list_Marker() {
   CloneDir=${1:-${CloneDir}}
-  if [ -e "${ctlFile}" ] && [[ $* != *"--existed"* ]]; then
+  if [ -e "${ctlFile}" ] && [[ $* != *"--reuse"* ]]; then
     show_restore_list "${ctlFile}"
 
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
@@ -213,13 +215,13 @@ list_Marker() {
       fi
     fi
     read
-  elif [[ $* == *"--existed"* ]] && [ -e "${ctl_override}" ]; then
-    #? --existed will always asume that ctl_override is already present
+  elif [[ $* == *"--reuse"* ]] && [ -e "${ctl_override}" ]; then
+    #? --reuse will always asume that ctl_override is already present
     show_restore_list "${ctl_override}"
   fi
   menu_manage_config
   show_restore_list "${ctl_override}"
-  if [[ $* != *"--existed"* ]]; then
+  if [[ $* != *"--reuse"* ]]; then
     print_prompt -y "Save this as your new control file?" && ask_confirm "Yy" &&
       [ $? -ne 1 ] &&
       cp "${ctl_override}" "${ctlFile}"
@@ -331,7 +333,7 @@ BackUp() {
       echo "Generating list..."
       generate_config_list
     fi
-    make_List "${config_source}" --existed
+    make_List "${config_source}" --reuse
     ask_confirm "${USER}"
     if [[ -z $selected_backup ]]; then
       echo "Nothing Selected"

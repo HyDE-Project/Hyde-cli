@@ -83,9 +83,11 @@ if [[ -e ${custom_apps} ]]; then
 fi
 
 #? Manage Configs
-[ -e $ctlFile ] && cp $ctlFile $ctl_override
-[ ! -e $ctlFile ] && Manage-Config generate_config_list
-Manage-Config make_List "" --existed
+#! [ -e $ctlFile ] && rm $ctlFile $ctl_override
+#!  [ ! -e $ctlFile ] && 
+#? Better to do a fresh restore on every Hyde-install
+Manage-Config generate_config_list
+Manage-Config make_List "" --reuse
 ask_confirm "${USER}"
 
 "${scriptDir}/install_pre.sh"
@@ -143,40 +145,18 @@ rm "${install_packages_list}"
 ./restore_fnt.sh || true
 Restore-Config --only "${HYDE_RUNTIME_DIR}/" ${CloneDir}/Configs
 
+export defaultTheme="Catppuccin Mocha"
 Manage-Themes theme_patcher
 
-# echo -e "\n\033[0;32m[themepatcher]\033[0m Patching themes..."
-# while IFS='"' read -r null1 themeName null2 themeRepo
-# do
-#     themeNameQ+=("${themeName//\"/}")
-#     themeRepoQ+=("${themeRepo//\"/}")
-#     themePath="${confDir}/hyde/themes/${themeName}"
-#     [ -d "${themePath}" ] || mkdir -p "${themePath}"
-#     [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" > "${themePath}/.sort"
-# done < "${scriptDir}/themepatcher.lst"
-# parallel --bar --link "${scriptDir}/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
-# echo -e "\n\033[0;32m[cache]\033[0m generating cache files..."
-# "$HOME/.local/share/bin/swwwallcache.sh" -t ""
-# if printenv HYPRLAND_INSTANCE_SIGNATURE &> /dev/null; then
-#     "$HOME/.local/share/bin/themeswitch.sh" &> /dev/null
-# fi
-
-#---------------------#
-# post-install script #
-#---------------------#
-
-
-
-# "${scriptDir}/install_pst.sh"
-export defaultTheme="Catppuccin Mocha"
-shell_select || Hyde theme patch "${defaultTheme}" "https://github.com/prasanthrangan/hyde-themes/tree/Catppuccin-Mocha"
-
+shell_select
 sddm_select
 # TODO Flatpak installation 
 
 #------------------------#
 # enable system services #
 #------------------------#
+
+set_metadata "${CloneDir}"
 
 while read servChk; do
 

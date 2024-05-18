@@ -14,17 +14,17 @@ install_distro() {
     . /etc/os-release
 
     case "${ID}" in
-        "fedora")
-            Install_Hyde-DNF "${newCloneDir}" "${GIT}"
+    "fedora")
+        Install_Hyde-DNF "${newCloneDir}" "${GIT}"
         ;;
-        "arch")
-            Install-Hyde-pacman "${newCloneDir}" "${GIT}"
+    "arch")
+        Install-Hyde-pacman "${newCloneDir}" "${GIT}"
         ;;
-        *)
-            # print_prompt -r "Can't recognize your disto: '${ID}'  "
-            Install-Hyde-pacman "${newCloneDir}" "${GIT}"
-            # Add the commands for other distributions here
-            echo ""
+    *)
+        # print_prompt -r "Can't recognize your disto: '${ID}'  "
+        Install-Hyde-pacman "${newCloneDir}" "${GIT}"
+        # Add the commands for other distributions here
+        echo ""
 
         ;;
     esac
@@ -39,20 +39,20 @@ export meta_file="${cacheDir}/hyde.meta"
 is_link=false
 while (("$#")); do
     case "$1" in
-        -d | --dir)
-            newCloneDir="$2"
-            shift 2
+    -d | --dir)
+        newCloneDir="$2"
+        shift 2
         ;;
-        -l | --link)
-            is_link=true
-            shift 1
+    -l | --link)
+        is_link=true
+        shift 1
         ;;
-        -g | --git)
-            GIT="$2"
-            shift 2
+    -g | --git)
+        GIT="$2"
+        shift 2
         ;;
-        *)
-    cat <<HANDLE_ERROR
+    *)
+        cat <<HANDLE_ERROR
 Unknown option: $1
 Please run: 'Hyde-install'                                Install Hyde (Defaults)
 
@@ -64,7 +64,7 @@ Advanced usage: [Hyde-install] --[options]
         -l|--link                                                Flag to transfer the link to a Clone Directory
                                                                     Default: 'false'
 HANDLE_ERROR
-            exit 1
+        exit 1
         ;;
     esac
 done
@@ -88,16 +88,16 @@ if cd "${newCloneDir}"/Scripts; then
     if [[ ${is_link} == true ]]; then
         echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
         # set_branch
-        check_integrity 
+        check_integrity
         print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
     else
-        install_distro 
+        install_distro
     fi
 else
     install_distro --fresh
 fi
-set_metadata "${newCloneDir}"
-print_prompt -c "\nRestart now?"
-if ask_confirm "Yy" && pkg_installed sddm &> /dev/null ; then
- systemctl restart sddm
+# set_metadata "${newCloneDir}"
+if ! grep -q "$HOME/.local/share/bin" <<<$PATH; then
+    print_prompt -y "Restarting to make Hyde Work"
+    pkg_installed sddm && systemctl restart sddm
 fi
