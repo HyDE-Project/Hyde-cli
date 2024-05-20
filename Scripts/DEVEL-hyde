@@ -122,7 +122,31 @@ done
 exit 0
 }
 
+convert_cursor() {
+
+[ -z ${1} ] && echo "missing icon path" && exit 1 
+
+CURSOR=$(basename ${1})
+iconDir=$(dirname ${1})
+
+[ ! -d "${1}" ] && echo "[error] Directory do not exist" && exit 1
+[ ! -d "${1}/cursors" ] && echo "[error] gtk "${iconDir}/cursors" do not exist" && exit 1
+[ ! -f "${1}/index.theme" ] && echo "[error] gtk "${iconDir}/index.theme" do not exist" && exit 1
+command -v hyprcursor-util > /dev/null || { echo "[error] missing hyprcursor-util command" && exit 1 ;}
+
+tempDir=/tmp/hyprcursor_$CURSOR
+
+mkdir -p $tempDir/extracted
+hyprcursor-util -x ${iconDir}/${CURSOR} -o $tempDir/
+hyprcursor-util -c $tempDir/extracted_$CURSOR -o $tempDir/extracted/
+cp -fr $tempDir/extracted/'theme_Extracted Theme'/* "${iconDir}/${CURSOR}"
+
+[ -d ${tempDir}  ] && rm -r ${tempDir}
+exit 0
+}
+
 OPT=(
+"Convert XCursor ? patch an XCURSOR theme with hyprcursor ? convert_cursor" 
 "Pull Request  ? Useful if you want to Test/Patch PRs  ? patch_PR "
 "Generate completion ? Click me to generate shell completion ? gen_completion "
 "Real Terminal Colors ? Show real 256 colors in terminal ?term_colors"
@@ -136,6 +160,10 @@ gen_completion) #? Generate Shell Completions
     ;;
 patch_PR)
     pacth_PR Patch a PR
+    ;;
+convert_cursor)
+    shift
+    convert_cursor ${1}
     ;;
 *)
     echo -e "\033[35mYou are on development mode, I assume you know what you are doing.\033[0m"
