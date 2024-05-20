@@ -18,6 +18,7 @@ Hyde <FUNCTIONS>
 		|  (backup <BACKUP_FUNCTION> )                        " Backing up commands"
 		|  (sync <SYNC_FUNCTION> )                            " Overwrite current dots from the user "
 		|  (cache <CACHE_FUNCTION> )                          " Manages Hyde's cache"
+		|  (cursor <CURSOR_FUNCTION> )                        " Cursor setting"
 		|  (theme <THEME_FUNCTION> )                          " Theme commands"
 		|  (wallpaper <WALLPAPER_FUNCTION> )                  " Wallpaper commands"
 		|  (wallbash <WALLBASH_FUNCTION> )                    " Toggle to use wallpaper accent themes"
@@ -61,6 +62,13 @@ Hyde <FUNCTIONS>
 <CACHE_FUNCTION> ::=
 			  (reload) 	  " Reload wallpaper cache"
 			 | (rebuild) 	  " Force rebuild cache"
+;
+
+
+<CURSOR_FUNCTION> ::=
+			  (theme) 	  " Set cursor theme"
+			 | (size) 	  " Set cursor size"
+			 | (info) 	  " Check active cursor status (only gsettings)"
 ;
 
 

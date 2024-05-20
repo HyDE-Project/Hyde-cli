@@ -108,7 +108,7 @@ systeminfo() { #? System information
     lscpu | awk -F': ' '/Model name/ {gsub(/^ *| *$| CPU.*/,"",$2); print $2}'
 
     echo -e "\n**OS:** "
-    cat /etc/os-release
+    cat /etc/os-releases
     fi
 }
 
@@ -363,6 +363,47 @@ cache() { #? Manages Hyde's cache
         Parameters "${FUNCNAME[0]}"
         ;;
     esac;
+}
+
+cursor() { #? Cursor setting
+#Case
+check_package gsettings hyprcursor-util hyprcursor
+cursor_theme=$(gsettings get org.gnome.desktop.interface cursor-theme | sed "s/'//g")
+cursor_size=$(gsettings get org.gnome.desktop.interface cursor-size | sed "s/'//g")
+
+hlp_msg=false
+[ $# == 0 ] && hlp_msg=true
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+    theme) #? Set cursor theme
+        shift
+        cursor_theme="${1:-${cursor_theme}}"
+        ;;
+    size) #? Set cursor size
+        shift
+        cursor_size=${1:-${cursor_size}}
+    ;;
+    info) #? Check active cursor status (only gsettings)
+    print_prompt -g "[Theme] "  "${cursor_theme}" 
+    print_prompt -g "[Size] "  "${cursor_size}"
+    exit 0
+    ;;
+    esac;
+    shift
+done
+
+if [ $hlp_msg = true ] ; then
+    . FUNCTIONS-hyde
+    Parameters "${FUNCNAME[0]}"
+    exit 0
+fi
+
+print_prompt -g "[Theme] "  "${cursor_theme}" 
+print_prompt -g "[Size] "  "${cursor_size}"
+hyprctl setcursor ${cursor_theme} ${cursor_size}
+gsettings set org.gnome.desktop.interface cursor-theme "${cursor_theme}"
+gsettings set org.gnome.desktop.interface cursor-size ${cursor_size}
 }
 
 theme() { #? Theme commands
@@ -746,7 +787,7 @@ inject() { #? User/Device specific scripts that might be useful
     check_package asusctl supergfxctl rog-control-center power-profiles-daemon
 
     #Check First before enabling
-    service_check power-profiles-daemon.service supergfxd
+    check_service power-profiles-daemon.service supergfxd
     ;;
     chaotic_aur) #? [*] Add chaotic aur to you mirror
         shift

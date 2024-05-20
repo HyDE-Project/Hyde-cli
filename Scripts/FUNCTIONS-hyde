@@ -303,7 +303,7 @@ sddm_select() {
         SUPER touch "${sddm_conf}"
         SUPER cp "${sddm_conf}" "${sddm_bak}"
         SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
-        service_check sddm
+        check_service sddm
 }
 
 main_help_content() {
