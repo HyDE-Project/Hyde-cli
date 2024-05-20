@@ -145,7 +145,7 @@ rm "${install_packages_list}"
 ./restore_fnt.sh || true
 Restore-Config --only "${HYDE_RUNTIME_DIR}/" ${CloneDir}/Configs
 
-export defaultTheme="Catppuccin Mocha"
+[ $(ls ${hydeConfDir}/themes | wc -l) -eq 0  ] && export defaultTheme="Catppuccin Mocha"
 Manage-Themes theme_patcher
 
 shell_select

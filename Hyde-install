@@ -96,7 +96,7 @@ if cd "${newCloneDir}"/Scripts; then
 else
     install_distro --fresh
 fi
-# set_metadata "${newCloneDir}"
+set_metadata "${newCloneDir}"
 if ! grep -q "$HOME/.local/share/bin" <<<$PATH; then
     print_prompt -y "Restarting to make Hyde Work"
     pkg_installed sddm && systemctl restart sddm
