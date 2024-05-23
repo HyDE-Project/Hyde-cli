@@ -13,8 +13,6 @@ pkill -x rofi && exit
 
 rofi_pos
 
-check_package wtype
-
 BOOKMARKS_PATH=""
 
 if [[ $BROWSER == "brave" ]]; then
