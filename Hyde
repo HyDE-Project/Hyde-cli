@@ -709,7 +709,6 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-        ;;
     bookmarks) #? Bookmark selector
         Launch-Bookmarks
         ;;
