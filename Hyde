@@ -7,7 +7,7 @@ fi
 
 export PATH=$PATH:/usr/lib/hyde-cli/
 
-hyde_cli_version=$(cat /etc/hyde-cli/.hyde-cli.ver | head -1)
+hyde_cli_version=$(cat /etc/hyde-cli/version.txt | head -1)
 
 # . DEVEL
 . GLOBAL-hyde
@@ -80,7 +80,7 @@ man() { #? Show Manual
 version() { #? Hyde-cli version
     hyde_header
     box_me -s "Hyde-cli version" -c 209
-    cat "${etcDir}/.hyde-cli.ver"
+    cat "${etcDir}/version.txt"
     barLine
     {
         . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
@@ -92,7 +92,7 @@ version() { #? Hyde-cli version
 
 systeminfo() { #? System information
     echo -e "**Hyde-cli version:**"
-    cat "${etcDir}/.hyde-cli.ver"
+    cat "${etcDir}/version.txt"
 
     echo -e "\n**Hyde repository:**"
     repo_info
@@ -384,10 +384,16 @@ while [ "$#" -gt 0 ]; do
         shift
         cursor_size=${1:-${cursor_size}}
     ;;
+    reload) #? Reload cursors
+    box_me "Reloading Cursor"
+    ;;
     info) #? Check active cursor status (only gsettings)
     print_prompt -g "[Theme] "  "${cursor_theme}" 
     print_prompt -g "[Size] "  "${cursor_size}"
     exit 0
+    ;;
+    *)
+    hlp_msg=true
     ;;
     esac;
     shift

@@ -68,6 +68,7 @@ Hyde <FUNCTIONS>
 <CURSOR_FUNCTION> ::=
 			  (theme) 	  " Set cursor theme"
 			 | (size) 	  " Set cursor size"
+			 | (reload) 	  " Reload cursors"
 			 | (info) 	  " Check active cursor status (only gsettings)"
 ;
 

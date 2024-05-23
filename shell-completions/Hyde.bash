@@ -7,39 +7,39 @@ _Hyde () {
     local words cword
     _get_comp_words_by_ref -n "$COMP_WORDBREAKS" words cword
 
-    local -a literals=("revert" "--uninstall" "--install" "wallbash" "--opacity" "-j" "save" "unset" "3" "--stop" "--animations" "backup" "BackUp" "list" "cursor" "-p" "Config" "d" "--scan" "--record-focus" "theme" "-freeze" "0" "pastebin" "1" "systeminfo" "--all" "theme" "toggle" "upgrade" "waybar" "toggle" "reload" "update" "all" "glyph" "--print-monitor" "w" "game" "shell" "Config" "info" "reload" "reset" "--animations" "version" "select" "--blur" "run" "theme" "clean" "size" "-f" "--print-snip" "reload" "Clone" "check" "::=" "--mismatch" "prev" "--borderangle" "wallpaper" "--borderangle" "-w" "inject" "power" "set" "binds" "rebuild" "screencap" "c" "man" "asus_patch" "events" "--blur" "restore" "-d" "emoji" "sddm" "cache" "control" "show" "prev" "sync" "chaotic_aur" "--less" "mode" "--opacity" "--reset" "Link" "audio_idle" "--print-all" "next" "-h" "select" "--preserve" "size" "next" "branch" "flatpak" "Config" "screencap" "--record-snip" "2" "--revert" "set" "patch" "select" "Package" "control")
+    local -a literals=("revert" "--uninstall" "--install" "wallbash" "--opacity" "-j" "save" "unset" "3" "--stop" "--animations" "backup" "BackUp" "list" "cursor" "-p" "Config" "d" "--scan" "--record-focus" "theme" "-freeze" "0" "pastebin" "1" "systeminfo" "--all" "theme" "toggle" "upgrade" "waybar" "toggle" "reload" "update" "all" "glyph" "--print-monitor" "w" "game" "shell" "Config" "info" "reload" "reset" "--animations" "version" "select" "--blur" "run" "theme" "clean" "size" "reload" "-f" "--print-snip" "reload" "Clone" "check" "::=" "--mismatch" "prev" "--borderangle" "wallpaper" "--borderangle" "-w" "inject" "power" "set" "binds" "rebuild" "screencap" "c" "man" "asus_patch" "events" "--blur" "restore" "-d" "emoji" "sddm" "cache" "control" "show" "prev" "sync" "chaotic_aur" "--less" "mode" "--opacity" "--reset" "Link" "audio_idle" "--print-all" "next" "-h" "select" "--preserve" "size" "next" "branch" "flatpak" "Config" "screencap" "--record-snip" "2" "--revert" "set" "patch" "select" "Package" "control")
 
     declare -A literal_transitions
-    literal_transitions[0]="([30]=24 [56]=2 [33]=3 [45]=4 [3]=5 [32]=25 [20]=7 [78]=8 [98]=9 [79]=10 [48]=11 [81]=14 [39]=12 [80]=13 [83]=15 [71]=16 [25]=17 [11]=18 [61]=19 [14]=20 [64]=21 [29]=23 [65]=1 [75]=6)"
-    literal_transitions[1]="([31]=27 [38]=27 [6]=32 [43]=27 [7]=33)"
-    literal_transitions[2]="([108]=27 [40]=30)"
-    literal_transitions[5]="([28]=27 [86]=31)"
-    literal_transitions[6]="([89]=27 [16]=27 [12]=27 [55]=27)"
-    literal_transitions[7]="([46]=27 [92]=27 [106]=27 [82]=27 [105]=27)"
-    literal_transitions[8]="([49]=27)"
-    literal_transitions[10]="([68]=27 [54]=27)"
-    literal_transitions[11]="([90]=27 [73]=27 [101]=34)"
-    literal_transitions[12]="([107]=27)"
-    literal_transitions[13]="([100]=27)"
-    literal_transitions[14]="([77]=27 [69]=27 [35]=27 [67]=36 [23]=35)"
-    literal_transitions[18]="([13]=27 [34]=27 [50]=27 [0]=27)"
-    literal_transitions[19]="([94]=27 [97]=27 [66]=27 [59]=27)"
-    literal_transitions[20]="([41]=27 [96]=27 [27]=27)"
-    literal_transitions[21]="([72]=27 [99]=27 [84]=29)"
-    literal_transitions[24]="([42]=27 [51]=26 [109]=27)"
-    literal_transitions[26]="([26]=27)"
-    literal_transitions[28]="([57]=27)"
-    literal_transitions[29]="([1]=27 [104]=27 [2]=27)"
-    literal_transitions[30]="([95]=27 [85]=27 [58]=27)"
-    literal_transitions[31]="([22]=27 [24]=27 [103]=27 [8]=27)"
-    literal_transitions[32]="([10]=27 [47]=27 [60]=27 [87]=27)"
-    literal_transitions[33]="([4]=27 [44]=27 [62]=27 [74]=27)"
-    literal_transitions[34]="([9]=27 [102]=27 [19]=27 [36]=27 [21]=27 [88]=27 [53]=27 [91]=27 [18]=27)"
-    literal_transitions[35]="([37]=27 [17]=27 [70]=27)"
-    literal_transitions[36]="([5]=27 [93]=27 [15]=27 [63]=27 [76]=27 [52]=27)"
+    literal_transitions[0]="([30]=24 [57]=2 [33]=3 [45]=4 [3]=5 [32]=25 [20]=7 [79]=8 [99]=9 [80]=10 [48]=11 [82]=14 [39]=12 [81]=13 [84]=15 [72]=16 [25]=17 [11]=18 [62]=19 [14]=20 [65]=21 [29]=23 [66]=1 [76]=6)"
+    literal_transitions[1]="([31]=26 [38]=26 [6]=32 [43]=26 [7]=33)"
+    literal_transitions[2]="([109]=26 [40]=30)"
+    literal_transitions[5]="([28]=26 [87]=29)"
+    literal_transitions[6]="([90]=26 [16]=26 [12]=26 [56]=26)"
+    literal_transitions[7]="([46]=26 [93]=26 [107]=26 [83]=26 [106]=26)"
+    literal_transitions[8]="([49]=26)"
+    literal_transitions[10]="([69]=26 [55]=26)"
+    literal_transitions[11]="([91]=26 [74]=26 [102]=27)"
+    literal_transitions[12]="([108]=26)"
+    literal_transitions[13]="([101]=26)"
+    literal_transitions[14]="([78]=26 [70]=26 [35]=26 [68]=36 [23]=35)"
+    literal_transitions[18]="([13]=26 [34]=26 [50]=26 [0]=26)"
+    literal_transitions[19]="([95]=26 [98]=26 [67]=26 [60]=26)"
+    literal_transitions[20]="([52]=26 [41]=26 [97]=26 [27]=26)"
+    literal_transitions[21]="([73]=26 [100]=26 [85]=31)"
+    literal_transitions[24]="([42]=26 [51]=28 [110]=26)"
+    literal_transitions[27]="([9]=26 [103]=26 [19]=26 [36]=26 [21]=26 [89]=26 [54]=26 [92]=26 [18]=26)"
+    literal_transitions[28]="([26]=26)"
+    literal_transitions[29]="([22]=26 [24]=26 [104]=26 [8]=26)"
+    literal_transitions[30]="([96]=26 [86]=26 [59]=26)"
+    literal_transitions[31]="([1]=26 [105]=26 [2]=26)"
+    literal_transitions[32]="([10]=26 [47]=26 [61]=26 [88]=26)"
+    literal_transitions[33]="([4]=26 [44]=26 [63]=26 [75]=26)"
+    literal_transitions[34]="([58]=26)"
+    literal_transitions[35]="([37]=26 [17]=26 [71]=26)"
+    literal_transitions[36]="([5]=26 [94]=26 [15]=26 [64]=26 [77]=26 [53]=26)"
 
     declare -A match_anything_transitions
-    match_anything_transitions=([23]=27 [3]=27 [16]=27 [0]=22 [17]=27 [9]=27 [15]=27 [4]=27 [22]=28 [25]=27)
+    match_anything_transitions=([23]=26 [3]=26 [16]=26 [0]=22 [15]=26 [17]=26 [9]=26 [4]=26 [22]=34 [25]=26)
     declare -A subword_transitions
 
     local state=0
