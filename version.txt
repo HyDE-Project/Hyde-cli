@@ -1,3 +1,1 @@
-Version: v0.5.2-8-g41e7906
-Last commit: 41e7906 Fri May 24 00:18:10 2024 +0800
-Commit message: 'Merge pull request #63 from rubiin/master  feat: version.txt'
+v0.5.2

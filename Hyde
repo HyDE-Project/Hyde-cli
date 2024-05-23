@@ -7,7 +7,7 @@ fi
 
 export PATH=$PATH:/usr/lib/hyde-cli/
 
-hyde_cli_version=$(cat /etc/hyde-cli/version.txt | head -1)
+hyde_cli_version=$(cat /usr/share/hyde-cli/.hyde-cli.ver | head -1)
 
 # . DEVEL
 . GLOBAL-hyde
@@ -80,7 +80,7 @@ man() { #? Show Manual
 version() { #? Hyde-cli version
     hyde_header
     box_me -s "Hyde-cli version" -c 209
-    cat "${etcDir}/version.txt"
+    cat "${usrDir}/.hyde-cli.ver"
     barLine
     {
         . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
@@ -92,7 +92,7 @@ version() { #? Hyde-cli version
 
 systeminfo() { #? System information
     echo -e "**Hyde-cli version:**"
-    cat "${etcDir}/version.txt"
+    cat "${usrDir}/.hyde-cli.ver"
 
     echo -e "\n**Hyde repository:**"
     repo_info

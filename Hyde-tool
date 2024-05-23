@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 export PATH=$PATH:/usr/lib/hyde-cli/
-hyde_cli_version=$(cat /etc/hyde-cli/version.txt | head -1)
+hyde_cli_version=$(cat /usr/share/hyde-cli/.hyde-cli.ver | head -1)
 
 . DEVEL-hyde
 . FUNCTIONS-hyde

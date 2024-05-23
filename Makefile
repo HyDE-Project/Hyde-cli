@@ -55,11 +55,11 @@ install:
 	install -m 755 ./Hyde-install $(DESTDIR)$(bindir)
 	install -m 755 ./Hyde-tool $(DESTDIR)$(bindir) 
 
-	@echo "Version: $(VERSION)" > version.txt
-	@echo "Last commit: $(LAST_COMMIT)" >> version.txt
-	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> version.txt
+	@echo "Version: $(VERSION)" > .$(pkgname).ver
+	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
+	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .$(pkgname).ver
 
-	install -m 644 ./version.txt $(DESTDIR)$(etcdir) 
+	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
