@@ -8,18 +8,28 @@
 # -----------------------------------------------------
 
 # Define the path to the bookmarks file
-BOOKMARKS_PATH="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
 
-if [[ $BROWSER == "vivaldi" || $BROWSER == "chromium" ]]; then
+pkill -x rofi && exit
+
+rofi_pos
+
+check_package wtype
+
+BOOKMARKS_PATH=""
+
+if [[ $BROWSER == "brave" ]]; then
+	BOOKMARKS_PATH="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
+elif [[ $BROWSER == "vivaldi" || $BROWSER == "chromium" ]]; then
 	BOOKMARKS_PATH="$HOME/.config/$BROWSER/Default/Bookmarks"
-fi
-
-if [[ $BROWSER == "google-chrome-stable" ]]; then
+elif [[ $BROWSER == "google-chrome-stable" ]]; then
 	BOOKMARKS_PATH="$HOME/.config/google/Default/Bookmarks"
+else
+	notify-send -a "Browser not supported" -t 2000
+	exit 1
 fi
 
-selected=$(grep '"url":' "$BOOKMARKS_PATH" | awk '{print $2}' | sed 's/"//g' | rofi -dmenu -p "Select a Browser Bookmark")
+selected=$(grep '"url":' "$BOOKMARKS_PATH" | awk '{print $2}' | sed 's/"//g' | rofi -dmenu -i -theme-str "entry { placeholder: \"Select Bookmark...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
 
 if [ "$selected" ]; then
-	$BROWSER "$selected"
+	xdg-open "$selected"
 fi
