@@ -127,7 +127,7 @@ Hyde <FUNCTIONS>
 			 | (emoji) 	  " Emoji selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (glyph) 	  " Glyph selector"
-			 | (bookmarks) 	  " Bookmark selector"
+			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
 			 | (screencap) 	  " Use rofi to select screenshot options "
 ;
 
@@ -190,6 +190,10 @@ Hyde <FUNCTIONS>
  (c  ) " cliphist list and copy selected"
 | (d  ) " cliphist list and delete selected"
 | (w  ) " cliphist wipe database"
+;
+
+<SHOW_BOOKMARKS_USAGE> ::=
+ (--rebuild     ) "  force rebuild cached bookmark paths"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=
