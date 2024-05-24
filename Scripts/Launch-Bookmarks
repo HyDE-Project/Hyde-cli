@@ -14,49 +14,28 @@ rofi_pos
 
 declare -a bookmarkFile
 
-# TODO List all the posible Bookmarks path if needed
+# TODO List all the posible Bookmarks path if needed to be hardcoded
 bookmarkFile+=(
     #* Examples
     # "${confDir}/BraveSoftware/Brave-Browser/Default/Bookmarks"
     # "${confDir}/thorium/Default/Bookmarks"
 )
-
-# if pkg_installed firefox; then
-    # ! deprecated
-    # ! check_package lz4json
-    # ! bookmarkFile+=("$(find ${HOME}/.mozilla/firefox/*.default-release/bookmarkbackups/ -type f -name "*.jsonlz4"| sort -r | head -n 1)")
-    # bookmarkFile+=("$(find "$HOME/.mozilla/firefox" -type f -name "*places.sqlite" | sort -r | head -n 1)")
-# fi
-
-#* Firefox works differently
-if pkg_installed firefox; then
-    bookmarkFile+=("$(find "$HOME/.mozilla/firefox" -type f -name "*places.sqlite" | sort -r | head -n 1)")
-fi
-
-#* Librewolf
-if pkg_installed librewolf; then
-    bookmarkFile+=("$(find "$HOME/.librewolf" -type f -name "*places.sqlite" | sort -r | head -n 1)")
-fi
-
-#* Fetch all chrome browser convention bookmarks path
-eval $(find "${confDir}" -type f -path "*/Default/Bookmarks" | while read -r line; do
-    cat <<<"bookmarkFile+=(\"$line\")"
-done)
-
-#* For Flatpak, Fetch all chromium browser alike bookmarks path
-eval $(find $HOME/.var/app/ -type f -path "*/Default/Bookmarks" | while read -r line; do
-    cat <<<"bookmarkFile+=(\"$line\")"
-done)
-
 #* parse vars inside ./hyde.conf
 bookmarkFile+=(${bookmark_file[@]})
 
-# echo ${bookmarkFile[@]}
+#* Cache bookmark path
+if [[  "${*}" == *"--reset"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]  ;then
+    print_prompt -y "[cache] " "bookmark paths"
+    eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 | 
+    xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' > "${HYDE_RUNTIME_DIR}/bookmarkFileArray"    )"
+fi
+
+. "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+
 #* Construct the main Json
 mainJson=$(
     for file in "${bookmarkFile[@]}"; do
         [ ! -f "${file}" ] && continue
-
         #* firefox
         if grep -q ".sqlite" <<<"${file}"; then
             #! deprecated
@@ -77,8 +56,8 @@ mainJson=$(
 
 [[ -z ${mainJson} ]] && print_prompt -r "[error]" " No/invalid bookmarks detected" && exit 1
 
-mainJson=$(jq -s 'sort_by(.title) | unique_by(.title)' <<<$mainJson)
-mainJson=$(jq 'unique_by(.title)' <<<"$mainJson")
+#* sort and undupe
+mainJson=$(jq -s 'unique_by(.title) | unique_by(.url) | sort_by(.title)' <<<$mainJson)
 
 #* Rofi
 browser_name=$(basename $(xdg-settings get default-web-browser) .desktop)

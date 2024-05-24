@@ -709,8 +709,9 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-    bookmarks) #? Bookmark selector
-        Launch-Bookmarks
+    bookmarks) #? Bookmark selector\nﯦ append --reset to force reload cached bookmarks
+        shift
+        Launch-Bookmarks $*
         ;;
     screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
         Launch-Screencap
