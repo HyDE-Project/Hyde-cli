@@ -316,7 +316,7 @@ backup() { #? Backing up commands
     esac;
 }
 
-sync() { #? Overwrite current dots from the user \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/directory' in '${hydeConfDir}/hyde.conf' for custom user path
+override() { #? Overwrite current dots from the prefered user dir \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/pref/directory' in\n'${hydeConfDir}/hyde.conf' for custom user path
     source_user
     userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
     [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1

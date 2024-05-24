@@ -16,7 +16,7 @@ Hyde <FUNCTIONS>
 		|  (upgrade <UPGRADE_FUNCTION> )                      " Upgrades dots from the repository"
 		|  (restore <RESTORE_FUNCTION> )                      " Restore dots"
 		|  (backup <BACKUP_FUNCTION> )                        " Backing up commands"
-		|  (sync <SYNC_FUNCTION> )                            " Overwrite current dots from the user "
+		|  (override <OVERRIDE_FUNCTION> )                    " Overwrite current dots from the prefered user dir "
 		|  (cache <CACHE_FUNCTION> )                          " Manages Hyde's cache"
 		|  (cursor <CURSOR_FUNCTION> )                        " Cursor setting"
 		|  (theme <THEME_FUNCTION> )                          " Theme commands"
