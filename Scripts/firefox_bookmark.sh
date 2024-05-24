@@ -7,8 +7,8 @@
 # rofi -show firefox_bookmarks -modi "firefox_bookmarks:/path/to/rofi_firefox_bookmarks.sh"
 
 # places.sqlite location
-places_file="$(find $HOME/.mozilla/firefox/*.default*/ -name "places.sqlite" -print -quit)"
-
+# places_file="${1:-(find $HOME/.mozilla/firefox/*.default*/ -name "places.sqlite" -print -quit)}"
+places_file=$1
 # places.sqlite copy
 places_backup="$(dirname "${places_file}")/places.rofi.sqlite"
 
@@ -17,11 +17,6 @@ sqlite_path="$(which sqlite3)"
 
 # sqlite3 parameters (define separator character)
 sqlite_params="-separator ^"
-
-# browser path
-browser_path="$(which firefox)"
-
-# functions
 
 # create a backup file
 create_backup() {
@@ -43,30 +38,6 @@ echo "{\"title\": \"$title\", \"url\": \"$url\"}" | jq .
   done
 }
 
-process_bookmark() {
-  if [ "$#" = 1 ] && [ -n "$1" ]; then
-    id="$(echo $1 | sed "s|.*{id:\(.*\)}$|\1|")"
-    query="select p.url from moz_bookmarks as b left outer join moz_places as p on b.fk=p.id where b.type = 1 and p.hidden=0 and b.title not null and b.id=$id"
-    url="$($sqlite_path $sqlite_params "$places_backup" "$query")"
-    nohup $browser_path "$url" >/dev/null 2>&1 &
-  fi
-}
-
-# process_bookmarks
-
-# # application
-
-parameter="$1"
-
 # create a backup, as we cannot operate on a places.sqlite file directly due to exclusive lock
 create_backup "$places_file" "$places_backup"
-
-# # open a bookmark when there is a param sety
-# if [ -n "$parameter" ]; then
-#   process_bookmark "$parameter"
-#   exit
-# fi
-
-# process bookmarks
 process_bookmarks
-

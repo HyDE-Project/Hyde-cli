@@ -21,12 +21,21 @@ bookmarkFile+=(
     # "${confDir}/thorium/Default/Bookmarks"
 )
 
+# if pkg_installed firefox; then
+    # ! deprecated
+    # ! check_package lz4json
+    # ! bookmarkFile+=("$(find ${HOME}/.mozilla/firefox/*.default-release/bookmarkbackups/ -type f -name "*.jsonlz4"| sort -r | head -n 1)")
+    # bookmarkFile+=("$(find "$HOME/.mozilla/firefox" -type f -name "*places.sqlite" | sort -r | head -n 1)")
+# fi
+
 #* Firefox works differently
 if pkg_installed firefox; then
-    #! deprecated
-    #! check_package lz4json
-    #! bookmarkFile+=("$(find ${HOME}/.mozilla/firefox/*.default-release/bookmarkbackups/ -type f -name "*.jsonlz4"| sort -r | head -n 1)")
-    bookmarkFile+=("$(find "$HOME/.mozilla/firefox" -type f -name "*.sqlite" | sort -r | head -n 1)")
+    bookmarkFile+=("$(find "$HOME/.mozilla/firefox" -type f -name "*places.sqlite" | sort -r | head -n 1)")
+fi
+
+#* Librewolf
+if pkg_installed librewolf; then
+    bookmarkFile+=("$(find "$HOME/.librewolf" -type f -name "*places.sqlite" | sort -r | head -n 1)")
 fi
 
 #* Fetch all chrome browser convention bookmarks path
