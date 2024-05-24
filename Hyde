@@ -709,6 +709,9 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
+    bookmarks) #? Bookmark selector
+        Launch-Bookmarks
+        ;;
     screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
         Launch-Screencap
         ;;
