@@ -7,27 +7,82 @@
 #
 # -----------------------------------------------------
 
-# Define the path to the bookmarks file
-
-pkill -x rofi && exit
+#? This scripts iterates to all known bookmarks path 
+# TODO accepts feature Request for other browser Bookmarks (json format only)
 
 rofi_pos
 
-BOOKMARKS_PATH=""
+declare -a bookmarkFile
 
-if [[ $BROWSER == "brave" ]]; then
-	BOOKMARKS_PATH="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
-elif [[ $BROWSER == "vivaldi" || $BROWSER == "chromium" ]]; then
-	BOOKMARKS_PATH="$HOME/.config/$BROWSER/Default/Bookmarks"
-elif [[ $BROWSER == "google-chrome-stable" ]]; then
-	BOOKMARKS_PATH="$HOME/.config/google/Default/Bookmarks"
+# TODO List all the posible Bookmarks path if needed
+bookmarkFile+=(
+    #* Examples
+    # "${confDir}/BraveSoftware/Brave-Browser/Default/Bookmarks"
+    # "${confDir}/thorium/Default/Bookmarks"
+)
+
+#* Firefox works differently
+if pkg_installed firefox; then
+check_package lz4json
+bookmarkFile+=("$(find ${HOME}/.mozilla/firefox/*.default-release/bookmarkbackups/ -type f -name "*.jsonlz4"| sort -r | head -n 1)")
+fi
+
+#* Fetch all chrome browser convention bookmarks path
+eval $(find "${confDir}" -type f -path "*/Default/Bookmarks" | while read -r line; do
+    cat <<< "bookmarkFile+=(\"$line\")"
+done)
+
+#* For Flatpak, Fetch all chromium browser alike bookmarks path
+eval $(find $HOME/.var/app/ -type f -path "*/Default/Bookmarks" | while read -r line; do
+    cat <<< "bookmarkFile+=(\"$line\")"
+done)
+
+#* parse vars inside ./hyde.conf
+bookmarkFile+=(${bookmark_file[@]})
+
+# echo ${bookmarkFile[@]}
+#* Construct the main Json
+mainJson=$(
+for file in "${bookmarkFile[@]}"; do
+[ ! -f "${file}" ] && continue
+
+#* firefox
+if grep -q ".jsonlz4" <<< "${file}";then
+lz4jsoncat $file | jq -r '.. | select(type!= "null") |.children[].children[] | select(.type=="text/x-moz-place") | { title:.title, url:.uri }' 2> /dev/null
 else
-	notify-send -a "Browser not supported" -t 2000
-	exit 1
+    #* User
+    if  jq -r '.roots.bookmark_bar.children[] | { title:.name, url:.url }' $file 2> /dev/null ; then 
+        jq -r '.roots.bookmark_bar.children[] | { title:.name, url:.url }' $file 
+    fi
+    #* Guest
+    if  jq -r '.roots.other.children[] | { title:.name, url:.url }' $file 2> /dev/null; then 
+        jq -r '.roots.other.children[] | { title:.name, url:.url }' $file 
+    fi
 fi
+done
+)
 
-selected=$(grep '"url":' "$BOOKMARKS_PATH" | awk '{print $2}' | sed 's/"//g' | rofi -dmenu -i -theme-str "entry { placeholder: \"Select Bookmark...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
+[[ -z ${mainJson} ]] && print_prompt -r "[error]" " No/invalid bookmarks detected" && exit 1
 
-if [ "$selected" ]; then
-	xdg-open "$selected"
-fi
+mainJson=$( jq -s  'sort_by(.title) | unique_by(.title)' <<< $mainJson )
+mainJson=$(jq 'unique_by(.title)' <<< "$mainJson")
+
+
+#* Rofi
+browser_name=$( basename $(xdg-settings get default-web-browser) .desktop)
+r_width="width: ${bookmark_width:-35em};"
+r_height="height: ${bookmark_height:-35em};"
+r_listview="listview { lines: ${bookmark_line:-13}; }"
+r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
+
+
+selected_opt=$(jq -r 'foreach .[] as $item (0; . + 1; "\(.)) \($item.title)")' <<< "$mainJson" |\
+rofi -dmenu -i -theme-str  "entry { placeholder: \"Launch in ${browser_name}... \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
+
+[[ -z ${selected_opt} ]] &&  print_prompt -r "Operation Cancelled" && exit 0
+
+index=$(cut -d ')' -f1 <<< ${selected_opt})
+
+#* Use index and open url
+url=$(jq -c  --argjson index "$index" -cr ' .[$index - 1] | .url' <<< $mainJson)
+xdg-open $url

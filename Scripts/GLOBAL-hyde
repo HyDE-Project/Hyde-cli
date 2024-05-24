@@ -295,7 +295,8 @@ check_package() {
         echo -e "$0 Dependencies:\n$Pkg_Dep"
         get_aurhlpr
         if [ -n "${DISPLAY}" ]; then
-            notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'"
+            notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'" -t 10000
+            print_prompt -y "Confirm to install dependencies: '${Pkg_Dep}'"
             { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
         else
             print_prompt -y "Confirm to install dependencies: '${Pkg_Dep}'"

@@ -127,6 +127,7 @@ Hyde <FUNCTIONS>
 			 | (emoji) 	  " Emoji selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (glyph) 	  " Glyph selector"
+			 | (bookmarks) 	  " Bookmark selector"
 			 | (screencap) 	  " Use rofi to select screenshot options "
 ;
 
