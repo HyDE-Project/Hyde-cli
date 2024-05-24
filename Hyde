@@ -671,7 +671,7 @@ code() { #! Modify Vscode Extensions
     esac;
 }
 
-show() { #? Some Hypr GUI you might want to use
+show() { #? Useful GUI util
     case $1 in
     # monitors) #? Manages monitors using nwg-displays
     #     Manage_Monitor
@@ -728,7 +728,7 @@ USAGE
     esac;
 }
 
-run() { #? Executables
+run() { #? Executable utilities
     case $1 in
     audio_idle) #? Inhibits idle when player status: 'Playing
     check_package systemd

@@ -26,8 +26,8 @@ Hyde <FUNCTIONS>
 		|  (sddm <SDDM_FUNCTION> )                            " Sddm commands"
 		|  (shell <SHELL_FUNCTION> )                          " Shell commands"
 		|  (power <POWER_FUNCTION> )                          " Power Options"
-		|  (show <SHOW_FUNCTION> )                            " Some Hypr GUI you might want to use"
-		|  (run <RUN_FUNCTION> )                              " Executables"
+		|  (show <SHOW_FUNCTION> )                            " Useful GUI util"
+		|  (run <RUN_FUNCTION> )                              " Executable utilities"
 		|  (inject <INJECT_FUNCTION> )                        " User/Device specific scripts that might be useful"
 		|  (reload <RELOAD_FUNCTION> )                        " Just reload";
 

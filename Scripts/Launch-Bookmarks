@@ -24,7 +24,7 @@ bookmarkFile+=(
 bookmarkFile+=(${bookmark_file[@]})
 
 #* Cache bookmark path
-if [[  "${*}" == *"--reset"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]  ;then
+if [[  "${*}" == *"--rebuild"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]  ;then
     print_prompt -y "[cache] " "bookmark paths"
     eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 | 
     xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' > "${HYDE_RUNTIME_DIR}/bookmarkFileArray"    )"
