@@ -709,12 +709,13 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-    bookmarks) #? [*] Bookmark selector
+    bookmarks) #? [*] Bookmark selector\nﯦ add your custom 'bookmarks.txt' file inside '${hydeConfDir}/hyde.conf'
         shift
         Launch-Bookmarks $*
 : <<USAGE
 [SHOW_BOOKMARKS_USAGE]
-    --rebuild     ?  force rebuild cached bookmark paths
+    --rebuild   ?   force rebuild cached bookmark paths
+    --no-custom ?    run without custom '.lst' bookmark files
 [END]
 USAGE
         ;;

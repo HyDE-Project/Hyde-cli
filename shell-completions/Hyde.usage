@@ -194,6 +194,7 @@ Hyde <FUNCTIONS>
 
 <SHOW_BOOKMARKS_USAGE> ::=
  (--rebuild     ) "  force rebuild cached bookmark paths"
+| (--no-custom    ) "    run without custom '.lst' bookmark files"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=
