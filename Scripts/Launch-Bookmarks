@@ -59,8 +59,12 @@ bookmarkFile+=(${bookmark_file[@]})
 #* Cache bookmark path
 if [[ "${*}" == *"--rebuild"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
     print_prompt -y "[cache] " "bookmark paths"
+    : > "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+    for bookmark in "${bookmark_file[@]}"; do
+        echo -e "bookmarkFile+=($bookmark)" >> "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+    done
     eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 |
-        xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >"${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
+        xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >> "${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
 fi
 
 . "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
@@ -82,11 +86,16 @@ mainJson=$(
             if jq -r '.roots.other.children[] | { title:.name, url:.url }' $file 2>/dev/null; then
                 jq -r '.roots.other.children[] | { title:.name, url:.url }' $file
             fi
+            #* Custom from hyde.conf
+            if grep -q ".lst" <<<"${file}"; then
+                [[ "${*}" == *"--no-custom"* ]] || awk -F '|' '{print "{\"title\":\""$1"\",\"url\":\""$2"\"}"}' "${file}" | tr -d ' '
+            fi
         fi
     done
 )
 
 [[ -z ${mainJson} ]] && print_prompt -r "[error]" " No/invalid bookmarks detected" && exit 1
+jq empty <<< ${mainJson} || { print_prompt -r "[fatal]"  " Broken json data, be sure to have a valid 'bookmarks.lst' file." "\nrun with '--no-custom' flag" && exit 1 ;}
 
 #* sort and remove duplicates
 mainJson=$(jq -s 'unique_by(.title) | unique_by(.url) | sort_by(.title)' <<<$mainJson)
@@ -107,4 +116,4 @@ index=$(cut -d ')' -f1 <<<${selected_opt})
 
 #* Use index and open url
 url=$(jq -c --argjson index "$index" -cr ' .[$index - 1] | .url' <<<$mainJson)
-xdg-open "${url}"
+xdg-open "${url}" || notify-send "Cannot accessing '$url'"
