@@ -1,6 +1,7 @@
 #!/bin/bash
 
-libDir=/usr/lib/hyde-cli
+export CLI_PATH=$(dirname $(dirname ${0}))
+export libDir=${CLI_PATH}/lib/hyde-cli
 export PATH="$libDir:$PATH"
 
 export is_fresh_install=true

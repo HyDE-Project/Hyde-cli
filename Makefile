@@ -1,3 +1,4 @@
+
 pkgname := hyde-cli
 prefix := /usr
 bindir := $(prefix)/bin
@@ -9,6 +10,14 @@ VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
 COMMIT_MESSAGE := $(shell git show -s --format='%B')
 INSTALLATION_DIRECTORY := $(shell pwd)
+
+ifdef LOCAL
+    prefix := $(HOME)/.local
+    bindir := $(prefix)/bin
+    libdir := $(prefix)/lib/$(pkgname)
+    etcdir := $(HOME)/.hyde-cli/
+    usrdir := $(prefix)/share/$(pkgname)
+endif
 
 all: check directories  install
 
@@ -55,11 +64,11 @@ install:
 	install -m 755 ./Hyde-install $(DESTDIR)$(bindir)
 	install -m 755 ./Hyde-tool $(DESTDIR)$(bindir) 
 
-	@echo "Version: $(VERSION)" > .$(pkgname).ver
-	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
-	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .$(pkgname).ver
+	@echo "Version: $(VERSION)" > $(DESTDIR)$(usrdir)/.$(pkgname).ver
+	@echo "Last commit: $(LAST_COMMIT)" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
+	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
 
-	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
+	# install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
