@@ -90,7 +90,8 @@ make update clean install
 
 Run: `Hyde man` if Hyde-cli is installed.
 <br>
-View: `USAGE` in this repository.
+View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE)
+
 
 ---
 
