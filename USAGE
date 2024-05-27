@@ -1,112 +1,248 @@
  ══════════════════════
 ║Hyde-cli: Manual Page ║
  ══════════════════════
-Hyde-cli: Version: v0.5.2-4-gf3e4807
 Usage: Hyde [Function] [options]
 
  
-man              ﬌ Show Manual
+[man]                       ﬌ Show Manual
 
  
-version          ﬌ Hyde-cli Version
+[version]                   ﬌ Hyde-cli version
 
  
-systeminfo       ﬌ System Information
+[systeminfo]                ﬌ System information
 
  
-branch           ﬌ Set pref Hyde branch
+[check]                     ﬌ Information about Hyde and its components
+
+			 [Config]  ﬌ [*] Hyde Config File & Directory status
+
+						[--mismatch] ﬌    Diff mismatched dotfiles
+						[--preserve] ﬌    Diff preserved dotfiles
+						[--less] ﬌    Pipes STDOUT to less
+
+			 [Package]  ﬌ Hyde core Package status
+ 
+[control]                   ﬌ Interactive control file
+
+			 [Config]  ﬌ Manage users restore control list
+ 
+[branch]                    ﬌ Set preavailable Hyde branch
 
  
-update           ﬌ Pull Updates From Hyde Repository
+[update]                    ﬌ Pull updates from Hyde repository
 
  
-upgrade          ﬌ Upgrades dots from the Repository  
-			 ﯧ Control file: '/home/khing/.cache/hyde/manage_cfg.lst'
+[upgrade]                   ﬌ Upgrades dots from the repository
 
  
-restore          ﬌ Restore Dots
+[restore]                   ﬌ Restore dots
 
-			 [Config]        ﬌ Only restores Dots from default '/home/khing/GitHub/HyDE/Configs'. 
-			 [Clone]         ﬌ Restores Dots from a Clone Repository. 
-						 ﯧ Provide ~/path/to/clone/directory
-			 [BackUp]        ﬌ Restores Dots from previous Backup.
-						   Files might not be complete
-						 ﯦ You can Cherry pick a file/dir from a backup
-			 [Link]          ﬌ Links a Clone Directory. Useful if you want to change your CloneDir
- 
-backup           ﬌ Backing up commands
+			 [Config]  ﬌ Only restores dots from default '/home/khing/.cache/hyde/Hyde-Clone/Configs'
 
-			 [all]           ﬌ Backs up the current configuration.
-			 [revert]        ﬌ Revert to a Previous Backup run by 'Hyde backup all'. 
-						 ﯦ Different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
-			 [list]          ﬌ List the backup
-			 [clean]         ﬌ Clear some Storage by Deleting old backups. 
- 
-cache            ﬌ Manages Hyde' Cache
+			 [Clone]  ﬌ Restores dots from a clone repository 
+  			                  ﯦ Provide ~/path/to/clone/directory
 
-			 [reload]        ﬌ Reload Wallpaper Cache.
-			 [rebuild]       ﬌ Force rebuild cache
- 
-theme            ﬌ Theme Commands
+			 [BackUp]  ﬌ Restores dots from previous backup
+  			                  !! Files might not be complete
+  			                  ﯦ You can cherry pick a file/dir from a backup
 
-			 [set]           ﬌ Set Theme
-			 [next]          ﬌ Next Theme
-			 [prev]          ﬌ Previous Theme
-			 [select]        ﬌ Theme Selector
-			 [patch]         ﬌ Patch A Theme from different repository.
+			 [Link]  ﬌ Links a clone directory. Useful if you want to change your CloneDir
  
-wallpaper        ﬌ Wallpaper Commands
+[backup]                    ﬌ Backing up commands
 
-			 [set]           ﬌ Set /Path/to/Wallpapers as new Wallpaper Directory
-			 [next]          ﬌ Next Wallppaer
-			 [prev]          ﬌ Previous Wallpaper
-			 [select]        ﬌ Wallpaper Selector
- 
-wallbash         ﬌ Toggle to use wallpaper accent themes .
+			 [all]  ﬌ Backs up the current configuration
 
-			 [toggle]        ﬌ Cycles Wallbash [0] off [1] auto [2] dark [3] light
-			 [mode]          ﬌ Set wallbash mode. [0] [1] [2] [3] 
- 
-waybar           ﬌ Waybar commands
+			 [revert]  ﬌ Revert to a previous backup run by 'Hyde backup all'. 
+  			                  ﯦ different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
 
-			 [control]       ﬌ Edit waybar Control File.
- 
-sddm             ﬌ Sddm commands.
+			 [list]  ﬌ List the backup
 
-			 [theme]         ﬌ Select Sddm Theme
+			 [clean]  ﬌ Clear some storage by deleting old backups
  
-shell            ﬌ Shell commands
+[override]                  ﬌ Overwrite current dots from the prefered user dir 
+			 ﯦ see upstream for more info 
+			 ﯦ add 'userPrefsDir=path/to/user/pref/directory' in
+			'/home/khing/.config/hyde/hyde.conf' for custom user path
 
-			 [select]        ﬌ Shell selector
  
-power            ﬌ Power Options
+[cache]                     ﬌ Manages Hyde's cache
 
-			 [reset]         ﬌ Reset Changes.
-			 [save]          ﬌ Save Power by disabling features
-			 [unset]         ﬌ Unset specific changes
-			 [game]          ﬌ Toggle Game mode
- 
-show             ﬌ Some Hypr GUI you might want to use.
+			 [reload]  ﬌ Reload wallpaper cache
 
-			 [monitors]      ﬌ Manages Monitors using nwg-displays
-			 [binds]         ﬌ Keybind Hints ﯧ Click to execute
-			 [emoji]         ﬌ Emoji Selector 
-						 ﯧ pass 
-			 [pastebin]      ﬌ Pastebin manager 
-						 ﯧ pass [only once] '--ignore=initialclass' to disable autopaste
-			 [glyph]         ﬌ Glyph selector 
-						 ﯧ Requires Nerd Fonts 
-						 ﯧ pass [only once] '--ignore=initialclass' to disable autopaste
-			 [screencap]     ﬌ Use rofi to select screenshot options 
-						  kills another rofi session 
+			 [rebuild]  ﬌ Force rebuild cache
  
-run              ﬌ Executables
+[cursor]                    ﬌ Cursor setting
 
-			 [events]        ﬌ Watches hyprland events and executes actions
-			 [screencap]     ﬌ Screenshot and Screenrecord Tool
- 
-inject           ﬌ User/Device specific scripts that might be useful.
+			 [theme]  ﬌ Set cursor theme
 
-			 [chaotic]       ﬌ install Chaotic AUR 
+			 [size]  ﬌ Set cursor size
+
+			 [reload]  ﬌ Reload cursors
+
+			 [info]  ﬌ Check active cursor status (only gsettings)
  
-reload           ﬌ Just Reload
+[theme]                     ﬌ Theme commands
+
+			 [set]  ﬌ Set theme
+
+			 [next]  ﬌ Next theme
+
+			 [prev]  ﬌ Previous theme
+
+			 [select]  ﬌ Theme selector
+
+			 [patch]  ﬌ Patch a theme from different repository.
+  			                 ﯦ Invoking without args will launch a menu from Hyde-gallery DB
+ 
+[wallpaper]                 ﬌ Wallpaper commands
+
+			 [set]  ﬌ Set /Path/to/Wallpapers as new wallpaper directory
+
+			 [next]  ﬌ Next wallppaer
+
+			 [prev]  ﬌ Previous wallpaper
+
+			 [select]  ﬌ Wallpaper selector
+ 
+[wallbash]                  ﬌ Toggle to use wallpaper accent themes
+
+			 [toggle]  ﬌ Cycles wallbash [0] off [1] auto [2] dark [3] light
+
+			 [mode]  ﬌ [*] Set wallbash mode. [0] [1] [2] [3] 
+  			                 ﯦ no args spawns a menu
+
+						[0] ﬌  wallbash disabled
+						[1] ﬌  wallbash auto
+						[2] ﬌  wallbash dark mode
+						[3] ﬌  wallbash light mode
+ 
+[waybar]                    ﬌ Waybar commands
+
+			 [control]  ﬌ Edit waybar control file
+
+			 [reload]  ﬌ Reloads waybar
+
+			 [size]  ﬌ [*]Set waybar size
+
+						[--all] ﬌  Change all the pre-set sizes
+ 
+[sddm]                      ﬌ Sddm commands
+
+			 [theme]  ﬌ Select sddm theme
+ 
+[shell]                     ﬌ Shell commands
+
+			 [select]  ﬌ Shell selector
+ 
+[power]                     ﬌ Power Options
+
+			 [reset]  ﬌ Reset changes
+
+			 [save]  ﬌ [*] Save power by disabling features
+
+						[--animations] ﬌  Disable animations
+						[--borderangle] ﬌  Disable border angle animation
+						[--blur] ﬌  Disable blur
+						[--opacity] ﬌  Disable tranparency
+
+			 [toggle]  ﬌ Toggle ﯦ Set/unset current changes'
+
+			 [unset]  ﬌ [*] Unset specific changes
+
+						[--animations] ﬌  Default animations
+						[--borderangle] ﬌  Default border angle animation
+						[--blur] ﬌  Default blur
+						[--opacity] ﬌  Default tranparency
+
+			 [game]  ﬌ Toggle game mode
+ 
+[show]                      ﬌ Useful GUI util
+
+			 [binds]  ﬌ [*] Show keybind hints
+  			                  ﯦ Click to execute
+
+						[-j] ﬌   Show the JSON format
+						[-p] ﬌   Show the pretty format
+						[-d] ﬌   Add custom delimiter symbol (default '>')
+						[-f] ﬌   Add custom file
+						[-y] ﬌   Custom width
+						[-h] ﬌   Display this help message
+
+			 [emoji]  ﬌ Emoji selector
+
+			 [pastebin]  ﬌ [*] Pastebin manager 
+  			                  ﯦ pass [only once] '--ignore=initialclass' to disable autopaste
+
+						[c] ﬌  cliphist list and copy selected
+						[d] ﬌  cliphist list and delete selected
+						[w] ﬌  cliphist wipe database
+
+			 [glyph]  ﬌ Glyph selector
+
+			 [bookmarks]  ﬌ [*] Bookmark selector
+  			                 ﯦ append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
+
+						[--rebuild] ﬌    force rebuild cached bookmark paths
+						[--no-custom] ﬌     run without custom '.lst' bookmark files
+
+			 [screencap]  ﬌ Use rofi to select screenshot options 
+  			                  !! kills another rofi session
+ 
+[run]                       ﬌ Executable utilities
+
+			 [audio_idle]  ﬌ Inhibits idle when player status: 'Playing
+
+			 [events]  ﬌ Watches hyprland events and executes actions
+
+			 [screencap]  ﬌ [*] Screenshot and screenrecord tool
+
+						[--print-all] ﬌   Print all outputs
+						[--record-focus] ﬌   Record focused monitor
+						[--print-snip] ﬌   Drag to manually snip an area
+						[--record-snip] ﬌   Drag to manually snip an area to screen record it
+						[-freeze] ﬌   Frozen screen, drag to manually snip an area
+						[--print-monitor] ﬌   Print focused monitor
+						[--scan] ﬌   Use 'tesseract' to scan image then add to clipboard
+						[--stop] ﬌   Stop every instance of Screencap
+						[--reset] ﬌   Reinitialize screencap
+ 
+[inject]                    ﬌ User/Device specific scripts that might be useful
+
+			 [asus_patch]  ﬌ Fixes issues for asus devices
+
+			 [chaotic_aur]  ﬌ [*] Add chaotic aur to you mirror
+
+						[--install] ﬌  Setup Choatic Aur, append [fresh] to run in fresh install mode
+						[--uninstall] ﬌  Removes Chaotic Aur
+						[--revert] ﬌  Converts chaotic aur packages to AUR
+
+			 [flatpak]  ﬌ Flatpak setup for HyDE
+ 
+[reload]                    ﬌ Just reload
+==========================================================================================================================
+
+Descriptions with [*] can be expanded to show more information. Append [--help]
+
+
+
+
+ ════════════════════════════
+║Hyde-cli: Tools Manual Page ║
+ ════════════════════════════
+Usage: Hyde-tool [Function] [options]
+
+ 
+[man]                       ﬌ Show Manual
+
+ 
+[zoom]                      ﬌ Zoom in/out Hyprland
+
+			 [in]  ﬌ Zoom in
+
+			 [out]  ﬌ Zoom out
+
+			 [reset]  ﬌ Reset Zoom
+==========================================================================================================================
+
+Descriptions with [*] can be expanded to show more information. Append [--help]
