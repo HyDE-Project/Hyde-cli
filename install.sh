@@ -75,8 +75,9 @@ fi
 check_deps jq git fzf kitty
 
 clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
-mkdir -p "${clone_hyde_cli}"
-# 'rm -fr "${clone_hyde_cli}"'
+# mkdir -p "${clone_hyde_cli}"
+
+rm -fr "${clone_hyde_cli}"
 git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
 cd "${clone_hyde_cli}" || exit
 
@@ -110,5 +111,5 @@ else
     git switch "${branch_name}"
 fi
 
-echo "Continue to install ${pkgname} locally"
+echo "Installing ${pkgname} locally"
 make LOCAL=1 clean all
