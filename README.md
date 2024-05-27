@@ -5,7 +5,7 @@
 
   <br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-  <a href="#usage"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
+  <a href="https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
   <a href="#faq"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
   <a href="#roadmap"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
