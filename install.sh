@@ -24,58 +24,59 @@ check_deps() {
 }
 export -f check_deps
 
-PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
-echo "Package manager: $PACKAGE_MANAGER"
+if [[ ${*} != *"--local"* ]]; then
+    PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
+    echo "Package manager: $PACKAGE_MANAGER"
+
+    case "${PACKAGE_MANAGER}" in
+    dnf)
+        :
+        #Yes posible! But I'm Lazy
+        ;;
+    pacman)
+        pkgname=hyde-cli-git
+        if pacman -Q yay &>/dev/null; then
+            aurhlpr="yay"
+        elif pacman -Q paru &>/dev/null; then
+            aurhlpr="paru"
+        else
+            select opt in "yay" "paru"; do if [[ -n $opt ]]; then
+                aurhlpr=$opt
+                break
+            fi; done
+            SUPER pacman -S --needed git base-devel
+            rm -fr ${clone_hyde_cli}/${aurhlpr}
+            git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
+            cd ${clone_hyde_cli}/${aurhlpr}
+            makepkg -si --noconfirm
+        fi
+
+        if ! pacman -Q "${aurhlpr}" &>/dev/null; then echo "Please try to rerun script!" && exit 0; fi
+
+        if pacman -Q "${pkgname}" 2>/dev/null; then
+            if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
+                ${aurhlpr} -Sy "${pkgname}" --noconfirm
+            else
+                echo "Already up to date"
+            fi
+            exit 0
+        else
+            "${aurhlpr}" -Sy "${pkgname}" --noconfirm
+            if pacman -Q "${pkgname}" 2>/dev/null; then exit 0; fi
+        fi
+        ;;
+    esac
+
+fi
+
+check_deps jq git fzf kitty
 
 clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
 mkdir -p "${clone_hyde_cli}"
-
-case "${PACKAGE_MANAGER}" in
-dnf)
-    :
-    #Yes posible! But I'm Lazy
-    ;;
-pacman)
-    pkgname=hyde-cli-git
-    if pacman -Q yay &>/dev/null; then
-        aurhlpr="yay"
-    elif pacman -Q paru &>/dev/null; then
-        aurhlpr="paru"
-    else
-        select opt in "yay" "paru"; do if [[ -n $opt ]]; then
-            aurhlpr=$opt
-            break
-        fi; done
-        SUPER pacman -S --needed git base-devel
-        rm -fr ${clone_hyde_cli}/${aurhlpr}
-        git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
-        cd ${clone_hyde_cli}/${aurhlpr}
-        makepkg -si --noconfirm
-    fi
-
-    if ! pacman -Q "${aurhlpr}" &>/dev/null; then echo "Please try to rerun script!" && exit 0; fi
-
-    if pacman -Q "${pkgname}" 2>/dev/null; then
-        if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
-            ${aurhlpr} -Sy "${pkgname}" --noconfirm
-        else
-            echo "Already up to date"
-        fi
-        exit 0
-    else
-        "${aurhlpr}" -Sy "${pkgname}" --noconfirm
-        if pacman -Q "${pkgname}" 2>/dev/null; then exit 0; fi
-    fi
-    ;;
-esac
-
-check_deps jq git kitty
-
-mkdir -p "${clone_hyde_cli}"
-rm -fr "${clone_hyde_cli}"
+# 'rm -fr "${clone_hyde_cli}"'
 git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
 cd "${clone_hyde_cli}" || exit
 
@@ -110,4 +111,4 @@ else
 fi
 
 echo "Continue to install ${pkgname} locally"
-SUPER make clean install
+make LOCAL=1 clean all

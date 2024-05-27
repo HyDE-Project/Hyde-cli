@@ -5,19 +5,18 @@ bindir := $(prefix)/bin
 libdir := $(prefix)/lib/$(pkgname)
 etcdir := /etc/$(pkgname)
 usrdir := $(prefix)/share/$(pkgname)
-UID := $(shell id -u)
 BACKUPDIR := $(shell mktemp -d)
 VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
 COMMIT_MESSAGE := $(shell git show -s --format='%B')
 INSTALLATION_DIRECTORY := $(shell pwd)
 
-ifneq ($(UID),0)
-	prefix := $(HOME)/.local
-	bindir := $(prefix)/bin
-	libdir := $(prefix)/lib/$(pkgname)
-	etcdir := $(HOME)/.hyde-cli/
-	usrdir := $(prefix)/share/$(pkgname)
+ifdef LOCAL
+    prefix := $(HOME)/.local
+    bindir := $(prefix)/bin
+    libdir := $(prefix)/lib/$(pkgname)
+    etcdir := $(HOME)/.hyde-cli/
+    usrdir := $(prefix)/share/$(pkgname)
 endif
 
 all: check directories  install
