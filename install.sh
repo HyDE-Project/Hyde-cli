@@ -22,9 +22,10 @@ check_deps() {
 
     [ -n "${requirements}" ] && echo -e "Depedencies: ${requirements}\nInstall them using your package manager"
 }
+
 export -f check_deps
 
-if [[ ${*} != *"--local"* ]]; then
+if [[ 1 -ne ${HYDE_LOCAL} ]]; then
     PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
     # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
     # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
@@ -72,7 +73,7 @@ if [[ ${*} != *"--local"* ]]; then
 
 fi
 
-check_deps jq git fzf kitty
+check_deps jq git kitty
 
 clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
 # mkdir -p "${clone_hyde_cli}"
@@ -81,34 +82,37 @@ rm -fr "${clone_hyde_cli}"
 git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
 cd "${clone_hyde_cli}" || exit
 
-if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
-    git remote set-branches origin '*'
-fi
-git fetch --all
-Git_Repo="$(git remote get-url origin)"
-
-branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
-branches=($branches)
-if [[ ${#branches[@]} -le 1 ]]; then
-    branch=${branches[0]}
-else
-    echo "Select a Branch"
-    if command -v fzf; then
-        git_branch=$(git branch -a | fzf --prompt='Choose a branch')
-    else
-        select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again."; done
+if [[ true == "HYDE_BRANCH" ]]; then
+    if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+        git remote set-branches origin '*'
     fi
-fi
+    git fetch --all
+    Git_Repo="$(git remote get-url origin)"
 
-[[ -z ${git_branch} ]] && echo "Operation cancelled" && exit 0
-if [[ $git_branch == *"*"* ]]; then
-    echo "Already in branch: ${git_branch}"
-    return 1
-else
-    # Extract the branch name without the remote prefix and trim leading whitespace
-    branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
-    # Switch to the selected branch
-    git switch "${branch_name}"
+    branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
+    branches=($branches)
+    if [[ ${#branches[@]} -le 1 ]]; then
+        branch=${branches[0]}
+    else
+        echo "Select a Branch (default Master):  "
+        if command -v flzf; then
+            git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+            { [[ -z ${git_branch} ]] && git_branch=master && echo "Default master branch"; }
+        else
+            select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid Selection"; done
+        fi
+    fi
+
+    [[ -z ${git_branch} ]] && echo "Operation cancelled" && exit 0
+    if [[ $git_branch == *"*"* ]]; then
+        echo "Already in branch: ${git_branch}"
+        return 1
+    else
+        # Extract the branch name without the remote prefix and trim leading whitespace
+        branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        # Switch to the selected branch
+        git switch "${branch_name}"
+    fi
 fi
 
 echo "Installing ${pkgname} locally"
