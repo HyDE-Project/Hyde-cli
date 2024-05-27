@@ -56,7 +56,7 @@ echo "Package manager: $PACKAGE_MANAGER"
         ;;
     esac
 }
-
+#! Deprecated
 export PATH=${PATH}:/usr/lib/hyprdots-ctl/
 
 if [[ -d "${CloneDir}" ]] && cd "${CloneDir}"; then

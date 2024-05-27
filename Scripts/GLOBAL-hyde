@@ -398,13 +398,15 @@ export settingDir="${cacheDir}/hyde-settings"
 [ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
 
 # HYDE-CLI
-export libDir=/usr/lib/hyde-cli
+export CLI_PATH=$(dirname $(dirname ${0}))
+export PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
 export PATH=${PATH}:${libDir}
 export HYDE_RUNTIME_DIR=$XDG_RUNTIME_DIR/hyde
 
 # Cli Configs
 export etcDir="/etc/hyde-cli"
-export usrDir="/usr/share/hyde-cli"
+ [[ "/usr" == *"${CLI_PATH}"* ]] || etcDir="$HOME/.hyde-cli"
+export usrDir="${CLI_PATH}/share/hyde-cli"
 
 # Config
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"

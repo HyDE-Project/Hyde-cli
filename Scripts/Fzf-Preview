@@ -35,6 +35,6 @@ if [ -e "${PREVIEW}" ]; then
     img_preview "$PREVIEW"
 elif [ ! -e "${PREVIEW}" ]; then
     echo "${PREVIEW}"
-    img_preview /usr/share/hyde-cli/no_preview.png
+    img_preview ${CLI_PATH}/share/hyde-cli/no_preview.png
 fi
 

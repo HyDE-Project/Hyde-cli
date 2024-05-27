@@ -80,7 +80,7 @@ fzf_shell_select() {
         --cycle \
         --pointer='→' \
         --disabled \
-        --preview 'Fzf-Preview /usr/share/hyde-cli/shell_{}.png' \
+        --preview="Fzf-Preview ${CLI_PATH}/share/hyde-cli/shell_{}.png" \
         --preview-window 'right:80%,border-rounded'
 }
 
@@ -106,7 +106,7 @@ fzf_sddm_select() {
         --cycle \
         --pointer='→' \
         --disabled \
-        --preview 'Fzf-Preview /usr/share/hyde-cli/sddm_{}.png' \
+        --preview="Fzf-Preview ${CLI_PATH}/share/hyde-cli/sddm_{}.png" \
         --preview-window 'right:80%,border-rounded'
 }
 

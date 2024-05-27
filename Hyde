@@ -5,11 +5,11 @@ if [ "$(whoami)" = "root" ] || [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-export PATH=$PATH:/usr/lib/hyde-cli/
+export CLI_PATH=$(dirname $(dirname ${0}))
+export PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
 
-hyde_cli_version=$(cat /usr/share/hyde-cli/.hyde-cli.ver | head -1)
+hyde_cli_version=$(cat ${CLI_PATH}/share/hyde-cli/.hyde-cli.ver | head -1)
 
-# . DEVEL
 . GLOBAL-hyde
 . DEVEL-hyde
 . FUNCTIONS-hyde
@@ -467,7 +467,7 @@ wallpaper() { #? Wallpaper commands
         ;;
     # variety) #? EXPERIMENTAL! Use variety package to manage wallpapers
     #     shift
-    #     /usr/lib/hyde-cli/Run-Wallpaper "${@}"
+    #     ${CLI_PATH}/lib/hyde-cli/Run-Wallpaper "${@}"
     # ;;
     *) Parameters "${FUNCNAME[0]}" ;;
 
@@ -660,7 +660,7 @@ code() { #! Modify Vscode Extensions
         else
             echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
             ask_confirm
-            sel_ext=$(/usr/bin/code --list-extensions | fzf)
+            sel_ext=$($(which code) --list-extensions | fzf)
             sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
             select_theme
         fi
@@ -807,7 +807,7 @@ inject() { #? User/Device specific scripts that might be useful
     ;;
     chaotic_aur) #? [*] Add chaotic aur to you mirror
         shift
-        SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
+        SUPER ${CLI_PATH}/lib/hyde-cli/Install-chaotic-aur "${@}"
 : <<USAGE
 [INJECT_CHAOTIC_AUR_USAGE]
     --install ? Setup Choatic Aur, append [fresh] to run in fresh install mode
