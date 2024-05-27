@@ -84,19 +84,21 @@ export newCloneDir
 export GIT
 
 export CloneDir=${newCloneDir}
-if cd "${newCloneDir}"/Scripts; then
-    print_prompt -m "[*] " -y "Using existing directory"
-    if [[ ${is_link} == true ]]; then
-        echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
-        # set_branch
-        check_integrity
-        print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
+(
+    if cd "${newCloneDir}"/Scripts; then
+        print_prompt -m "[*] " -y "Using existing directory"
+        if [[ ${is_link} == true ]]; then
+            echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
+            # set_branch
+            check_integrity
+            print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
+        else
+            install_distro
+        fi
     else
-        install_distro
+        install_distro --fresh
     fi
-else
-    install_distro --fresh
-fi
+) || echo "Operation Failed" && exit 1
 set_metadata "${newCloneDir}"
 if ! grep -q "$HOME/.local/share/bin" <<<$PATH; then
     print_prompt -y "Restarting to make Hyde Work"
