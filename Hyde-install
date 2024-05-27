@@ -12,21 +12,26 @@ export is_fresh_install=true
 #? One time set up on terminal
 install_distro() {
     if [ "${1}" = "--fresh" ]; then export fresh=true; fi
-    . /etc/os-release
+    # . /etc/os-release
 
-    case "${ID}" in
-    "fedora")
+    PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
+    echo "Package manager: $PACKAGE_MANAGER"
+
+    case "${PACKAGE_MANAGER}" in
+    "dnf")
         Install_Hyde-DNF "${newCloneDir}" "${GIT}"
         ;;
-    "arch")
+    "pacman")
         Install-Hyde-pacman "${newCloneDir}" "${GIT}"
         ;;
     *)
-        # print_prompt -r "Can't recognize your disto: '${ID}'  "
-        Install-Hyde-pacman "${newCloneDir}" "${GIT}"
+        print_prompt -r "Can't recognize your package manager: '${PACKAGE_MANAGER}'  "
+        # Install-Hyde-pacman "${newCloneDir}" "${GIT}"
         # Add the commands for other distributions here
         echo ""
-
         ;;
     esac
 }
