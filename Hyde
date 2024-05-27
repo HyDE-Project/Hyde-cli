@@ -94,6 +94,7 @@ version() { #? Hyde-cli version
 systeminfo() { #? System information
     echo -e "**Hyde-cli version:**"
     cat "${usrDir}/.hyde-cli.ver"
+    [[ ${CLI_PATH} != *"/usr"*  ]] && echo "***Locally installed by $USER***"
 
     echo -e "\n**Hyde repository:**"
     repo_info
