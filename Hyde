@@ -81,6 +81,7 @@ version() { #? Hyde-cli version
     hyde_header
     box_me -s "Hyde-cli version" -c 209
     cat "${usrDir}/.hyde-cli.ver"
+    [[ ${CLI_PATH} != *"/usr"*  ]] && print_prompt -y "Locally installed by $USER"
     barLine
     {
         . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
