@@ -41,11 +41,11 @@ Usage: Hyde [Function] [options]
 			 [Config]  ﬌ Only restores dots from default '/home/khing/.cache/hyde/Hyde-Clone/Configs'
 
 			 [Clone]  ﬌ Restores dots from a clone repository 
-  			                  ﯦ Provide ~/path/to/clone/directory
+  			                  💡 Provide ~/path/to/clone/directory
 
 			 [BackUp]  ﬌ Restores dots from previous backup
   			                  !! Files might not be complete
-  			                  ﯦ You can cherry pick a file/dir from a backup
+  			                  💡 You can cherry pick a file/dir from a backup
 
 			 [Link]  ﬌ Links a clone directory. Useful if you want to change your CloneDir
  
@@ -54,15 +54,15 @@ Usage: Hyde [Function] [options]
 			 [all]  ﬌ Backs up the current configuration
 
 			 [revert]  ﬌ Revert to a previous backup run by 'Hyde backup all'. 
-  			                  ﯦ different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
+  			                  💡 different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
 
 			 [list]  ﬌ List the backup
 
 			 [clean]  ﬌ Clear some storage by deleting old backups
  
 [override]                  ﬌ Overwrite current dots from the prefered user dir 
-			 ﯦ see upstream for more info 
-			 ﯦ add 'userPrefsDir=path/to/user/pref/directory' in
+			 💡 see upstream for more info 
+			 💡 add 'userPrefsDir=path/to/user/pref/directory' in
 			'/home/khing/.config/hyde/hyde.conf' for custom user path
 
  
@@ -93,7 +93,7 @@ Usage: Hyde [Function] [options]
 			 [select]  ﬌ Theme selector
 
 			 [patch]  ﬌ Patch a theme from different repository.
-  			                 ﯦ Invoking without args will launch a menu from Hyde-gallery DB
+  			                 💡 Invoking without args will launch a menu from Hyde-gallery DB
  
 [wallpaper]                 ﬌ Wallpaper commands
 
@@ -110,7 +110,7 @@ Usage: Hyde [Function] [options]
 			 [toggle]  ﬌ Cycles wallbash [0] off [1] auto [2] dark [3] light
 
 			 [mode]  ﬌ [*] Set wallbash mode. [0] [1] [2] [3] 
-  			                 ﯦ no args spawns a menu
+  			                 💡 no args spawns a menu
 
 						[0] ﬌  wallbash disabled
 						[1] ﬌  wallbash auto
@@ -146,7 +146,7 @@ Usage: Hyde [Function] [options]
 						[--blur] ﬌  Disable blur
 						[--opacity] ﬌  Disable tranparency
 
-			 [toggle]  ﬌ Toggle ﯦ Set/unset current changes'
+			 [toggle]  ﬌ Toggle 💡 Set/unset current changes'
 
 			 [unset]  ﬌ [*] Unset specific changes
 
@@ -160,7 +160,7 @@ Usage: Hyde [Function] [options]
 [show]                      ﬌ Useful GUI util
 
 			 [binds]  ﬌ [*] Show keybind hints
-  			                  ﯦ Click to execute
+  			                  💡 Click to execute
 
 						[-j] ﬌   Show the JSON format
 						[-p] ﬌   Show the pretty format
@@ -172,7 +172,7 @@ Usage: Hyde [Function] [options]
 			 [emoji]  ﬌ Emoji selector
 
 			 [pastebin]  ﬌ [*] Pastebin manager 
-  			                  ﯦ pass [only once] '--ignore=initialclass' to disable autopaste
+  			                  💡 pass [only once] '--ignore=initialclass' to disable autopaste
 
 						[c] ﬌  cliphist list and copy selected
 						[d] ﬌  cliphist list and delete selected
@@ -181,7 +181,7 @@ Usage: Hyde [Function] [options]
 			 [glyph]  ﬌ Glyph selector
 
 			 [bookmarks]  ﬌ [*] Bookmark selector
-  			                 ﯦ append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
+  			                 💡 append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
 
 						[--rebuild] ﬌    force rebuild cached bookmark paths
 						[--no-custom] ﬌     run without custom '.lst' bookmark files
