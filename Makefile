@@ -68,7 +68,7 @@ install:
 	@echo "Last commit: $(LAST_COMMIT)" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
 	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
 
-	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
+	# install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
