@@ -30,6 +30,9 @@ To install, execute the following command:
 ```
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
 ```
+> [!Note]
+> For User who do not have root access:
+> ` export HYDE_LOCAL=1 ` to install this package locally
 
 For other working install solutions, see the following below.
 
@@ -63,7 +66,6 @@ Clone:
 git clone https://github.com/kRHYME7/Hyde-cli
 cd ./Hyde-cli
 ```
-
 To install: 
 
 ```
@@ -81,6 +83,8 @@ To update:
 ```
 make update clean install
 ```
+> [!Note]
+> User who do not have root access should provide this flag for ` make `; ` make LOCAL=1 ` 
 
 ## Usage
 
