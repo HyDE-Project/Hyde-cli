@@ -3,75 +3,97 @@
 rofi_pos
 
 check_package wtype
-# trap 'killall wtype' EXIT
+
+delMode=false
 
 #? MultiSelect
-cliphist_decode() {
-    # Read the entire input into an array
-    mapfile -t lines #! Not POSIX compiliant
-    # Get the total number of lines
-    total_lines=${#lines[@]}
-    
-    if [ "${lines}" = "delete" ] ; then Hyde show pastebin d ;exit 0
-        elif [ "${lines}" = "wipe" ] ; then Hyde show pastebin w ; exit 0
+pastebin_process() {
+
+    if [ true != "${delMode}" ]; then
+        # Read the entire input into an array
+        mapfile -t lines #! Not POSIX compiliant
+        # Get the total number of lines
+        total_lines=${#lines[@]}
+        if [[ "${lines[0]}" = *":d:e:l:e:t:e:"* ]]; then
+            Hyde show pastebin d
+            exit 0
+        elif [[ "${lines[0]}" = *":b:a:r:"* ]]; then
+            Hyde show pastebin c
+        else
+            # Iterate over each line in the array
+            for ((i = 0; i < total_lines; i++)); do
+                line="${lines[$i]}"
+                decoded_line="$(echo -e "$line\t" | cliphist decode)"
+                if [ $i -lt $((total_lines - 1)) ]; then
+                    printf -v output '%s%s\n' "$output" "$decoded_line"
+                else
+                    printf -v output '%s%s' "$output" "$decoded_line"
+                fi
+            done
+            echo -n "$output"
+        fi
     else
-        # Iterate over each line in the array
-        for (( i=0; i<$total_lines; i++ )); do
-            line="${lines[$i]}"
-            decoded_line="$(echo -e "$line\t" | cliphist decode)"
-            if [ $i -lt $((total_lines - 1)) ]; then
-                printf -v output '%s%s\n' "$output" "$decoded_line"
+        while IFS= read -r line; do
+            if [[ "${line}" = *":w:i:p:e:"* ]]; then
+                Hyde show pastebin w
+                break
+                elif [[ "${line}" = *":b:a:r:"* ]]; then
+                Hyde show pastebin d
+                break
             else
-                printf -v output '%s%s' "$output" "$decoded_line"
+                cliphist delete <<<"${line}"
             fi
         done
-        
-        echo -n "$output"
+        exit 0
     fi
-}
-
-cliphist_delete() {
-    awk -F "\t\t\t\t\t" '{print $2}' |
-    while IFS= read -r line; do
-        echo -e "${line}\t" | cliphist delete
-    done
 }
 
 checkContent() {
     # Read the input line by line
     read -r line
-    if  [[ ${line} == *"[[ binary data"* ]]; then
-        imag=$(echo -e "${line}"| awk -F "\t\t\t\t\t" '{print $2}' | cat )
-        temprev="${HYDE_RUNTIME_DIR}/pastebin-preview${imag}"
-        echo -e "${imag}\t" | cliphist decode | wl-copy
-        wl-paste > "${temprev}"
-        notify-send -a "Pastebin:" "Preview: ${imag}" -i "${temprev}" -t 2000
+    if [[ ${line} == *"[[ binary data"* ]]; then
+        cliphist decode <<<"$line" | wl-copy
+        imdx=$(awk -F '\t' '{print $1}' <<<$line)
+        temprev="${HYDE_RUNTIME_DIR}/pastebin-preview_${imdx}"
+        wl-paste >"${temprev}"
+        notify-send -a "Pastebin:" "Preview: ${imdx}" -i "${temprev}" -t 2000
         return 1
     fi
 }
 
 # clipboard action
 case $1 in
-    # c)  cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | cliphist decode | wl-copy
-    c)  selClip=$(cliphist list | awk -F "\t" '{print $2"\t\t\t\t\t"$1} END {print "===============================================================\n\t WIPE PASTE BIN \t\t\t\t\twipe\n\t DELETE \t\t\t\t\tdelete"}' | rofi -dmenu -multi-select  -theme-str  "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile )
-        ( [ -n "${selClip}" ] && echo -e "${selClip}" | checkContent ) || exit 0
-        if [ $? -eq  1 ]; then pasteIt "${*}" ; exit 0 ; fi
-        echo -e "${selClip}" | awk -F "\t\t\t\t\t" '{print $2}' | cliphist_decode | wl-copy
+c)
+    selClip=$( (
+        echo -e ":d:e:l:e:t:e:\t Delete\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
+        cliphist list
+    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)
+    ([ -n "${selClip}" ] && echo -e "${selClip}" | checkContent) || exit 0
+    if [ $? -eq 1 ]; then
         pasteIt "${*}"
+        exit 0
+    fi
+    pastebin_process <<<"${selClip}" | wl-copy
+    pasteIt "${*}"
     ;;
-    d)  cliphist list |  awk -F "\t" '{print $2"\t\t\t\t\t"$1}' | rofi -dmenu  -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile |  cliphist_delete
-        
+d)
+    delMode=true
+    (
+        echo -e ":w:i:p:e:\tClear Pastebin\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
+        cliphist list
+    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
+
     ;;
-    w)
-        r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
-        if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)" == "Yes" ] ; then
-            cliphist wipe
-        fi
+w)
+    r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
+    if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)" == "Yes" ]; then
+        cliphist wipe
+    fi
     ;;
-    *)
-        echo  "cliphist.sh [action]"
-        echo "c :  cliphist list and copy selected"
-        echo "d :  cliphist list and delete selected"
-        echo "w :  cliphist wipe database"
+*)
+    echo "cliphist.sh [action]"
+    echo "c :  cliphist list and copy selected"
+    echo "d :  cliphist list and delete selected"
+    echo "w :  cliphist wipe database"
     ;;
 esac

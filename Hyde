@@ -690,7 +690,6 @@ show() { #? Useful GUI util
     -p   ?  Show the pretty format
     -d   ?  Add custom delimiter symbol (default '>')
     -f   ?  Add custom file
-    -w   ?  Custom width
     -h   ?  Display this help message
 [END]
 USAGE
