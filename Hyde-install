@@ -89,7 +89,6 @@ export newCloneDir
 export GIT
 
 export CloneDir=${newCloneDir}
-(
     if cd "${newCloneDir}"/Scripts; then
         print_prompt -m "[*] " -y "Using existing directory"
         if [[ ${is_link} == true ]]; then
@@ -103,7 +102,6 @@ export CloneDir=${newCloneDir}
     else
         install_distro --fresh
     fi
-) || echo "Operation Failed" && exit 1
 set_metadata "${newCloneDir}"
 if ! grep -q "$HOME/.local/share/bin" <<<$PATH; then
     print_prompt -y "Restarting to make Hyde Work"
