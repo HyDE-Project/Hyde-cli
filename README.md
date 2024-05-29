@@ -172,15 +172,6 @@ source Hyde.bash
 
 </details>
 
-<details>
-<summary>Fish</summary>
-
-```
-source Hyde.fish
-```
-
-</details>
-
 ## Support
 
 If you would like to support this project, but don't know how, here are some ways: 
