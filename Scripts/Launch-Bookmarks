@@ -11,6 +11,8 @@
 # TODO accepts feature Request for other browser Bookmarks (json format only)
 
 rofi_pos
+recentData="${cacheDir}/landing/show_bookmarks.recent"
+[ ! -f "${recentData}" ] && touch "${recentData}"
 
 # create a backup file
 create_backup() {
@@ -45,6 +47,21 @@ firefox_bookmarks() {
     process_bookmarks
 }
 
+#? Receives a filepath of any .lst format converts to json
+# TODO make this to handle multiple slots for multi objects
+custom_bookmarks() {
+    awk -F '|' '{gsub(/^ */, "", $1); gsub(/ *$/, "", $1); gsub(/^ */, "", $2); gsub(/ *$/, "", $2); print "{\"title\":\""$1"\",\"url\":\""$2"\"}"}' "${1}"
+}
+
+save_recent() {
+    recentNumber=5
+    #? Prepend the selected glyph to the top of the recentData file
+    # sed -i "1i\\$selGlyph" "${recentData}"
+    awk -v var="${*}" 'BEGIN{print var} {print}' "${recentData}" >temp && mv temp "${recentData}"
+    #?  Use awk to remove duplicates and empty lines, moving the most recent glyph to the top
+    awk 'NF' "${recentData}" | awk '!seen[$0]++' | head -n ${recentNumber} >temp && mv temp "${recentData}"
+}
+
 declare -a bookmarkFile
 
 # TODO List all the posible Bookmarks path if needed to be hardcoded
@@ -59,8 +76,12 @@ bookmarkFile+=(${bookmark_file[@]})
 #* Cache bookmark path
 if [[ "${*}" == *"--rebuild"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
     print_prompt -y "[cache] " "bookmark paths"
+    : >"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+    for bookmark in "${bookmark_file[@]}"; do
+        echo -e "bookmarkFile+=($bookmark)" >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+    done
     eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 |
-        xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >"${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
+        xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
 fi
 
 . "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
@@ -82,14 +103,26 @@ mainJson=$(
             if jq -r '.roots.other.children[] | { title:.name, url:.url }' $file 2>/dev/null; then
                 jq -r '.roots.other.children[] | { title:.name, url:.url }' $file
             fi
+            #* Custom from hyde.conf
+            if grep -q ".lst" <<<"${file}"; then
+                [[ "${*}" == *"--no-custom"* ]] || custom_bookmarks "${file}"
+            fi
         fi
     done
 )
 
 [[ -z ${mainJson} ]] && print_prompt -r "[error]" " No/invalid bookmarks detected" && exit 1
+jq empty <<<${mainJson} || { print_prompt -r "[fatal]" " Broken json data, be sure to have a valid 'bookmarks.lst' file." "\nrun with '--no-custom' flag" && exit 1; }
 
-#* sort and remove duplicates
-mainJson=$(jq -s 'unique_by(.title) | unique_by(.url) | sort_by(.title)' <<<$mainJson)
+#* sort and remove duplicates and append recent
+mainJson=$(
+    (
+        [[ "${*}" == *"--no-custom"* ]] || { [ -f ${recentData} ] && custom_bookmarks "${recentData}"; }
+        jq -s 'unique_by(.title) | unique_by(.url) | sort_by(.title) | .[]' <<<$mainJson
+    ) | jq -s
+)
+
+listView=$(jq -r 'foreach .[] as $item (0; . + 1; "\(.)) \($item.title)")' <<<"$mainJson")
 
 #* Rofi
 browser_name=$(basename $(xdg-settings get default-web-browser) .desktop)
@@ -98,13 +131,13 @@ r_height="height: ${bookmark_height:-35em};"
 r_listview="listview { lines: ${bookmark_line:-13}; }"
 r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
 
-selected_opt=$(jq -r 'foreach .[] as $item (0; . + 1; "\(.)) \($item.title)")' <<<"$mainJson" |
-    rofi -dmenu -i -theme-str "entry { placeholder: \"Launch in ${browser_name}... \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
+selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \"Launch in ${browser_name}... \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
 
 [[ -z ${selected_opt} ]] && print_prompt -r "Operation Cancelled" && exit 0
 
 index=$(cut -d ')' -f1 <<<${selected_opt})
+save_recent "$(jq -c --argjson index "$index" -cr '.[$index - 1] | "\(.title) |\(.url)"' <<<$mainJson)"
 
 #* Use index and open url
 url=$(jq -c --argjson index "$index" -cr ' .[$index - 1] | .url' <<<$mainJson)
-xdg-open "${url}"
+xdg-open "${url}" || notify-send "Cannot accessing '$url'"

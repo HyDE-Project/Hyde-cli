@@ -5,7 +5,7 @@
 
   <br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-  <a href="#usage"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
+  <a href="https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
   <a href="#faq"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
   <a href="#roadmap"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
@@ -30,6 +30,9 @@ To install, execute the following command:
 ```
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
 ```
+> [!Note]
+> For User who do not have root access:
+> ` export HYDE_LOCAL=1 ` to install this package locally
 
 For other working install solutions, see the following below.
 
@@ -63,7 +66,6 @@ Clone:
 git clone https://github.com/kRHYME7/Hyde-cli
 cd ./Hyde-cli
 ```
-
 To install: 
 
 ```
@@ -81,12 +83,15 @@ To update:
 ```
 make update clean install
 ```
+> [!Note]
+> User who do not have root access should provide this flag for ` make `; ` make LOCAL=1 ` 
 
 ## Usage
 
 Run: `Hyde man` if Hyde-cli is installed.
 <br>
-View: `USAGE` in this repository.
+View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE)
+
 
 ---
 
@@ -147,13 +152,13 @@ View: `USAGE` in this repository.
 
 #### Activate Shell-completions
 
-If shell completions are not working, you can manually source them from the terminal. You can also persist the changes by adding the snippet at the end of your `.zshrc`, `.bashrc`, or `~/.config/fish/config.fish`.
+If shell completions are not working, you can manually source them from the terminal. You can also persist the changes by adding the snippet at the end of your `.zshrc`, `.bashrc`.
 
 <details>
 <summary>Zsh</summary>
 
 ```
-source /usr/share/hyde-cli/Hyde.zsh
+source Hyde.zsh
 ```
 
 </details>
@@ -162,16 +167,7 @@ source /usr/share/hyde-cli/Hyde.zsh
 <summary>Bash</summary>
 
 ```
-source /usr/share/hyde-cli/Hyde.bash
-```
-
-</details>
-
-<details>
-<summary>Fish</summary>
-
-```
-source /usr/share/hyde-cli/Hyde.fish
+source Hyde.bash
 ```
 
 </details>

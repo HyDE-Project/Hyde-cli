@@ -5,11 +5,11 @@ if [ "$(whoami)" = "root" ] || [ "$(id -u)" -eq 0 ]; then
     exit 1
 fi
 
-export PATH=$PATH:/usr/lib/hyde-cli/
+export CLI_PATH=$(dirname $(dirname ${0}))
+export PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
 
-hyde_cli_version=$(cat /usr/share/hyde-cli/.hyde-cli.ver | head -1)
+hyde_cli_version=$(cat ${CLI_PATH}/share/hyde-cli/.hyde-cli.ver | head -1)
 
-# . DEVEL
 . GLOBAL-hyde
 . DEVEL-hyde
 . FUNCTIONS-hyde
@@ -81,6 +81,7 @@ version() { #? Hyde-cli version
     hyde_header
     box_me -s "Hyde-cli version" -c 209
     cat "${usrDir}/.hyde-cli.ver"
+    [[ ${CLI_PATH} != *"/usr"*  ]] && print_prompt -y "Locally installed by $USER"
     barLine
     {
         . "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
@@ -93,6 +94,7 @@ version() { #? Hyde-cli version
 systeminfo() { #? System information
     echo -e "**Hyde-cli version:**"
     cat "${usrDir}/.hyde-cli.ver"
+    [[ ${CLI_PATH} != *"/usr"*  ]] && echo "***Locally installed by $USER***"
 
     echo -e "\n**Hyde repository:**"
     repo_info
@@ -241,7 +243,9 @@ update() { #? Pull updates from Hyde repository
     git pull
     git stash pop 2>/dev/null
     print_prompt -y "Checking Hyde CLI updates..."
+    [[ ${CLI_PATH} != *"/usr"*  ]] && export HYDE_LOCAL=1 && print_prompt -y "Locally installed by $USER"
     curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
+    barLine
     inform_updates
 }
 
@@ -467,7 +471,7 @@ wallpaper() { #? Wallpaper commands
         ;;
     # variety) #? EXPERIMENTAL! Use variety package to manage wallpapers
     #     shift
-    #     /usr/lib/hyde-cli/Run-Wallpaper "${@}"
+    #     ${CLI_PATH}/lib/hyde-cli/Run-Wallpaper "${@}"
     # ;;
     *) Parameters "${FUNCNAME[0]}" ;;
 
@@ -660,7 +664,7 @@ code() { #! Modify Vscode Extensions
         else
             echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
             ask_confirm
-            sel_ext=$(/usr/bin/code --list-extensions | fzf)
+            sel_ext=$($(which code) --list-extensions | fzf)
             sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
             select_theme
         fi
@@ -709,12 +713,13 @@ USAGE
     glyph) #? Glyph selector
         Launch-Glyph
         ;;
-    bookmarks) #? [*] Bookmark selector
+    bookmarks) #? [*] Bookmark selector\nﯦ append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '${hydeConfDir}/hyde.conf'
         shift
         Launch-Bookmarks $*
 : <<USAGE
 [SHOW_BOOKMARKS_USAGE]
-    --rebuild     ?  force rebuild cached bookmark paths
+    --rebuild   ?   force rebuild cached bookmark paths
+    --no-custom ?    run without custom '.lst' bookmark files
 [END]
 USAGE
         ;;
@@ -806,7 +811,7 @@ inject() { #? User/Device specific scripts that might be useful
     ;;
     chaotic_aur) #? [*] Add chaotic aur to you mirror
         shift
-        SUPER /usr/lib/hyde-cli/Install-chaotic-aur "${@}"
+        SUPER ${CLI_PATH}/lib/hyde-cli/Install-chaotic-aur "${@}"
 : <<USAGE
 [INJECT_CHAOTIC_AUR_USAGE]
     --install ? Setup Choatic Aur, append [fresh] to run in fresh install mode

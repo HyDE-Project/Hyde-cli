@@ -22,92 +22,98 @@ check_deps() {
 
     [ -n "${requirements}" ] && echo -e "Depedencies: ${requirements}\nInstall them using your package manager"
 }
+
 export -f check_deps
 
-PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
-# PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
-echo "Package manager: $PACKAGE_MANAGER"
+if [[ 1 -ne ${HYDE_LOCAL} ]]; then
+    PACKAGE_MANAGER=$(which pacman >/dev/null 2>&1 && echo "pacman" || true)
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which apt >/dev/null 2>&1 && echo "apt" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which zypper >/dev/null 2>&1 && echo "zypper" || true)}
+    # PACKAGE_MANAGER=${PACKAGE_MANAGER:-$(which yum >/dev/null 2>&1 && echo "yum" || true)}
+    echo "Package manager: $PACKAGE_MANAGER"
 
-clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
-mkdir -p "${clone_hyde_cli}"
-
-case "${PACKAGE_MANAGER}" in
-dnf)
-    :
-    #Yes posible! But I'm Lazy
-    ;;
-pacman)
-    pkgname=hyde-cli-git
-    if pacman -Q yay &>/dev/null; then
-        aurhlpr="yay"
-    elif pacman -Q paru &>/dev/null; then
-        aurhlpr="paru"
-    else
-        select opt in "yay" "paru"; do if [[ -n $opt ]]; then
-            aurhlpr=$opt
-            break
-        fi; done
-        SUPER pacman -S --needed git base-devel
-        rm -fr ${clone_hyde_cli}/${aurhlpr}
-        git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
-        cd ${clone_hyde_cli}/${aurhlpr}
-        makepkg -si --noconfirm
-    fi
-
-    if ! pacman -Q "${aurhlpr}" &>/dev/null; then echo "Please try to rerun script!" && exit 0; fi
-
-    if pacman -Q "${pkgname}" 2>/dev/null; then
-        if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
-            ${aurhlpr} -Sy "${pkgname}" --noconfirm
+    case "${PACKAGE_MANAGER}" in
+    dnf)
+        :
+        #Yes posible! But I'm Lazy
+        ;;
+    pacman)
+        pkgname=hyde-cli-git
+        if pacman -Q yay &>/dev/null; then
+            aurhlpr="yay"
+        elif pacman -Q paru &>/dev/null; then
+            aurhlpr="paru"
         else
-            echo "Already up to date"
+            select opt in "yay" "paru"; do if [[ -n $opt ]]; then
+                aurhlpr=$opt
+                break
+            fi; done
+            SUPER pacman -S --needed git base-devel
+            rm -fr ${clone_hyde_cli}/${aurhlpr}
+            git clone https://aur.archlinux.org/${aurhlpr}.git ${clone_hyde_cli}/${aurhlpr}
+            cd ${clone_hyde_cli}/${aurhlpr}
+            makepkg -si --noconfirm
         fi
-        exit 0
-    else
-        "${aurhlpr}" -Sy "${pkgname}" --noconfirm
-        if pacman -Q "${pkgname}" 2>/dev/null; then exit 0; fi
-    fi
-    ;;
-esac
+
+        if ! pacman -Q "${aurhlpr}" &>/dev/null; then echo "Please try to rerun script!" && exit 0; fi
+
+        if pacman -Q "${pkgname}" 2>/dev/null; then
+            if ${aurhlpr} -Qu --devel "${pkgname}" | grep -q "${pkgname}"; then
+                ${aurhlpr} -Sy "${pkgname}" --noconfirm
+            else
+                echo "Already up to date"
+            fi
+            exit 0
+        else
+            "${aurhlpr}" -Sy "${pkgname}" --noconfirm
+            if pacman -Q "${pkgname}" 2>/dev/null; then exit 0; fi
+        fi
+        ;;
+    esac
+
+fi
 
 check_deps jq git kitty
 
-mkdir -p "${clone_hyde_cli}"
+clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
+# mkdir -p "${clone_hyde_cli}"
+
 rm -fr "${clone_hyde_cli}"
 git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
 cd "${clone_hyde_cli}" || exit
 
-if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
-    git remote set-branches origin '*'
-fi
-git fetch --all
-Git_Repo="$(git remote get-url origin)"
+if [[ true == "HYDE_BRANCH" ]]; then
+    if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+        git remote set-branches origin '*'
+    fi
+    git fetch --all
+    Git_Repo="$(git remote get-url origin)"
 
-branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
-branches=($branches)
-if [[ ${#branches[@]} -le 1 ]]; then
-    branch=${branches[0]}
-else
-    echo "Select a Branch"
-    if command -v fzf; then
-        git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+    branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
+    branches=($branches)
+    if [[ ${#branches[@]} -le 1 ]]; then
+        branch=${branches[0]}
     else
-        select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid selection. Please try again."; done
+        echo "Select a Branch (default Master):  "
+        if command -v flzf; then
+            git_branch=$(git branch -a | fzf --prompt='Choose a branch')
+            { [[ -z ${git_branch} ]] && git_branch=master && echo "Default master branch"; }
+        else
+            select git_branch in "${branches[@]}"; do [[ -n $git_branch ]] && break || echo "Invalid Selection"; done
+        fi
+    fi
+
+    [[ -z ${git_branch} ]] && echo "Operation cancelled" && exit 0
+    if [[ $git_branch == *"*"* ]]; then
+        echo "Already in branch: ${git_branch}"
+        return 1
+    else
+        # Extract the branch name without the remote prefix and trim leading whitespace
+        branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        # Switch to the selected branch
+        git switch "${branch_name}"
     fi
 fi
 
-[[ -z ${git_branch} ]] && echo "Operation cancelled" && exit 0
-if [[ $git_branch == *"*"* ]]; then
-    echo "Already in branch: ${git_branch}"
-    return 1
-else
-    # Extract the branch name without the remote prefix and trim leading whitespace
-    branch_name=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
-    # Switch to the selected branch
-    git switch "${branch_name}"
-fi
-
-echo "Continue to install ${pkgname} locally"
-SUPER make clean install
+echo "Installing ${pkgname} locally"
+make LOCAL=1 clean all

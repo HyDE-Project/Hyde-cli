@@ -63,7 +63,11 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
 
             done
         )
-        echo -e "${man_params}"
+        echo -e "${man_params}" |
+        sed -e "s|\${CloneDir}|$CloneDir|g" \
+            -e "s|\${HOME}|${HOME}|g" \
+            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+            -e "s|\${ctlFile}|$ctlFile|g"
     fi
 }
 

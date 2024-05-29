@@ -1,3 +1,4 @@
+
 pkgname := hyde-cli
 prefix := /usr
 bindir := $(prefix)/bin
@@ -9,6 +10,14 @@ VERSION := $(shell git describe --tags)
 LAST_COMMIT := $(shell git log -1 --pretty=format:"%h %cd")
 COMMIT_MESSAGE := $(shell git show -s --format='%B')
 INSTALLATION_DIRECTORY := $(shell pwd)
+
+ifdef LOCAL
+    prefix := $(HOME)/.local
+    bindir := $(prefix)/bin
+    libdir := $(prefix)/lib/$(pkgname)
+    etcdir := $(HOME)/.hyde-cli/
+    usrdir := $(prefix)/share/$(pkgname)
+endif
 
 all: check directories  install
 
@@ -55,15 +64,21 @@ install:
 	install -m 755 ./Hyde-install $(DESTDIR)$(bindir)
 	install -m 755 ./Hyde-tool $(DESTDIR)$(bindir) 
 
-	@echo "Version: $(VERSION)" > .$(pkgname).ver
-	@echo "Last commit: $(LAST_COMMIT)" >> .$(pkgname).ver
-	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> .$(pkgname).ver
+	install -m 644 ./shell-completions/Hyde.bash $(DESTDIR)$(bindir)/Hyde.bash 
+	install -m 644 ./shell-completions/Hyde.zsh $(DESTDIR)$(bindir)/Hyde.zsh 
+	install -m 644 ./shell-completions/Hyde-tool.bash $(DESTDIR)$(bindir)/Hyde-tool.bash 
+	install -m 644 ./shell-completions/Hyde-tool.zsh $(DESTDIR)$(bindir)/Hyde-tool.zsh 
 
-	install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
+	@echo "Version: $(VERSION)" > $(DESTDIR)$(usrdir)/.$(pkgname).ver
+	@echo "Last commit: $(LAST_COMMIT)" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
+	@echo "Commit message: '$(COMMIT_MESSAGE)'" >> $(DESTDIR)$(usrdir)/.$(pkgname).ver
+
+	# install -m 644 ./.$(pkgname).ver $(DESTDIR)$(usrdir) 
 
 	install -m 755 ./Scripts/* $(DESTDIR)$(libdir) 
 	install -m 644 ./Configs/* $(DESTDIR)$(etcdir) 
 	install -m 644 ./Extras/* $(DESTDIR)$(usrdir) 
+	
 	install -m 644 ./shell-completions/Hyde.bash $(DESTDIR)$(usrdir)
 	install -m 644 ./shell-completions/Hyde.zsh $(DESTDIR)$(usrdir)
 	install -m 644 ./shell-completions/Hyde-tool.bash $(DESTDIR)$(usrdir)
@@ -99,6 +114,11 @@ purge :
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-install)
 	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-tool)
+
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde.bash)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde.zsh)
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-tool.bash) 
+	-rm -f $(wildcard $(DESTDIR)$(bindir)/Hyde-tool.zsh)
 
 	-rm -rf $(wildcard $(DESTDIR)$(libdir)/)
 	-rm -rf $(wildcard $(DESTDIR)$(etcdir)/)
