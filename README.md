@@ -152,7 +152,7 @@ View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE)
 
 #### Activate Shell-completions
 
-If shell completions are not working, you can manually source them from the terminal. You can also persist the changes by adding the snippet at the end of your `.zshrc`, `.bashrc`, or `~/.config/fish/config.fish`.
+If shell completions are not working, you can manually source them from the terminal. You can also persist the changes by adding the snippet at the end of your `.zshrc`, `.bashrc`.
 
 <details>
 <summary>Zsh</summary>
