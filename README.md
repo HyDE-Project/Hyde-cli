@@ -158,7 +158,7 @@ If shell completions are not working, you can manually source them from the term
 <summary>Zsh</summary>
 
 ```
-source /usr/share/hyde-cli/Hyde.zsh
+source Hyde.zsh
 ```
 
 </details>
@@ -167,7 +167,7 @@ source /usr/share/hyde-cli/Hyde.zsh
 <summary>Bash</summary>
 
 ```
-source /usr/share/hyde-cli/Hyde.bash
+source Hyde.bash
 ```
 
 </details>
@@ -176,7 +176,7 @@ source /usr/share/hyde-cli/Hyde.bash
 <summary>Fish</summary>
 
 ```
-source /usr/share/hyde-cli/Hyde.fish
+source Hyde.fish
 ```
 
 </details>
