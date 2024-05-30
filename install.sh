@@ -71,16 +71,22 @@ if [[ 1 -ne ${HYDE_LOCAL} ]]; then
         ;;
     esac
 
-fi
+else
 
 check_deps jq git kitty
 
 clone_hyde_cli=${HOME}/.cache/hyde/Hyde-cli
 # mkdir -p "${clone_hyde_cli}"
 
+if [[ 1 -ne ${HYDE_UPDATE} ]]; then
 rm -fr "${clone_hyde_cli}"
 git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}"
-cd "${clone_hyde_cli}" || exit
+fi
+
+cd "${clone_hyde_cli}" || { git clone https://github.com/kRHYME7/Hyde-cli "${clone_hyde_cli}" && cd "${clone_hyde_cli}" ;}
+git reset --hard
+git clean -fdi
+git pull
 
 if [[ true == "HYDE_BRANCH" ]]; then
     if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
@@ -92,7 +98,7 @@ if [[ true == "HYDE_BRANCH" ]]; then
     branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
     branches=($branches)
     if [[ ${#branches[@]} -le 1 ]]; then
-        branch=${branches[0]}
+        git_branch=${branches[0]}
     else
         echo "Select a Branch (default Master):  "
         if command -v flzf; then
@@ -117,3 +123,5 @@ fi
 
 echo "Installing ${pkgname} locally"
 make LOCAL=1 clean all
+
+fi
