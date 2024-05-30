@@ -9,13 +9,11 @@ initiate_hyde_command() {
         if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
             git fetch >/dev/null 2>&1
             if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
-                echo -e "Updates available! \nEXEC: \033[0;34mHyde update\033[0m"
-                # notify-send "Updates available! EXEC: 'Hyde update' "
+                echo -e "Updates available! \nexec: \033[0;34mHyde update\033[0m"
+                notify-send "Updates available! exec: 'Hyde update' to pull the changes upstream"
             fi
         fi
         touch "${cacheDir}/landing/update.check"
-    else
-        :
     fi
 }
 
@@ -288,17 +286,18 @@ shell_select() {
     else
         print_prompt -g "[SKIP] " "${myShell} is already set as shell..."
     fi
-
 }
 
 sddm_select() {
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
         sddm_conf=/etc/sddm.conf.d/kde_settings.conf
+        SUPER mkdir -p "$(dirname ${sddm_conf})"
         sddm_theme=$(
         find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
         | awk -F 'Sddm_' '{print $2}' |\
          awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
         )
+        
         [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"

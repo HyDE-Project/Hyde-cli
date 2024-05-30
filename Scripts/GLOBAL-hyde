@@ -393,6 +393,7 @@ eval "$(declare -F | sed -e 's/-f /-fx /')"
 export cacheDir="${HOME}/.cache/hyde"
 export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to dissable perms
 export settingDir="${cacheDir}/hyde-settings"
+export landingDir="${cacheDir}/landing"
 
 #! Temporary
 [ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
@@ -434,6 +435,7 @@ make_dir=(
     "${BkpDir}"
     "${cacheDir}"
     "${settingDir}"
+    "${landingDir}"
     "${etcDir}"
     "${HYDE_RUNTIME_DIR}"
 )
