@@ -243,7 +243,7 @@ update() { #? Pull updates from Hyde repository
     git pull
     git stash pop 2>/dev/null
     print_prompt -y "Checking Hyde CLI updates..."
-    [[ ${CLI_PATH} != *"/usr"*  ]] && export HYDE_LOCAL=1 && print_prompt -y "Locally installed by $USER"
+    [[ ${CLI_PATH} != *"/usr"*  ]] && export HYDE_LOCAL=1; export HYDE_UPDATE=1 && print_prompt -y "Locally installed by $USER"
     curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
     barLine
     inform_updates
