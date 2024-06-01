@@ -170,8 +170,9 @@ source Hyde.zsh
 ```sh
 source Hyde.bash
 ```
+</details>
 
-##### Images are not being shown in the terminal
+#### Images are not being shown in the terminal
   Make sure your terminal supports images. If you are using a terminal emulator that does not support images, you can use a terminal emulator that does, such as `kitty`.
   
 </details>
