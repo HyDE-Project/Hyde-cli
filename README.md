@@ -25,11 +25,12 @@ For example, we have a functional TUI restore tool that follows `restore_cfg.lst
 
 ## Installation
 
-To install, execute the following command: 
+To install, execute the following command:
 
 ```
 curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
 ```
+
 > [!Note]
 > For User who do not have root access:
 > ` export HYDE_LOCAL=1 ` to install this package locally
@@ -38,7 +39,7 @@ For other working install solutions, see the following below.
 
 ### Arch Linux
 
-Use your preferred AUR helper `paru` or `yay`: 
+Use your preferred AUR helper `paru` or `yay`:
 
 ```
 paru -Sy hyde-cli-git
@@ -48,7 +49,7 @@ paru -Sy hyde-cli-git
 yay -Sy hyde-cli-git
 ```
 
-Use makepkg: 
+Use makepkg:
 
 ```
 git clone https://aur.archlinux.org/hyde-cli-git.git
@@ -60,38 +61,39 @@ makepkg -si
 
 Install required dependencies: `git make fzf tree ttf-jetbrains-mono-nerd`.
 
-Clone: 
+Clone:
 
 ```
 git clone https://github.com/kRHYME7/Hyde-cli
 cd ./Hyde-cli
 ```
-To install: 
+
+To install:
 
 ```
 make
 ```
 
-To uninstall: 
+To uninstall:
 
 ```
 make uninstall
 ```
 
-To update: 
+To update:
 
 ```
 make update clean install
 ```
+
 > [!Note]
-> User who do not have root access should provide this flag for ` make `; ` make LOCAL=1 ` 
+> User who do not have root access should provide this flag for ` make `; ` make LOCAL=1 `
 
 ## Usage
 
 Run: `Hyde man` if Hyde-cli is installed.
 <br>
 View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE)
-
 
 ---
 
@@ -102,48 +104,47 @@ View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE)
 
 1) **Basic Installation**
 
-  - To install HyDE with the defaults, simply run the following command: 
+- To install HyDE with the defaults, simply run the following command:
 
     ```
     Hyde-install
     ```
 
 > [!Important]
->  _Already  have HyDE before you discover this CLI?_
-> Simply run this command 
-> ` Hyde-intall --link --dir ~/HyDE ` 
->  Note that the ` ~/HydE ` is the path to the clone directory. 
+> *Already  have HyDE before you discover this CLI?*
+> Simply run this command
+> ` Hyde-install --link --dir ~/HyDE `
+> Note that the ` ~/HydE ` is the path to the clone directory.
 > See **Advanced Installation** below for more info.
 
 2) **Advanced Installation**
 
-  - For more control over the installation process, you can use the following options: 
+- For more control over the installation process, you can use the following options:
 
-    - **Specify Local Directory**: To clone HyDE into a specific local directory and run the installation, use the `-d` or `--dir` flag followed by the path of the directory.
+  - **Specify Local Directory**: To clone HyDE into a specific local directory and run the installation, use the `-d` or `--dir` flag followed by the path of the directory.
 
       ```
       Hyde-install --dir /path/to/directory
       ```
 
-    - **Specify Remote Git Repository**: To clone HyDE from a specific remote git repository, use the `-g` or `--git` flag followed by the URL of the repository.
+  - **Specify Remote Git Repository**: To clone HyDE from a specific remote git repository, use the `-g` or `--git` flag followed by the URL of the repository.
 
       ```
       Hyde-install --git https://host/owner/repository
       ```
 
-    - **Link Local Git Repository**: To link a local git repository, use the `-l` or `--link` flag.
+  - **Link Local Git Repository**: To link a local git repository, use the `-l` or `--link` flag.
 
       ```
       Hyde-install --link
       ```
 
-
 > [!Important]
 > If you have previously installed HyDE without using the CLI, you can still use the CLI to manage your installation.
 > To do this, combine the --dir and --link flags where the local cloned repository is located.
-> 
-> For example: 
-> 
+>
+> For example:
+>
 > ```
 > Hyde-install --dir /path/to/cloned/hyde --link
 > ```
@@ -157,7 +158,7 @@ If shell completions are not working, you can manually source them from the term
 <details>
 <summary>Zsh</summary>
 
-```
+```sh
 source Hyde.zsh
 ```
 
@@ -166,15 +167,19 @@ source Hyde.zsh
 <details>
 <summary>Bash</summary>
 
-```
+```sh
 source Hyde.bash
 ```
+</details>
 
+#### Images are not being shown in the terminal
+  Make sure your terminal supports images. If you are using a terminal emulator that does not support images, you can use a terminal emulator that does, such as `kitty`.
+  
 </details>
 
 ## Support
 
-If you would like to support this project, but don't know how, here are some ways: 
+If you would like to support this project, but don't know how, here are some ways:
 
 - Submit PRs. Even if it's formatting improvements or fixing spelling mistakes, they are all appreciated!
 - Report issues. Major or minor, doesn't matter, please report any you find.
@@ -182,7 +187,7 @@ If you would like to support this project, but don't know how, here are some way
 
 ## Roadmap
 
-This is the current unfinished and completed plans of the project: 
+This is the current unfinished and completed plans of the project:
 
 - [ ] Add interactive installation using fzf
 - [x] Interactive restore config following `restore_cfg.lst`
