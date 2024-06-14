@@ -361,7 +361,7 @@ do_contain() {
     else
         :
         # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
-        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to receive updates"
     fi
 }
 
@@ -391,7 +391,7 @@ eval "$(declare -F | sed -e 's/-f /-fx /')"
 
 # Cache-dir
 export cacheDir="${HOME}/.cache/hyde"
-export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to dissable perms
+export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to disable perms
 export settingDir="${cacheDir}/hyde-settings"
 export landingDir="${cacheDir}/landing"
 
