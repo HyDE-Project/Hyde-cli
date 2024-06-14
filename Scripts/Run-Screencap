@@ -104,11 +104,11 @@ print_error() {
 Screenrecord: '${screen_recorder}'
 Screenshot: 'grimblast'
 
-[Usage] Hyprdots run screencap [option]
+[Usage] Hyde run screencap [option]
 
 ${usage}
 
-For Screen Recording you can pass an argument (--help for for options for '${screen_recorder}' )
+For Screen Recording you can pass an argument --help for '${screen_recorder}' options
 Example you can append [--audio] to capture audio.
 
 HELP
@@ -135,7 +135,7 @@ case ${OPTION} in
     grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
     cleaNotify
     ;;
--ra | --record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
+-ra | --record-all) notify-send -a "ScreenCap" "'--record-all' is deprecated please use --record-focus instead" ;;
 -rf | --record-focus) #? 󰃽 Record focused monitor
     grim -o "${focus_monitor}" "${temp_screenshot}"
     warn_dup

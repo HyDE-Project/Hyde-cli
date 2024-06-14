@@ -121,9 +121,9 @@ case ${OPT} in
 "${rec}"*)
     config_reload
     if ! ${snip}; then
-        Hyprdots run screencap -rf
+        Run-Screencap -rf
     elif [[ -z ${GEOM} ]]; then
-        Hyprdots run screencap -rf
+        Run-Screencap -rf
     else
         grim -g "${GEOM}" $temp_screenshot
         warn_dup
