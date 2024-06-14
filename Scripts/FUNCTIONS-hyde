@@ -266,7 +266,7 @@ shell_select() {
         done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
 
         # update plugin array in zshrc
-        print_prompt -y "[SHELL]" " intalling plugins (${w_plugin})"
+        print_prompt -y "[SHELL]" " installing plugins (${w_plugin})"
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then

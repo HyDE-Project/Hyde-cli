@@ -20,7 +20,7 @@ check_deps() {
         fi
     done
 
-    [ -n "${requirements}" ] && echo -e "Depedencies: ${requirements}\nInstall them using your package manager"
+    [ -n "${requirements}" ] && echo -e "Dependencies: ${requirements}\nInstall them using your package manager"
 }
 
 export -f check_deps
@@ -35,7 +35,7 @@ if [[ 1 -ne ${HYDE_LOCAL} ]]; then
     case "${PACKAGE_MANAGER}" in
     dnf)
         :
-        #Yes posible! But I'm Lazy
+        #Yes possible! But I'm Lazy
         ;;
     pacman)
         pkgname=hyde-cli-git

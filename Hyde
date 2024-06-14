@@ -186,7 +186,7 @@ check() { #? Information about Hyde and its components
 cat <<NOTE
 *mismatch               Mismatched files compared to upstream and not preserved
                             ﯦ check diff by appending '--mismatch'
-*preserve               Incosistency may occur if preserving files
+*preserve               Inconsistency may occur if preserving files
                             ﯦ check diff regularly by appending '--preserve'
 *wallbash & *dynamic     Constantly changing files
                             ﯦ pointless to diff
@@ -202,7 +202,7 @@ NOTE
 USAGE
     ;;
     Package) #? Hyde core Package status
-    # TODO revert this back to a funtion if needed to be reused like hwo rubiin did.  
+    # TODO revert this back to a function if needed to be reused like hwo rubiin did.  
     navigate_clone
     hyde_header
     # TODO Read the main package list then compare the locally installed packages
@@ -320,7 +320,7 @@ backup() { #? Backing up commands
     esac;
 }
 
-override() { #? Overwrite current dots from the prefered user dir \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/pref/directory' in\n'${hydeConfDir}/hyde.conf' for custom user path
+override() { #? Overwrite current dots from the preferred user dir \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/pref/directory' in\n'${hydeConfDir}/hyde.conf' for custom user path
     source_user
     userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
     [ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
@@ -814,7 +814,7 @@ inject() { #? User/Device specific scripts that might be useful
         SUPER ${CLI_PATH}/lib/hyde-cli/Install-chaotic-aur "${@}"
 : <<USAGE
 [INJECT_CHAOTIC_AUR_USAGE]
-    --install ? Setup Choatic Aur, append [fresh] to run in fresh install mode
+    --install ? Setup Chaotic Aur, append [fresh] to run in fresh install mode
     --uninstall ? Removes Chaotic Aur
     --revert  ? Converts chaotic aur packages to AUR
 [END]

@@ -34,7 +34,7 @@
 #? 12 > cursor
 #? 4:1 > while typing
 #? 4:2 > Commands and the Check Mark
-#? 4:3 > arguments/params/opts qouted
+#? 4:3 > arguments/params/opts quoted
 #? 
 #? 4:6 > Variables with $
 #? 4:8 > Suggestions
@@ -43,7 +43,7 @@
 #? 
 #? 
 #? 19 > marked letters 
-#? 17 > mark hightlight
+#? 17 > mark highlight
 #? 
 
 
