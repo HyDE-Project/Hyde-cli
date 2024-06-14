@@ -11,7 +11,7 @@ snip=false
 [ ! -f "${rofile}" ] && roFile="${etcDir}/screencap.rasi"
 
 . Run-Screencap GUI
-trap cleaNotify EXIT
+trap clearNotify EXIT
 
 # # set position
 # x_offset=70   #* Cursor spawn position on clipboard

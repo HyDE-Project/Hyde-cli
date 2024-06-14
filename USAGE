@@ -60,7 +60,7 @@ Usage: Hyde [Function] [options]
 
 			 [clean]  ﬌ Clear some storage by deleting old backups
  
-[override]                  ﬌ Overwrite current dots from the prefered user dir 
+[override]                  ﬌ Overwrite current dots from the preferred user dir 
 			 💡 see upstream for more info 
 			 💡 add 'userPrefsDir=path/to/user/pref/directory' in
 			'/home/khing/.config/hyde/hyde.conf' for custom user path
@@ -213,7 +213,7 @@ Usage: Hyde [Function] [options]
 
 			 [chaotic_aur]  ﬌ [*] Add chaotic aur to you mirror
 
-						[--install] ﬌  Setup Choatic Aur, append [fresh] to run in fresh install mode
+						[--install] ﬌  Setup Chaotic Aur, append [fresh] to run in fresh install mode
 						[--uninstall] ﬌  Removes Chaotic Aur
 						[--revert] ﬌  Converts chaotic aur packages to AUR
 

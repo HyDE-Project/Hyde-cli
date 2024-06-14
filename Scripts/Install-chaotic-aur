@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-#! REQURED ROOT
+#! REQUIRED ROOT
 execName="$0 $*"
 rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs to be in sudo
 vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"

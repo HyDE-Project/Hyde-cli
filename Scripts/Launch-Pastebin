@@ -8,7 +8,7 @@ check_package wtype
 #? MultiSelect
 cliphist_decode() {
     # Read the entire input into an array
-    mapfile -t lines #! Not POSIX compiliant
+    mapfile -t lines #! Not POSIX compliant
     # Get the total number of lines
     total_lines=${#lines[@]}
     

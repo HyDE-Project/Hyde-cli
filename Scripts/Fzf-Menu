@@ -1,8 +1,8 @@
 #! /bin/env bash
 
-#? This Script stores all fzf menu related funtions
+#? This Script stores all fzf menu related functions
 #? Call the functions by 'fzf-menu "functions"'
-#? Functions have 'fzf_' prefix and its funtions to point to is the function name of the actual function
+#? Functions have 'fzf_' prefix and its functions to point to is the function name of the actual function
 # TODO: Make this Intuitive
 # TODO: Make the menu uniform
 
