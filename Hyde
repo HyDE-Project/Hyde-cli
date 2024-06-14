@@ -42,7 +42,7 @@ initiate_hyde_command
 #* | [FUNCTION_CASE_USAGE ]
 #* | --flags ? Description for flags
 #* | --args  ? Desc for args
-#* | --parms ? desc for parm
+#* | --parms ? desc for param
 #* | [END]
 #* | USAGE
 #? | ^^^^^^ Usage block is a comment block that will be parsed by gen_completion and man  function
