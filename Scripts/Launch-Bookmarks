@@ -64,7 +64,7 @@ save_recent() {
 
 declare -a bookmarkFile
 
-# TODO List all the posible Bookmarks path if needed to be hardcoded
+# TODO List all the possible Bookmarks path if needed to be hardcoded
 bookmarkFile+=(
     #* Examples
     # "${confDir}/BraveSoftware/Brave-Browser/Default/Bookmarks"

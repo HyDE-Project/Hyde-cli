@@ -1,0 +1,8 @@
+ERROR: 2024-06-16 20:01:01,162: process_command() 'Could not read/write configuration:'
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/site-packages/variety/VarietyWindow.py", line 2479, in process_command
+    self.reload_config()
+  File "/usr/lib/python3.12/site-packages/variety/VarietyWindow.py", line 393, in reload_config
+    self.previous_options = self.options
+                            ^^^^^^^^^^^^
+AttributeError: 'VarietyWindow' object has no attribute 'options'

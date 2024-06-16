@@ -16,7 +16,7 @@ Hyde <FUNCTIONS>
 		|  (upgrade <UPGRADE_FUNCTION> )                      " Upgrades dots from the repository"
 		|  (restore <RESTORE_FUNCTION> )                      " Restore dots"
 		|  (backup <BACKUP_FUNCTION> )                        " Backing up commands"
-		|  (override <OVERRIDE_FUNCTION> )                    " Overwrite current dots from the prefered user dir "
+		|  (override <OVERRIDE_FUNCTION> )                    " Overwrite current dots from the preferred user dir "
 		|  (cache <CACHE_FUNCTION> )                          " Manages Hyde's cache"
 		|  (cursor <CURSOR_FUNCTION> )                        " Cursor setting"
 		|  (theme <THEME_FUNCTION> )                          " Theme commands"
@@ -83,10 +83,11 @@ Hyde <FUNCTIONS>
 
 
 <WALLPAPER_FUNCTION> ::=
-			  (set) 	  " Set /Path/to/Wallpapers as new wallpaper directory"
+			  (set) 	  " Set /Path/to/Wallpaper"
 			 | (next) 	  " Next wallppaer"
 			 | (prev) 	  " Previous wallpaper"
 			 | (select) 	  " Wallpaper selector"
+			 | (variety <WALLPAPER_VARIETY_USAGE> ) 	  " [*] Use variety package to manage wallpapers"
 ;
 
 
@@ -116,7 +117,7 @@ Hyde <FUNCTIONS>
 <POWER_FUNCTION> ::=
 			  (reset) 	  " Reset changes"
 			 | (save <POWER_SAVE_USAGE> ) 	  " [*] Save power by disabling features"
-			 | (toggle) 	  " Toggle ﯦ Set/unset current changes'"
+			 | (toggle) 	  " Toggle ﯦ  Set/unset current changes'"
 			 | (unset <POWER_UNSET_USAGE> ) 	  " [*] Unset specific changes"
 			 | (game) 	  " Toggle game mode"
 ;
@@ -124,18 +125,19 @@ Hyde <FUNCTIONS>
 
 <SHOW_FUNCTION> ::=
 			  (binds <SHOW_BINDS_USAGE> ) 	  " [*] Show keybind hints"
-			 | (emoji) 	  " Emoji selector"
-			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
-			 | (glyph) 	  " Glyph selector"
 			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
+			 | (emoji) 	  " Emoji selector"
+			 | (glyph) 	  " Glyph selector"
+			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (screencap) 	  " Use rofi to select screenshot options "
+			 | (search <SHOW_SEARCH_USAGE> ) 	  " [*] Web Search"
 ;
 
 
 <RUN_FUNCTION> ::=
 			  (audio_idle) 	  " Inhibits idle when player status: 'Playing"
-			 | (events) 	  " Watches hyprland events and executes actions"
 			 | (screencap <RUN_SCREENCAP_USAGE> ) 	  " [*] Screenshot and screenrecord tool"
+			 | (events) 	  " Watches hyprland events and executes actions"
 ;
 
 
@@ -150,6 +152,10 @@ Hyde <FUNCTIONS>
  (--mismatch  ) "   Diff mismatched dotfiles"
 | (--preserve  ) "   Diff preserved dotfiles"
 | (--less  ) "   Pipes STDOUT to less"
+;
+
+<WALLPAPER_VARIETY_USAGE> ::=
+ (--reset ) " reset hyde profile"
 ;
 
 <WALLBASH_MODE_USAGE> ::=
@@ -182,19 +188,24 @@ Hyde <FUNCTIONS>
 | (-p   ) "  Show the pretty format"
 | (-d   ) "  Add custom delimiter symbol (default '>')"
 | (-f   ) "  Add custom file"
-| (-w   ) "  Custom width"
 | (-h   ) "  Display this help message"
-;
-
-<SHOW_PASTEBIN_USAGE> ::=
- (c  ) " cliphist list and copy selected"
-| (d  ) " cliphist list and delete selected"
-| (w  ) " cliphist wipe database"
 ;
 
 <SHOW_BOOKMARKS_USAGE> ::=
  (--rebuild   ) "   force rebuild cached bookmark paths"
 | (--no-custom ) "    run without custom '.lst' bookmark files"
+;
+
+<SHOW_PASTEBIN_USAGE> ::=
+ (--copy  ) "	list and copy selected"
+| (--delete  ) "	list and delete selected"
+| (--wipe  ) "	wipe database"
+| (--option  ) "	options"
+;
+
+<SHOW_SEARCH_USAGE> ::=
+ (--site  ) " search engine to use"
+| (--browser  ) " browser to use"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=
@@ -210,7 +221,7 @@ Hyde <FUNCTIONS>
 ;
 
 <INJECT_CHAOTIC_AUR_USAGE> ::=
- (--install ) " Setup Choatic Aur, append [fresh] to run in fresh install mode"
+ (--install ) " Setup Chaotic Aur, append [fresh] to run in fresh install mode"
 | (--uninstall ) " Removes Chaotic Aur"
 | (--revert  ) " Converts chaotic aur packages to AUR"
 ;

@@ -23,7 +23,7 @@ source_section() {
 
 # Define the function
 #* [select_exec] Accepts an array[@]
-#* Usefull for level 1 selection without preview
+#* Useful for level 1 selection without preview
 select_exec() {
     local selected_opt="$(printf '%s\n' "${@:1}" \
     | awk -F '?' '{printf "%-40s %s\n", $1, $2}' |

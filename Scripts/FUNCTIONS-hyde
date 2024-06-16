@@ -38,11 +38,11 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
             # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
             awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r pline; do
                     # echo $pline
-                param=$(echo ${pline} | awk -F ')' '{print $1}')
-                desc=$(echo ${pline} | awk -F '?' '{print $2}')
+                param=$(awk -F ')' '{print $1}' <<< ${pline} )
+                desc=$(awk -F '?' '{print $2}' <<< ${pline})
                 indent="\t\t\t"
                 # echo echo -e ${line} | awk -F '?' '{print}'
-                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en ${desc} | head -n 1)")"
+                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en "${desc}" | head -n 1)")"
                 # Print the remaining lines of $desc with indentation
                 echo -e "$desc" | tail +2 | while IFS= read -r line; do
                     printf "  %s%-15s %s %s\n" "$indent" "" "" "$(print_prompt "$line")"
@@ -266,7 +266,7 @@ shell_select() {
         done < <(cut -d '#' -f 1 "./restore_zsh.lst" | sed 's/ //g')
 
         # update plugin array in zshrc
-        print_prompt -y "[SHELL]" " intalling plugins (${w_plugin})"
+        print_prompt -y "[SHELL]" " installing plugins (${w_plugin})"
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
@@ -291,7 +291,6 @@ shell_select() {
 sddm_select() {
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
         sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-        SUPER mkdir -p "$(dirname ${sddm_conf})"
         sddm_theme=$(
         find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
         | awk -F 'Sddm_' '{print $2}' |\
@@ -302,6 +301,7 @@ sddm_select() {
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"
         [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
+        SUPER mkdir -p "$(dirname ${sddm_conf})"
         SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
         SUPER touch "${sddm_conf}"
         SUPER cp "${sddm_conf}" "${sddm_bak}"
