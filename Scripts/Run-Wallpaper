@@ -2,8 +2,11 @@
 
 check_package variety
 
-varietyDir=$confDir/variety/hyprdots
-varietyScript="${varietyDir}/scripts/hyprdots_wallpaper"
+varietyDir=$confDir/variety/hyde
+varietyScript="${varietyDir}/scripts/hyde_wallpaper"
+
+
+[[ "${*}" = *"--reset"* ]] && shift && rm  -fr ~/.config/variety/hyde/
 
 # Pass arguments here
 if [[ -n ${*} ]]; then
@@ -15,7 +18,7 @@ fi
 # This will loop forever
 if [[ -e "${varietyScript}" ]] ; then
     print_prompt -y "Starting as Daemon"
-    [[ -z "${*}" ]] && print_prompt -y "'Hyprdots wallpaper variety [ -h | --help ]' for options"
+    [[ -z "${*}" ]] && print_prompt -y "'Hyde wallpaper variety [ -h | --help ]' for options"
     variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${varietyScript}"
     exit 0
 fi
@@ -25,32 +28,13 @@ nohup variety --profile="${varietyDir}" --set-option=set_wallpaper_script "${var
 
 while [[ ! -e "${varietyDir}" ]]; do sleep 1 ; done
 
-notify-send -a "Hyprdots: Variety Setup" "Please setup your profile" -e
+notify-send -a "Hyde: Variety Setup" "Please setup your profile" -e
 sed -n '/^### startVARIETY ###$/,/^### endVARIETY ###$/{//!p}' "${0}" > "${varietyScript}"
 chmod +x "${varietyScript}" && exec ${0} "${@}"
 
 exit 0
 
 ### startVARIETY ###
-#! /bin/bash
-
-WP="${1}"
-confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-hyprdotsDir="${confDir}/hyprdots"
-ScrDir="${hyprdotsDir}/scripts"
-source "${ScrDir}/globalcontrol.sh"
-
-CurrThemeDir=$(awk -F '|' '/^1/ {print $NF}' ${ThemeCtl} | xargs -d '\n' dirname)
-THEME=$(awk -F '|' '/^1/ {print $2}' "${ThemeCtl}")
-varBase="A_VARIETY_WALLPAPER_${THEME}.png"
-VARIETY="$(eval realpath "${CurrThemeDir}")/${varBase}"
-
-cp -f "${WP}" "${VARIETY}"
-
-PID=$(pgrep swww-daemon)
-if [[ -n ${PID} ]] && [[ -e ${VARIETY} ]]; then
-    find ~/.cache/hyprdots/ -type f -name "${varBase}*" -delete && Hyprdots wallpaper set "${VARIETY}"
-    notify-send -a "Hyprdots" "${VARIETY}" -i "${VARIETY}" -e
-fi
-
+#! /bin/env bash
+swwwallpaper.sh -s "${1}"
 ### endVARIETY ###

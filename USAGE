@@ -97,13 +97,18 @@ Usage: Hyde [Function] [options]
  
 [wallpaper]                 ↪️ Wallpaper commands
 
-			 [set]  ↪️  Set /Path/to/Wallpapers as new wallpaper directory
+			 [set]  ↪️  Set /Path/to/Wallpaper
 
 			 [next]  ↪️  Next wallppaer
 
 			 [prev]  ↪️  Previous wallpaper
 
 			 [select]  ↪️  Wallpaper selector
+
+			 [variety]  ↪️  [*] Use variety package to manage wallpapers
+  			                 💡Add 'exec-once=Hyde wallpaper variety' in ./userprfs.conf
+
+						[--reset] ↪️  reset hyde profile
  
 [wallbash]                  ↪️ Toggle to use wallpaper accent themes
 

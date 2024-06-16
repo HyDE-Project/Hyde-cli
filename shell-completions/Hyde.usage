@@ -83,10 +83,11 @@ Hyde <FUNCTIONS>
 
 
 <WALLPAPER_FUNCTION> ::=
-			  (set) 	  " Set /Path/to/Wallpapers as new wallpaper directory"
+			  (set) 	  " Set /Path/to/Wallpaper"
 			 | (next) 	  " Next wallppaer"
 			 | (prev) 	  " Previous wallpaper"
 			 | (select) 	  " Wallpaper selector"
+			 | (variety <WALLPAPER_VARIETY_USAGE> ) 	  " [*] Use variety package to manage wallpapers"
 ;
 
 
@@ -151,6 +152,10 @@ Hyde <FUNCTIONS>
  (--mismatch  ) "   Diff mismatched dotfiles"
 | (--preserve  ) "   Diff preserved dotfiles"
 | (--less  ) "   Pipes STDOUT to less"
+;
+
+<WALLPAPER_VARIETY_USAGE> ::=
+ (--reset ) " reset hyde profile"
 ;
 
 <WALLBASH_MODE_USAGE> ::=

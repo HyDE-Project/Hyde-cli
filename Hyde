@@ -458,12 +458,12 @@ theme() { #? Theme commands
 
 wallpaper() { #? Wallpaper commands
 	case $1 in
-	set) #? Set /Path/to/Wallpapers as new wallpaper directory
-		print_prompt -r "[deprecated] " -y "add 'wallAddCustomPath=( \"path/to/wallpapers\" \"...\" )' in '${hydeConfDir}/hyde.conf' instead"
-		#! shift
-		#! cd - || exit
-		#! if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
-		#! "${scrDir}"/swwwallpaper.sh -s "$1"
+	set) #? Set /Path/to/Wallpaper
+		print_prompt +r "[deprecated] " +y "add 'wallAddCustomPath=( \"path/to/wallpapers\" \"...\" )' in '${hydeConfDir}/hyde.conf' instead"
+		shift
+		# cd - || exit
+		if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
+		"${scrDir}"/swwwallpaper.sh -s "${1}"
 		;;
 	next) #? Next wallppaer
 		"${scrDir}"/swwwallpaper.sh -n
@@ -474,10 +474,15 @@ wallpaper() { #? Wallpaper commands
 	select) #? Wallpaper selector
 		"${scrDir}"/swwwallselect.sh
 		;;
-	# variety) #? EXPERIMENTAL! Use variety package to manage wallpapers
-	#     shift
-	#     ${CLI_PATH}/lib/hyde-cli/Run-Wallpaper "${@}"
-	# ;;
+	variety) #? [*] Use variety package to manage wallpapers\nﯦ Add 'exec-once=Hyde wallpaper variety' in ./userprfs.conf 
+		shift
+		Run-Wallpaper "${@}"
+		: <<USAGE
+[WALLPAPER_VARIETY_USAGE]
+    --reset ? reset hyde profile
+[END]
+USAGE
+	;;
 	*) Parameters "${FUNCNAME[0]}" ;;
 
 	esac;
