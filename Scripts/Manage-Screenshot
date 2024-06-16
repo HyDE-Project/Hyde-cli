@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+# Set up the filename for the screenshot
+file="/tmp/$(date "+%Y%m%d-%H%M%S")_screenshot.png"
+
+# Take a screenshot using grim and save it to the specified file
+grim -g "$(slurp)" - | swappy -f - -o "$file" &&
+# Display a confirmation dialog using whiptail
+whiptail --title "Upload OK?" --yesno "Upload OK?" 10 40
+
+# Check the exit status of whiptail (0 for Yes, 1 for No/Cancel)
+if [ $? -eq 0 ]; then
+    # Upload the file using curl to 0x0.st and copy the URL to clipboard
+    url=$(curl -sfF "file=@$file" https://0x0.st)
+    echo "$url" | wl-copy -n
+    # Display a notification confirming upload and copied URL
+    notify-send --expire-time=2000 "Uploaded, URL Copied!" "$url"
+fi
