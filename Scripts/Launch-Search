@@ -10,79 +10,73 @@ declare -A SITES
 # Set default variable value to empty string.
 SITE_TO_USE=""
 
-CACHE_DIR="$HOME/.cache/stevenliebregt/rofi-scripts/web-search"
-BROWSER="google-chrome-stable"
+CACHE_DIR="$cacheDir/hyde-search"
+# BROWSER="google-chrome-stable"
+BROWSER="firefox"
 
 SITES=(
-    ["google"]="https://www.google.com/search?q="
-    ["stackoverflow"]="https://www.stackoverflow.com/search?q="
-    ["stackexchange"]="https://stackexchange.com/search?q="
-    ["superuser"]="https://superuser.com/search?q="
-    ["tex"]="https://tex.stackexchange.com/search?q="
-    ["softwareengineering"]="https://softwareengineering.stackexchange.com/search?q="
-    ["github"]="https://www.github.com/search?q="
-    ["youtube"]="https://www.youtube.com/results?search_query="
-    ["superuser"]="https://www.superuser.com/search?q="
+	["google"]="https://www.google.com/search?q="
+	["stackoverflow"]="https://www.stackoverflow.com/search?q="
+	["stackexchange"]="https://stackexchange.com/search?q="
+	["superuser"]="https://superuser.com/search?q="
+	["tex"]="https://tex.stackexchange.com/search?q="
+	["softwareengineering"]="https://softwareengineering.stackexchange.com/search?q="
+	["github"]="https://www.github.com/search?q="
+	["youtube"]="https://www.youtube.com/results?search_query="
+	["superuser"]="https://www.superuser.com/search?q="
 )
 
 # Show usage for the script.
-usage()
-{
-    echo "web-search is a script that opens a rofi browser with which you can"
-    echo "search the web."
-    echo ""
-    echo "Usage: $0 [-s <site to search>] [-b <browser executable> ]"
-    echo "  -h      show this help"
-    echo "  -s      give the search engine to use, can be one of the following:"
-    
+usage() {
+cat << EOF
+-s [search engine]      give the search engine to use, can be one of the following:
+$(
     for site in "${!SITES[@]}"; do 
-        echo "              * $site"
+        echo -e "\t* $site"
     done
+)
+-b [browser]      give the browser to use, the default value is '$BROWSER'"
+EOF
 
-    echo "  -b      give the browser to use, the default value is 'google-chrome-stable'"
 
-    exit 1
+	exit 1
 }
 
 # Creates the cache directory if it does not exist.
 create_cache_dir() {
-    if [ ! -d "$CACHE_DIR" ]; then
-        mkdir -p "$CACHE_DIR"
-    fi
+	if [ ! -d "$CACHE_DIR" ]; then
+		echo "Hyde-cli created a directory: ${CACHE_DIR}"
+		mkdir -p "$CACHE_DIR"
+	fi
 }
 
 # Create the cache files if they do not exist.
 create_cache_files() {
-    for site in "${!SITES[@]}"
-    do
-        if [ ! -f "$CACHE_DIR/$site.txt" ]; then
-            touch "$CACHE_DIR/$site.txt"
-        fi
-    done
+	for site in "${!SITES[@]}"; do
+		if [ ! -f "$CACHE_DIR/$site.txt" ]; then
+			touch "$CACHE_DIR/$site.txt"
+		fi
+	done
 }
 
 # Generate the list of sites.
 #
 # If a config file exists, use the sites from that list, otherwise populate
 # the list with the sites from the $SITES variable.
-gen_sites_list() 
-{
-    for site in "${!SITES[@]}"
-    do
-        echo "$site"
-    done
+gen_sites_list() {
+	for site in "${!SITES[@]}"; do
+		echo "$site"
+	done
 }
 
 # Generate the list of previously used search queries.
-gen_queries_list() 
-{
-    site=$1
-    
-    cat "$CACHE_DIR/$site.txt"
+gen_queries_list() {
+	site=$1
+	cat "$CACHE_DIR/$site.txt"
 }
 
 # Write a given line to a given file to the top of the file.
-# 
+#
 # It does this by creating a temporary file and then catting that output to the
 # file after echoing the new line.
 #
@@ -90,81 +84,101 @@ gen_queries_list()
 #  - The name of the file to write to, must be one of the options of sites in
 #    the SITES array.
 #  - The new line to input at the top of the new file.
-write_to_top()
-{
-    file=$1
-    content=$2
+write_to_top() {
+	file=$1
+	content=$2
 
-    # Move old values to temporary file.
-    cat "$CACHE_DIR/$file.txt" > "$CACHE_DIR/tmp.txt"
-    # Print query to top.
-    echo "$content" > "$CACHE_DIR/$file.txt"
-    cat "$CACHE_DIR/tmp.txt" >> "$CACHE_DIR/$file.txt"
-    # Remove temporary file.
-    rm "$CACHE_DIR/tmp.txt"
+	# Move old values to temporary file.
+	cat "$CACHE_DIR/$file.txt" >"$CACHE_DIR/tmp.txt"
+	# Print query to top.
+	echo "$content" >"$CACHE_DIR/$file.txt"
+	cat "$CACHE_DIR/tmp.txt" >>"$CACHE_DIR/$file.txt"
+	# Remove temporary file.
+	rm "$CACHE_DIR/tmp.txt"
 
 }
 
 # Handle the query.
-handle_query()
-{
-    site=$1
-    query=$2
+handle_query() {
+	site=$1
+	query=$2
+	# Write the query to file.
+	# Check if the search query already exists.
+	if grep -Fxq "$query" "$CACHE_DIR/$site.txt"; then
+		# Remove the existing entry.
+		echo "$(cat "$CACHE_DIR/$site.txt" | grep -xv "$query")" >"$CACHE_DIR/$site.txt"
+		# Write the new entry on top.
+		write_to_top "$site" "$query"
+	else
+		# Write the new entry on top.
+		write_to_top "$site" "$query"
+	fi
 
-    # Write the query to file.
-    # Check if the search query already exists.
-    if grep -Fxq "$query" "$CACHE_DIR/$site.txt"; then
-        # Remove the existing entry.
-        echo "$(cat "$CACHE_DIR/$site.txt" | grep -xv "$query")" > "$CACHE_DIR/$site.txt"
-        # Write the new entry on top.
-        write_to_top "$site" "$query"
-    else
-        # Write the new entry on top.
-        write_to_top "$site" "$query"
-    fi
-
-    # Open the corresponding site in google-chrome-stable.
-    # google-chrome-stable "${SITES[$site]}$query"
-    xdg-open "${SITES[$site]}$query"
+	# Open the corresponding site in google-chrome-stable.
+	# google-chrome-stable "${SITES[$site]}$query"
+	# $BROWSER
+	xdg-open "${SITES[$site]}$query"
 }
 
-main()
-{
-    create_cache_dir
-    create_cache_files
+handle_input() {
+	inputTxt="${*}"
+	if [[ ${inputTxt} =~ ":" ]]; then
+		key="$(awk -F ':' '{print $1}' <<<$inputTxt)"
+		if [[ -n "${key}" ]]; then
+			query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
+			parseSite="$(grep -iE "^${key}" <<<"$(gen_sites_list)" | head -n 1)"
+			if [[ -n "${parseSite}" ]]; then
+				site="${parseSite}"
+			else
+				query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
+				site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			fi
 
-    if [ "$@" ]
-    then 
-        handle_query "google" "$@"
-    else
-        # Check if search engine set.
-        if [ "$SITE_TO_USE" ]; then
-            query=$(echo "$(gen_queries_list $SITE_TO_USE)" | rofi -dmenu -p "Search ($SITE_TO_USE)" -config $confDir/rofi/clipboard.rasi )
+		else
+			query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
+			site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+		fi
+	else
+		query="${inputTxt}"
+		site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+	fi
 
-            handle_query "$SITE_TO_USE" "$query"
-        else
-            site=$(echo "$(gen_sites_list)" | rofi -dmenu -p "Search" -no-custom -config  $confDir/rofi/clipboard.rasi )
-            query=$(echo "$(gen_queries_list $site)" | rofi -dmenu -p "Search ($site)" -config $confDir/rofi/clipboard.rasi )
+	handle_query "$site" "$query"
 
-            handle_query "$site" "$query"
-        fi
-    fi
+}
+
+main() {
+	create_cache_dir
+	create_cache_files
+
+	if [ "$@" ]; then
+		handle_query "google" "$@"
+	else
+		# Check if search engine set.
+		if [ "$SITE_TO_USE" ]; then
+			query=$(rofi -dmenu -p -theme-str "entry { placeholder:  \" Search ($SITE_TO_USE)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
+			handle_query "$SITE_TO_USE" "$query"
+		else
+			inputTxt=$(rofi -dmenu -mesg "ok" -theme-str "entry { placeholder:  \" Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			handle_input "${inputTxt}"
+		fi
+	fi
 }
 
 # Get argument options.
 while getopts ":s:b:" o; do
-    case "${o}" in 
-        s)
-            SITE_TO_USE=${OPTARG}
-            ;;
-        b)
-            BROWSER=${OPTARG}
-            ;;
-        \?) 
-            usage
-            ;;
-    esac
+	case "${o}" in
+	s)
+		SITE_TO_USE=${OPTARG}
+		;;
+	b)
+		BROWSER=${OPTARG}
+		;;
+	?)
+		usage
+		;;
+	esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 main "$@"

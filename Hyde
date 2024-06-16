@@ -189,11 +189,11 @@ check() { #? Information about Hyde and its components
 		barLine
 		cat <<NOTE
 *mismatch               Mismatched files compared to upstream and not preserved
-                            ﯦ check diff by appending '--mismatch'
+                            ﯦ  check diff by appending '--mismatch'
 *preserve               Inconsistency may occur if preserving files
-                            ﯦ check diff regularly by appending '--preserve'
+                            ﯦ  check diff regularly by appending '--preserve'
 *wallbash & *dynamic     Constantly changing files
-                            ﯦ pointless to diff
+                            ﯦ  pointless to diff
 *missing                Missing/not installed files
 
 NOTE
@@ -279,12 +279,12 @@ restore() { #? Restore dots
 		rename_backup "_Hyde_restore_Configs"
 		Hyde reload
 		;;
-	Clone) #? Restores dots from a clone repository \n ﯦ Provide ~/path/to/clone/directory
+	Clone) #? Restores dots from a clone repository \n ﯦ  Provide ~/path/to/clone/directory
 		Manage-Config "$1" "$2" && rename_backup "_Hyde_restore_Clone"
 		#? Meta is added inside Clone function
 		;;
 
-	BackUp) #? Restores dots from previous backup\n !! Files might not be complete\n ﯦ You can cherry pick a file/dir from a backup
+	BackUp) #? Restores dots from previous backup\n !! Files might not be complete\n ﯦ  You can cherry pick a file/dir from a backup
 		Manage-Config "${@}"
 		;;
 	Link) #? Links a clone directory. Useful if you want to change your CloneDir
@@ -312,7 +312,7 @@ backup() { #? Backing up commands
 	# custom)
 	#     Manage-Config "$1"
 	# ;;
-	revert) #? Revert to a previous backup run by 'Hyde backup all'. \n ﯦ different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
+	revert) #? Revert to a previous backup run by 'Hyde backup all'. \n ﯦ  different from 'Hyde restore Backup', this command will restore the explicit backups like a snapshot
 		Manage-Config "$1"
 		;;
 	list) #? List the backup
@@ -325,7 +325,7 @@ backup() { #? Backing up commands
 	esac;
 }
 
-override() { #? Overwrite current dots from the preferred user dir \n ﯦ see upstream for more info \n ﯦ add 'userPrefsDir=path/to/user/pref/directory' in\n'${hydeConfDir}/hyde.conf' for custom user path
+override() { #? Overwrite current dots from the preferred user dir \n ﯦ  see upstream for more info \n ﯦ  add 'userPrefsDir=path/to/user/pref/directory' in\n'${hydeConfDir}/hyde.conf' for custom user path
 	source_user
 	userPrefsDir=${userPrefsDir:-${HOME}/.config/hyde/user}
 	[ ! -d "$userPrefsDir" ] && print_prompt "Undefined user directory, see upstream for more information" && return 1
@@ -626,7 +626,7 @@ power() { #? Power Options
 [END]
 USAGE
 		;;
-	toggle) #? Toggle ﯦ Set/unset current changes'
+	toggle) #? Toggle ﯦ  Set/unset current changes'
 		Manage-Power "$@"
 		;;
 	unset) #? [*] Unset specific changes
@@ -685,7 +685,7 @@ show() { #? Useful GUI util
 	# monitors) #? Manages monitors using nwg-displays
 	#     Manage_Monitor
 	# ;;
-	binds) #? [*] Show keybind hints\n ﯦ Click to execute
+	binds) #? [*] Show keybind hints\n ﯦ  Click to execute
 		# Keybinds_Hint #! Moved to .extra
 		shift
 		"${scrDir}"/keybinds_hint.sh "${*}"
@@ -716,7 +716,7 @@ USAGE
 	glyph) #? Glyph selector
 		Launch-Glyph
 		;;
-	pastebin) #? [*] Pastebin manager \n ﯦ pass [only once] '--ignore=initialclass' to disable autopaste
+	pastebin) #? [*] Pastebin manager \n ﯦ  pass [only once] '--ignore=initialclass' to disable autopaste
 		[[ $* == *"--ignore"* ]] && pasteIt "${*}"
 		shift
 		Launch-Pastebin "$@"
@@ -731,13 +731,20 @@ USAGE
 	screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
 		Launch-Screencap
 		;;
-	search) #? Launch google search
-		Launch-Search
+	search) #? [*] Web Search\nﯦ supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')\nﯦ ':' is use as delimter
+	shift
+		Launch-Search "${@}"
+		: <<USAGE
+[SHOW_SEARCH_USAGE]
+    -s  ? search engine to use
+    -b  ? browser to use
+[END]
+USAGE
 		;;
 	*)
 		Parameters "${FUNCNAME[0]}"
+		# Launch-Search -h
 		;;
-
 	esac;
 }
 

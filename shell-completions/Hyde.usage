@@ -116,7 +116,7 @@ Hyde <FUNCTIONS>
 <POWER_FUNCTION> ::=
 			  (reset) 	  " Reset changes"
 			 | (save <POWER_SAVE_USAGE> ) 	  " [*] Save power by disabling features"
-			 | (toggle) 	  " Toggle ﯦ Set/unset current changes'"
+			 | (toggle) 	  " Toggle ﯦ  Set/unset current changes'"
 			 | (unset <POWER_UNSET_USAGE> ) 	  " [*] Unset specific changes"
 			 | (game) 	  " Toggle game mode"
 ;
@@ -129,7 +129,7 @@ Hyde <FUNCTIONS>
 			 | (glyph) 	  " Glyph selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (screencap) 	  " Use rofi to select screenshot options "
-			 | (search) 	  " Launch google search"
+			 | (search <SHOW_SEARCH_USAGE> ) 	  " [*] Web Search"
 ;
 
 
@@ -196,6 +196,11 @@ Hyde <FUNCTIONS>
  (c  ) " cliphist list and copy selected"
 | (d  ) " cliphist list and delete selected"
 | (w  ) " cliphist wipe database"
+;
+
+<SHOW_SEARCH_USAGE> ::=
+ (-s  ) " search engine to use"
+| (-b  ) " browser to use"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=

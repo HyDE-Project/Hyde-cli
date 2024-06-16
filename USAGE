@@ -93,7 +93,7 @@ Usage: Hyde [Function] [options]
 			 [select]  ↪️  Theme selector
 
 			 [patch]  ↪️  Patch a theme from different repository.
-  			                 💡 Invoking without args will launch a menu from Hyde-gallery DB
+  			                 💡Invoking without args will launch a menu from Hyde-gallery DB
  
 [wallpaper]                 ↪️ Wallpaper commands
 
@@ -110,7 +110,7 @@ Usage: Hyde [Function] [options]
 			 [toggle]  ↪️  Cycles wallbash [0] off [1] auto [2] dark [3] light
 
 			 [mode]  ↪️  [*] Set wallbash mode. [0] [1] [2] [3] 
-  			                 💡 no args spawns a menu
+  			                 💡no args spawns a menu
 
 						[0] ↪️  wallbash disabled
 						[1] ↪️  wallbash auto
@@ -170,7 +170,7 @@ Usage: Hyde [Function] [options]
 						[-h] ↪️   Display this help message
 
 			 [bookmarks]  ↪️  [*] Bookmark selector
-  			                 💡 append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
+  			                 💡append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
 
 						[--rebuild] ↪️    force rebuild cached bookmark paths
 						[--no-custom] ↪️     run without custom '.lst' bookmark files
@@ -189,7 +189,11 @@ Usage: Hyde [Function] [options]
 			 [screencap]  ↪️  Use rofi to select screenshot options 
   			                  !!  kills another rofi session
 
-			 [search]  ↪️  Launch google search
+			 [search]  ↪️  [*] Web Search
+  			                  💡supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing') 💡':' is use as delimter
+
+						[-s] ↪️  search engine to use
+						[-y] ↪️  browser to use
  
 [run]                       ↪️ Executable utilities
 

@@ -158,7 +158,7 @@ Please run:
            'Hyde-install'                                 Install Hyde (default)
 For advanced usage see options below
         -l|--link                                                Flag to transfer the link to a Clone Directory
-                                                                    ﯦ This is useful if you already have a Hyde
+                                                                    ﯦ  This is useful if you already have a Hyde
                                                                     Default: 'false'
         -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
                                                                 Default: '${cacheDir}/Hyde'
@@ -439,6 +439,7 @@ make_dir=(
     "${etcDir}"
     "${HYDE_RUNTIME_DIR}"
 )
+
 for dir in "${make_dir[@]}"; do
     if [[ ! -d "${dir}" ]] && [[ -n "${dir}" ]]; then
         mkdir -p "${dir}"
