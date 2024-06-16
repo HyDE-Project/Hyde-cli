@@ -5,17 +5,31 @@
 
 set -eu
 
+CACHE_DIR="$cacheDir/hyde-search"
+# BROWSER="google-chrome-stable"
+BROWSER="firefox"
+
+[[ -f "${CACHE_DIR}/recent.site" ]] && source "${CACHE_DIR}/recent.site"
+
+rofi_pos
+r_width="width: ${search_width:-40em};"
+r_height="height: ${search_height:-23em};"
+r_listview="listview { lines: ${search_line:-8}; }"
+r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
+
 declare -A SITES
 
 # Set default variable value to empty string.
 SITE_TO_USE=""
 
-CACHE_DIR="$cacheDir/hyde-search"
-# BROWSER="google-chrome-stable"
-BROWSER="firefox"
-
 SITES=(
 	["google"]="https://www.google.com/search?q="
+	["yahoo"]="https://search.yahoo.com/search?p="
+	["bing"]="https://www.bing.com/search?q="
+	["duckduckgo"]="https://duckduckgo.com/?q="
+	["startpage"]="https://www.startpage.com/do/search?query="
+	["amazon"]="https://www.amazon.com/s?k="
+	["wikipedia"]="https://en.wikipedia.org/w/index.php?search="
 	["stackoverflow"]="https://www.stackoverflow.com/search?q="
 	["stackexchange"]="https://stackexchange.com/search?q="
 	["superuser"]="https://superuser.com/search?q="
@@ -24,20 +38,22 @@ SITES=(
 	["github"]="https://www.github.com/search?q="
 	["youtube"]="https://www.youtube.com/results?search_query="
 	["superuser"]="https://www.superuser.com/search?q="
+	["archlinux"]="https://archlinux.org/packages/?sort=&q="
+	["AUR"]="https://aur.archlinux.org/packages?O=0&K="
 )
+
 
 # Show usage for the script.
 usage() {
-cat << EOF
+	cat <<EOF
 -s [search engine]      give the search engine to use, can be one of the following:
 $(
-    for site in "${!SITES[@]}"; do 
-        echo -e "\t* $site"
-    done
-)
+		for site in "${!SITES[@]}"; do
+			echo -e "\t* $site"
+		done
+	)
 -b [browser]      give the browser to use, the default value is '$BROWSER'"
 EOF
-
 
 	exit 1
 }
@@ -64,9 +80,9 @@ create_cache_files() {
 # If a config file exists, use the sites from that list, otherwise populate
 # the list with the sites from the $SITES variable.
 gen_sites_list() {
-	for site in "${!SITES[@]}"; do
-		echo "$site"
-	done
+    for site in "${!SITES[@]}"; do
+        printf "%s\n" "$site"
+    done | sort
 }
 
 # Generate the list of previously used search queries.
@@ -102,6 +118,7 @@ write_to_top() {
 handle_query() {
 	site=$1
 	query=$2
+	echo "recentSite=\"${site}\"" >"${CACHE_DIR}/recent.site"
 	# Write the query to file.
 	# Check if the search query already exists.
 	if grep -Fxq "$query" "$CACHE_DIR/$site.txt"; then
@@ -131,16 +148,16 @@ handle_input() {
 				site="${parseSite}"
 			else
 				query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
-				site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+				site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 			fi
 
 		else
 			query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
-			site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 		fi
 	else
 		query="${inputTxt}"
-		site=$(rofi -dmenu -no-custom -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+		site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 	fi
 
 	handle_query "$site" "$query"
@@ -156,11 +173,17 @@ main() {
 	else
 		# Check if search engine set.
 		if [ "$SITE_TO_USE" ]; then
-			query=$(rofi -dmenu -p -theme-str "entry { placeholder:  \" Search ($SITE_TO_USE)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
+			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($SITE_TO_USE)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
 			handle_query "$SITE_TO_USE" "$query"
 		else
-			inputTxt=$(rofi -dmenu -mesg "ok" -theme-str "entry { placeholder:  \" Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
-			handle_input "${inputTxt}"
+			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			if gen_sites_list | grep -q "${inputTxt}"; then
+				site="$(gen_sites_list | grep ${inputTxt})"
+				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($site)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
+				handle_query "$site" "$query"
+			else
+				handle_input "${inputTxt}"
+			fi
 		fi
 	fi
 }
