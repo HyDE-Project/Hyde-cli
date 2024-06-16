@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# TODO Do some clean up
 #  insipired from https://github.com/stevenliebregt/rofi-scripts/blob/master/web-search.sh
 # Modified by khing to fit on Hyde usage
 
@@ -7,7 +8,7 @@ set -eu
 
 CACHE_DIR="$cacheDir/hyde-search"
 # BROWSER="google-chrome-stable"
-BROWSER="firefox"
+# BROWSER="firefox"
 
 [[ -f "${CACHE_DIR}/recent.site" ]] && source "${CACHE_DIR}/recent.site"
 
@@ -42,7 +43,6 @@ SITES=(
 	["AUR"]="https://aur.archlinux.org/packages?O=0&K="
 )
 
-
 # Show usage for the script.
 usage() {
 	cat <<EOF
@@ -52,7 +52,7 @@ $(
 			echo -e "\t* $site"
 		done
 	)
--b [browser]      give the browser to use, the default value is '$BROWSER'"
+-b [browser]      browser to use, follows the default xdg browser
 EOF
 
 	exit 1
@@ -80,9 +80,9 @@ create_cache_files() {
 # If a config file exists, use the sites from that list, otherwise populate
 # the list with the sites from the $SITES variable.
 gen_sites_list() {
-    for site in "${!SITES[@]}"; do
-        printf "%s\n" "$site"
-    done | sort
+	for site in "${!SITES[@]}"; do
+		printf "%s\n" "$site"
+	done | sort
 }
 
 # Generate the list of previously used search queries.
@@ -133,7 +133,7 @@ handle_query() {
 
 	# Open the corresponding site in google-chrome-stable.
 	# google-chrome-stable "${SITES[$site]}$query"
-	# $BROWSER
+	[ -n "${BROWSER}" ] && "${BROWSER}" "${SITES[$site]}$query" && exit 0
 	xdg-open "${SITES[$site]}$query"
 }
 
