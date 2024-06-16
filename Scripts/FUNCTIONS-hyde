@@ -291,7 +291,6 @@ shell_select() {
 sddm_select() {
         sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
         sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-        SUPER mkdir -p "$(dirname ${sddm_conf})"
         sddm_theme=$(
         find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
         | awk -F 'Sddm_' '{print $2}' |\
@@ -302,6 +301,7 @@ sddm_select() {
         print_prompt -y "Setting into '${sddm_theme} theme'..."
         ask_confirm "${USER}"
         [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
+        SUPER mkdir -p "$(dirname ${sddm_conf})"
         SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
         SUPER touch "${sddm_conf}"
         SUPER cp "${sddm_conf}" "${sddm_bak}"

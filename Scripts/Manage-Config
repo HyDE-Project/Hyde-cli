@@ -185,7 +185,7 @@ MISSING
       cp "${ctl_override}" "${ctlFile}"
     [[ $* = *"--edit"* ]] && exit 0
   fi
-  print_prompt -w '[ctrl + c]' -r ' Cancel'
+  print_prompt -wt '[ctrl + c]' -r ' Cancel'
   print_prompt "Continue?"
 
 }
@@ -227,7 +227,7 @@ list_Marker() {
       cp "${ctl_override}" "${ctlFile}"
     [[ $* = *"--edit"* ]] && exit 0
   fi
-  print_prompt -w '[ctrl + c]' -r ' Cancel'
+  print_prompt -wt '[ctrl + c]' -r ' Cancel'
   print_prompt "Continue?"
 }
 

@@ -24,35 +24,35 @@ barLine() {
 print_prompt() {
     while (("$#")); do
         case "$1" in
-        -r)
+        -r|+r)
             echo -ne "\e[31m$2\e[0m"
             shift 2
             ;; # Red
-        -g)
+        -g|+g)
             echo -ne "\e[32m$2\e[0m"
             shift 2
             ;; # Green
-        -y)
+        -y|+y)
             echo -ne "\e[33m$2\e[0m"
             shift 2
             ;; # Yellow
-        -b)
+        -b|+b)
             echo -ne "\e[34m$2\e[0m"
             shift 2
             ;; # Blue
-        -m)
+        -m|+m)
             echo -ne "\e[35m$2\e[0m"
             shift 2
             ;; # Magenta
-        -c)
+        -c|+c)
             echo -ne "\e[36m$2\e[0m"
             shift 2
             ;; # Cyan
-        -w)
+        -wt|+w)
             echo -ne "\e[37m$2\e[0m"
             shift 2
             ;; # White
-        -n)
+        -n|+n)
             echo -ne "\e[96m$2\e[0m"
             shift 2
             ;; # Neon
@@ -117,7 +117,7 @@ ask_confirm() {
     local key=$1
     if [[ "$key" == "Yy" ]]; then
         while true; do
-            read -n 1 -s -r -p "$(print_prompt -n "[y] " -w "yes (default) " -m "[n] " -w "no:\n")" key
+            read -n 1 -s -r -p "$(print_prompt -n "[y] " -wt "yes (default) " -m "[n] " -wt "no:\n")" key
             [[ -z "$key" ]] && key=y
             if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
                 return 0
@@ -130,7 +130,7 @@ ask_confirm() {
     else
         while true; do
             if [ -z "$key" ]; then
-                read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -w "continue " -m "[ANY] " -w " Exit:\n")" key
+                read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -wt "continue " -m "[ANY] " -wt " Exit:\n")" key
                 [[ -z "$key" ]] && break || exit 0
             else
                 read -p "Please type '$(print_prompt -m "$key")' to continue: " answer
@@ -147,7 +147,7 @@ ask_confirm() {
 handle_error() {
     print_prompt -r "Looks like I forgot your clone directory!"
     if [ -d "${cacheDir}/Hyde-Clone" ]; then
-        print_prompt -y "Using the Clone Directory: " -w "${cacheDir}/Hyde-Clone"
+        print_prompt -y "Using the Clone Directory: " -wt "${cacheDir}/Hyde-Clone"
         Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
     fi
 
@@ -181,7 +181,7 @@ check_Ping() {
 
 set_branch() {
     check_Ping
-    print_prompt -w "Fetching upstream"
+    print_prompt -wt "Fetching upstream"
     if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
         git remote set-branches origin '*'
     fi
@@ -325,7 +325,7 @@ check_integrity() {
     #     # Use find to search for files matching the pattern
     #     file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
     #     if [[ -z "${file}" ]]; then
-    #         print_prompt -r "[ERROR] " -w "${fchk} --> does not exist in ${CheckDir}/Configs/"
+    #         print_prompt -r "[ERROR] " -wt "${fchk} --> does not exist in ${CheckDir}/Configs/"
     #         exit_flag=true
     #     fi
     # done
@@ -361,7 +361,7 @@ do_contain() {
     else
         :
         # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
-        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to receive updates"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -wt "\n Delete file to receive updates"
     fi
 }
 
