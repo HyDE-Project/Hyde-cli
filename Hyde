@@ -721,9 +721,10 @@ USAGE
 		Launch-Pastebin "$@"
 		: <<USAGE
 [SHOW_PASTEBIN_USAGE]
-    c  ? cliphist list and copy selected
-    d  ? cliphist list and delete selected
-    w  ? cliphist wipe database
+    c  ?	list and copy selected
+    d  ?	list and delete selected
+    w  ?	wipe database
+    s  ?	options
 [END]
 USAGE
 		;;

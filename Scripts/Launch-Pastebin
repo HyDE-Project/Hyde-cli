@@ -15,10 +15,14 @@ pastebin_process() {
         # Get the total number of lines
         total_lines=${#lines[@]}
         if [[ "${lines[0]}" = *":d:e:l:e:t:e:"* ]]; then
-            Hyde show pastebin d
+            Launch-Pastebin d
             exit 0
-        elif [[ "${lines[0]}" = *":b:a:r:"* ]]; then
-            Hyde show pastebin c
+        elif [[ "${lines[0]}" = *":w:i:p:e:"* ]]; then
+            Launch-Pastebin w            
+        elif [[ "${lines[0]}" = *":b:a:r:"* ]] || [[ "${lines[0]}" = *":c:o:p:y:"* ]]   ; then
+            Launch-Pastebin c
+        elif [[ "${lines[0]}" = *":o:p:t:"* ]]; then
+        Launch-Pastebin s
         else
             # Iterate over each line in the array
             for ((i = 0; i < total_lines; i++)); do
@@ -35,10 +39,10 @@ pastebin_process() {
     else
         while IFS= read -r line; do
             if [[ "${line}" = *":w:i:p:e:"* ]]; then
-                Hyde show pastebin w
+                Launch-Pastebin w
                 break
                 elif [[ "${line}" = *":b:a:r:"* ]]; then
-                Hyde show pastebin d
+                Launch-Pastebin d
                 break
             else
                 cliphist delete <<<"${line}"
@@ -65,7 +69,7 @@ checkContent() {
 case $1 in
 c)
     selClip=$( (
-        echo -e ":d:e:l:e:t:e:\t Delete\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
+        echo -e ":o:p:t:\t Options\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
         cliphist list
     ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)
     ([ -n "${selClip}" ] && echo -e "${selClip}" | checkContent) || exit 0
@@ -79,10 +83,8 @@ c)
 d)
     delMode=true
     (
-        echo -e ":w:i:p:e:\tClear Pastebin\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
         cliphist list
-    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
-
+    ) | rofi -dmenu -multi-select -i  -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
     ;;
 w)
     r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
@@ -90,10 +92,22 @@ w)
         cliphist wipe
     fi
     ;;
-*)
-    echo "cliphist.sh [action]"
-    echo "c :  cliphist list and copy selected"
-    echo "d :  cliphist list and delete selected"
-    echo "w :  cliphist wipe database"
+s)
+echo -e ":d:e:l:e:t:e:\t Delete
+:w:i:p:e:\t﫧 Wipe Pastebin
+:c:o:p:y:\t Copy Pastebin" | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "entry { placeholder: \"Pastebin Options\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | pastebin_process
+# :b:a:r:\t$(seq -s= 100 | tr -dc '=' ) 
+;;
+-*)
+cat << USAGE
+$(basename ${0}) [action]
+c :  list and copy selected
+d :  list and delete selected
+w :  wipe database
+s :  options  
+USAGE
     ;;
+*) 
+Launch-Pastebin c
+;;
 esac

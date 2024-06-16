@@ -183,7 +183,6 @@ Hyde <FUNCTIONS>
 | (-p   ) "  Show the pretty format"
 | (-d   ) "  Add custom delimiter symbol (default '>')"
 | (-f   ) "  Add custom file"
-| (-w   ) "  Custom width"
 | (-h   ) "  Display this help message"
 ;
 
@@ -193,9 +192,10 @@ Hyde <FUNCTIONS>
 ;
 
 <SHOW_PASTEBIN_USAGE> ::=
- (c  ) " cliphist list and copy selected"
-| (d  ) " cliphist list and delete selected"
-| (w  ) " cliphist wipe database"
+ (c  ) "	list and copy selected"
+| (d  ) "	list and delete selected"
+| (w  ) "	wipe database"
+| (s  ) "	options"
 ;
 
 <SHOW_SEARCH_USAGE> ::=

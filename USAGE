@@ -166,7 +166,6 @@ Usage: Hyde [Function] [options]
 						[-p] ↪️   Show the pretty format
 						[-d] ↪️   Add custom delimiter symbol (default '>')
 						[-f] ↪️   Add custom file
-						[-y] ↪️   Custom width
 						[-h] ↪️   Display this help message
 
 			 [bookmarks]  ↪️  [*] Bookmark selector
@@ -182,15 +181,17 @@ Usage: Hyde [Function] [options]
 			 [pastebin]  ↪️  [*] Pastebin manager 
   			                  💡 pass [only once] '--ignore=initialclass' to disable autopaste
 
-						[c] ↪️  cliphist list and copy selected
-						[d] ↪️  cliphist list and delete selected
-						[w] ↪️  cliphist wipe database
+						[c] ↪️ 	list and copy selected
+						[d] ↪️ 	list and delete selected
+						[w] ↪️ 	wipe database
+						[s] ↪️ 	options
 
 			 [screencap]  ↪️  Use rofi to select screenshot options 
   			                  !!  kills another rofi session
 
 			 [search]  ↪️  [*] Web Search
-  			                  💡supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing') 💡':' is use as delimter
+  			                 💡supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')
+  			                 💡':' is use as delimter
 
 						[-s] ↪️  search engine to use
 						[-y] ↪️  browser to use
