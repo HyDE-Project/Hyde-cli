@@ -38,11 +38,11 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
             # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
             awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r pline; do
                     # echo $pline
-                param=$(echo ${pline} | awk -F ')' '{print $1}')
-                desc=$(echo ${pline} | awk -F '?' '{print $2}')
+                param=$(awk -F ')' '{print $1}' <<< ${pline} )
+                desc=$(awk -F '?' '{print $2}' <<< ${pline})
                 indent="\t\t\t"
                 # echo echo -e ${line} | awk -F '?' '{print}'
-                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en ${desc} | head -n 1)")"
+                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en "${desc}" | head -n 1)")"
                 # Print the remaining lines of $desc with indentation
                 echo -e "$desc" | tail +2 | while IFS= read -r line; do
                     printf "  %s%-15s %s %s\n" "$indent" "" "" "$(print_prompt "$line")"

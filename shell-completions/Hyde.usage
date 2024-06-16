@@ -124,18 +124,19 @@ Hyde <FUNCTIONS>
 
 <SHOW_FUNCTION> ::=
 			  (binds <SHOW_BINDS_USAGE> ) 	  " [*] Show keybind hints"
-			 | (emoji) 	  " Emoji selector"
-			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
-			 | (glyph) 	  " Glyph selector"
 			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
+			 | (emoji) 	  " Emoji selector"
+			 | (glyph) 	  " Glyph selector"
+			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (screencap) 	  " Use rofi to select screenshot options "
+			 | (search) 	  " Launch google search"
 ;
 
 
 <RUN_FUNCTION> ::=
 			  (audio_idle) 	  " Inhibits idle when player status: 'Playing"
-			 | (events) 	  " Watches hyprland events and executes actions"
 			 | (screencap <RUN_SCREENCAP_USAGE> ) 	  " [*] Screenshot and screenrecord tool"
+			 | (events) 	  " Watches hyprland events and executes actions"
 ;
 
 
@@ -186,15 +187,15 @@ Hyde <FUNCTIONS>
 | (-h   ) "  Display this help message"
 ;
 
+<SHOW_BOOKMARKS_USAGE> ::=
+ (--rebuild   ) "   force rebuild cached bookmark paths"
+| (--no-custom ) "    run without custom '.lst' bookmark files"
+;
+
 <SHOW_PASTEBIN_USAGE> ::=
  (c  ) " cliphist list and copy selected"
 | (d  ) " cliphist list and delete selected"
 | (w  ) " cliphist wipe database"
-;
-
-<SHOW_BOOKMARKS_USAGE> ::=
- (--rebuild   ) "   force rebuild cached bookmark paths"
-| (--no-custom ) "    run without custom '.lst' bookmark files"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=
