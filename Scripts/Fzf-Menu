@@ -1,8 +1,8 @@
 #! /bin/env bash
 
-#? This Script stores all fzf menu related funtions
+#? This Script stores all fzf menu related functions
 #? Call the functions by 'fzf-menu "functions"'
-#? Functions have 'fzf_' prefix and its funtions to point to is the function name of the actual function
+#? Functions have 'fzf_' prefix and its functions to point to is the function name of the actual function
 # TODO: Make this Intuitive
 # TODO: Make the menu uniform
 
@@ -10,28 +10,28 @@
 menu_height="--height 60%"
 
 fzf_make_List_OVERWRITE() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "OVERWRITE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_make_List_SYNC() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "SYNCHRONIZE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_make_List_PRESERVE() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "PRESERVE" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
 }
 
 fzf_make_List_BACKUP() {
-    fzf -m --marker ' ' \
+    fzf -m --marker ' ' \
         --prompt '[TAB] MARK to "BACKUP" [Esc] Back | CTRL A : mark all  | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview "Manage-Config show_restore_list ${ctl_override}"
@@ -41,8 +41,8 @@ fzf_make_List_BACKUP() {
 fzf_menu_manage_config() {
     fzf --prompt='Options: ' \
         --disabled \
-        --pointer='→' \
-        --marker='♡' \
+        --pointer=' ' \
+        --marker=' ' \
         --cycle \
         --preview "Manage-Config show_restore_list ${ctl_override}" \
         --preview-window 'right:80%,border-rounded'
@@ -57,9 +57,9 @@ fzf_revert() {
 #? backup clean
 fzf_clean() {
     fzf -m \
-        --marker='X' \
+        --marker=' ' \
         --cycle \
-        --pointer='→' \
+        --pointer=' ' \
         --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all'
 }
@@ -76,9 +76,9 @@ fzf_BackUp() {
 #? shell select
 fzf_shell_select() {
     fzf --prompt='Select default shell: ' \
-        --marker='' \
+        --marker=' ' \
         --cycle \
-        --pointer='→' \
+        --pointer=' ' \
         --disabled \
         --preview="Fzf-Preview ${CLI_PATH}/share/hyde-cli/shell_{}.png" \
         --preview-window 'right:80%,border-rounded'
@@ -90,8 +90,8 @@ fzf_theme_menu() {
         --cycle \
         --preview '[ {} = "[Confirm]" ] || Manage-Themes preview_theme {}' \
         -m \
-        --marker '' \
-        --pointer='→' \
+        --marker ' ' \
+        --pointer=' ' \
         --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview-window 'right:60%,border-rounded'
@@ -102,9 +102,9 @@ fzf_theme_menu() {
 fzf_sddm_select() {
 
     fzf --prompt='Select SDDM theme: ' \
-        --marker=' ' \
+        --marker=' ' \
         --cycle \
-        --pointer='→' \
+        --pointer=' ' \
         --disabled \
         --preview="Fzf-Preview ${CLI_PATH}/share/hyde-cli/sddm_{}.png" \
         --preview-window 'right:80%,border-rounded'

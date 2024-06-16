@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-#! REQURED ROOT
+#! REQUIRED ROOT
 execName="$0 $*"
 rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs to be in sudo
 vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
@@ -234,9 +234,9 @@ case "$1" in
     cat <<HELP
 Invalid option: $1
 Usage: $0 [option]
-    --install [fresh]  ﯦ Install chaotic AUR ('fresh' assumes a fresh install)
-    --uninstall        ﯦ Uninstall chaotic AUR ( requires you to run $0 --revert after)
-    --revert           ﯦ Reinstall orphaned chaotic AUR packages
+    --install [fresh]  ﯦ  Install chaotic AUR ('fresh' assumes a fresh install)
+    --uninstall        ﯦ  Uninstall chaotic AUR ( requires you to run $0 --revert after)
+    --revert           ﯦ  Reinstall orphaned chaotic AUR packages
 HELP
     ;;
 esac

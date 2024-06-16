@@ -140,7 +140,7 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
 # shellcheck disable=SC2120
 #* assumes the 1st param is directory
 #* The rest are decisional flags
-#* --reuse  ? asume that ctl_override is already present
+#* --reuse  ? assume that ctl_override is already present
 #* --edit ?  Modifies the control file then exit
 make_List() {
   # check_package md5sum
@@ -156,7 +156,7 @@ make_List() {
         generate_config_list "${CloneDir}/Configs"
         print_prompt -g "\n\n\nNew Files has been added/removed!" "\nCreate a new control file to avoid conflicts!\n"
       else
-        print_prompt -g "Found existing: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
+        print_prompt -g "Found existing: '${ctlFile}'" "\nWould you like to use your last preferred selection?"
         ask_confirm "Yy"
           if [ $? -eq 1 ]; then
             generate_config_list "${CloneDir}/Configs"
@@ -166,7 +166,7 @@ make_List() {
       fi
       read
   elif [[ $* == *"--reuse"* ]] && [ -e "${ctl_override}" ]; then
-    #? --reuse will always asume that ctl_override is already present
+    #? --reuse will always assume that ctl_override is already present
     show_restore_list "${ctl_override}"
   else
   cat <<MISSING
@@ -193,7 +193,7 @@ MISSING
 #! Deprecated
 #* assumes the 1st param is directory
 #* The rest are decisional flags
-#* --reuses  ? asume that ctl_override is already present
+#* --reuses  ? assume that ctl_override is already present
 #* --edit ?  Modifies the control file then exit
 list_Marker() {
   CloneDir=${1:-${CloneDir}}
@@ -206,7 +206,7 @@ list_Marker() {
       print_prompt -y "New/Changed: '${CloneDir}/Scripts/restore_cfg.lst' !" "\nCreate a new control file to avoid conflicts"
       generate_config_list "${CloneDir}/Configs"
     else
-      print_prompt -y "Existing Control file: '${ctlFile}'" "\nWould you like to use your last prefered selection?"
+      print_prompt -y "Existing Control file: '${ctlFile}'" "\nWould you like to use your last preferred selection?"
       ask_confirm "Yy"
       if [ $? -eq 1 ]; then
         generate_config_list "${CloneDir}/Configs"
@@ -216,7 +216,7 @@ list_Marker() {
     fi
     read
   elif [[ $* == *"--reuse"* ]] && [ -e "${ctl_override}" ]; then
-    #? --reuse will always asume that ctl_override is already present
+    #? --reuse will always assume that ctl_override is already present
     show_restore_list "${ctl_override}"
   fi
   menu_manage_config

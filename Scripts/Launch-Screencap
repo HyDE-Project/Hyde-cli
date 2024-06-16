@@ -11,7 +11,7 @@ snip=false
 [ ! -f "${rofile}" ] && roFile="${etcDir}/screencap.rasi"
 
 . Run-Screencap GUI
-trap cleaNotify EXIT
+trap clearNotify EXIT
 
 # # set position
 # x_offset=70   #* Cursor spawn position on clipboard
@@ -121,9 +121,9 @@ case ${OPT} in
 "${rec}"*)
     config_reload
     if ! ${snip}; then
-        Hyprdots run screencap -rf
+        Run-Screencap -rf
     elif [[ -z ${GEOM} ]]; then
-        Hyprdots run screencap -rf
+        Run-Screencap -rf
     else
         grim -g "${GEOM}" $temp_screenshot
         warn_dup

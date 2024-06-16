@@ -158,7 +158,7 @@ Please run:
            'Hyde-install'                                 Install Hyde (default)
 For advanced usage see options below
         -l|--link                                                Flag to transfer the link to a Clone Directory
-                                                                    ﯦ This is useful if you already have a Hyde
+                                                                    ﯦ  This is useful if you already have a Hyde
                                                                     Default: 'false'
         -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
                                                                 Default: '${cacheDir}/Hyde'
@@ -361,7 +361,7 @@ do_contain() {
     else
         :
         # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
-        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to recieve updates"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -w "\n Delete file to receive updates"
     fi
 }
 
@@ -391,8 +391,9 @@ eval "$(declare -F | sed -e 's/-f /-fx /')"
 
 # Cache-dir
 export cacheDir="${HOME}/.cache/hyde"
-export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to dissable perms
+export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to disable perms
 export settingDir="${cacheDir}/hyde-settings"
+export landingDir="${cacheDir}/landing"
 
 #! Temporary
 [ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
@@ -434,9 +435,11 @@ make_dir=(
     "${BkpDir}"
     "${cacheDir}"
     "${settingDir}"
+    "${landingDir}"
     "${etcDir}"
     "${HYDE_RUNTIME_DIR}"
 )
+
 for dir in "${make_dir[@]}"; do
     if [[ ! -d "${dir}" ]] && [[ -n "${dir}" ]]; then
         mkdir -p "${dir}"

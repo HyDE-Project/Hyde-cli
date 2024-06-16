@@ -1643,8 +1643,8 @@
  	nf-fa-life_buoy
  	nf-fa-life_ring
  	nf-fa-life_saver
- 	nf-fa-lightbulb
- 	nf-fa-lightbulb_o
+ﯦ  	nf-fa-lightbulb
+ﯦ  	nf-fa-lightbulb_o
  	nf-fa-line
  	nf-fa-line_chart
  	nf-fa-link
@@ -5478,7 +5478,7 @@
 3 	nf-md-file_image_marker_outline
 b 	nf-md-file_image_minus
 c 	nf-md-file_image_minus_outline
-0 	nf-md-file_image_outline
+ﯦ 0 	nf-md-file_image_outline
 d 	nf-md-file_image_plus
 e 	nf-md-file_image_plus_outline
 f 	nf-md-file_image_remove
@@ -5595,7 +5595,7 @@
 f 	nf-md-finance
 4 	nf-md-find_replace
 7 	nf-md-fingerprint
-1 	nf-md-fingerprint_off
+ﯦ 1 	nf-md-fingerprint_off
 8 	nf-md-fire
 7 	nf-md-fire_alert
 7 	nf-md-fire_circle
@@ -5883,7 +5883,7 @@
 9 	nf-md-format_line_weight
 9 	nf-md-format_list_bulleted
 0 	nf-md-format_list_bulleted_square
-2 	nf-md-format_list_bulleted_triangle
+ﯦ 2 	nf-md-format_list_bulleted_triangle
 a 	nf-md-format_list_bulleted_type
 a 	nf-md-format_list_checkbox
 6 	nf-md-format_list_checks
@@ -5891,7 +5891,7 @@
 b 	nf-md-format_list_numbered
 d 	nf-md-format_list_numbered_rtl
 f 	nf-md-format_list_text
-3 	nf-md-format_overline
+ﯦ 3 	nf-md-format_overline
 7 	nf-md-format_page_break
 7 	nf-md-format_page_split
 c 	nf-md-format_paint
@@ -5950,7 +5950,7 @@
 2 	nf-md-fraction_one_half
 0 	nf-md-freebsd
 7 	nf-md-french_fries
-4 	nf-md-frequently_asked_questions
+ﯦ 4 	nf-md-frequently_asked_questions
 0 	nf-md-fridge
 1 	nf-md-fridge_alert
 2 	nf-md-fridge_alert_outline
@@ -6009,11 +6009,11 @@
 f 	nf-md-gamepad_round_outline
 0 	nf-md-gamepad_round_right
 1 	nf-md-gamepad_round_up
-5 	nf-md-gamepad_square
-6 	nf-md-gamepad_square_outline
+ﯦ 5 	nf-md-gamepad_square
+ﯦ 6 	nf-md-gamepad_square_outline
 2 	nf-md-gamepad_up
 7 	nf-md-gamepad_variant
-7 	nf-md-gamepad_variant_outline
+ﯦ 7 	nf-md-gamepad_variant_outline
 e 	nf-md-gamma
 1 	nf-md-gantry_crane
 9 	nf-md-garage
@@ -6029,7 +6029,7 @@
 8 	nf-md-gas_station
 9 	nf-md-gas_station_off
 a 	nf-md-gas_station_off_outline
-8 	nf-md-gas_station_outline
+ﯦ 8 	nf-md-gas_station_outline
 9 	nf-md-gate
 8 	nf-md-gate_alert
 1 	nf-md-gate_and
@@ -6139,7 +6139,7 @@
 9 	nf-md-google_nearby
 c 	nf-md-google_play
 d 	nf-md-google_plus
-9 	nf-md-google_podcast
+ﯦ 9 	nf-md-google_podcast
 7 	nf-md-google_spreadsheet
 8 	nf-md-google_street_view
 f 	nf-md-google_translate
@@ -6329,7 +6329,7 @@
 6 	nf-md-home_account
 b 	nf-md-home_alert
 0 	nf-md-home_alert_outline
-a 	nf-md-home_analytics
+ﯦ a 	nf-md-home_analytics
 0 	nf-md-home_assistant
 1 	nf-md-home_automation
 1 	nf-md-home_battery
@@ -6858,7 +6858,7 @@
 c 	nf-md-magnify_remove_cursor
 d 	nf-md-magnify_remove_outline
 6 	nf-md-magnify_scan
-b 	nf-md-mail
+ﯦ b 	nf-md-mail
 e 	nf-md-mailbox
 8 	nf-md-mailbox_open
 9 	nf-md-mailbox_open_outline
@@ -6869,8 +6869,8 @@
 e 	nf-md-mailbox_up_outline
 a 	nf-md-manjaro
 d 	nf-md-map
-c 	nf-md-map_check
-d 	nf-md-map_check_outline
+ﯦ c 	nf-md-map_check
+ﯦ d 	nf-md-map_check_outline
 e 	nf-md-map_clock
 f 	nf-md-map_clock_outline
 1 	nf-md-map_legend
@@ -7329,7 +7329,7 @@
 0 	nf-md-notebook_minus
 1 	nf-md-notebook_minus_outline
 5 	nf-md-notebook_multiple
-f 	nf-md-notebook_outline
+ﯦ f 	nf-md-notebook_outline
 2 	nf-md-notebook_plus
 3 	nf-md-notebook_plus_outline
 4 	nf-md-notebook_remove
@@ -8127,7 +8127,7 @@
 9 	nf-md-rugby
 d 	nf-md-ruler
 2 	nf-md-ruler_square
-e 	nf-md-ruler_square_compass
+ﯦ e 	nf-md-ruler_square_compass
 e 	nf-md-run
 e 	nf-md-run_fast
 4 	nf-md-rv_truck
@@ -10833,7 +10833,7 @@
  	nfold-mdi-library_music
  	nfold-mdi-library_plus
  	nfold-mdi-lightbulb
-ﯦ 	nfold-mdi-lightbulb_on
+ﯦ  	nfold-mdi-lightbulb_on
 ﯧ 	nfold-mdi-lightbulb_on_outline
  	nfold-mdi-lightbulb_outline
  	nfold-mdi-link

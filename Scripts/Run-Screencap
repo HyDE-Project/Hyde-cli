@@ -70,7 +70,7 @@ first_setup() {
 
         if ! grep -q "${vaMsg}" "${cacheFile}"; then
             notify-send -a "ScreenCap" "Oh no! wl-screenrec might not work on your system. Will use 'wf-recorder' for now." -t 3000 -r 56789
-            vaMsg="#! Oh no! wl-screenrec is not working for you. Do not worry we will use wf-recorder instead. Try to run 'wl-screenrec' in termianl."
+            vaMsg="#! Oh no! wl-screenrec is not working for you. Do not worry we will use wf-recorder instead. Try to run 'wl-screenrec' in terminal."
             {
                 echo "${vaMsg}"
                 echo "export screen_recorder=\"wf-recorder\""
@@ -104,17 +104,17 @@ print_error() {
 Screenrecord: '${screen_recorder}'
 Screenshot: 'grimblast'
 
-[Usage] Hyprdots run screencap [option]
+[Usage] Hyde run screencap [option]
 
 ${usage}
 
-For Screen Recording you can pass an argument (--help for for options for '${screen_recorder}' )
+For Screen Recording you can pass an argument --help for '${screen_recorder}' options
 Example you can append [--audio] to capture audio.
 
 HELP
 }
 
-cleaNotify() {
+clearNotify() {
     if [ -f "${img_dir}/${img_file}" ]; then
         notify-send -a "Screencap" "Saved in ${img_dir}" -i "${img_dir}/${img_file}" -e
         rm -f "${temp_screenshot}"
@@ -133,9 +133,9 @@ fi
 case ${OPTION} in
 -pa | --print-all) #? 󰄀 Print all outputs
     grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    cleaNotify
+    clearNotify
     ;;
--ra | --record-all) notify-send -a "ScreenCap" "'Hyprdots run screencap --record-all' is deprecated please use --record-focus instead" ;;
+-ra | --record-all) notify-send -a "ScreenCap" "'--record-all' is deprecated please use --record-focus instead" ;;
 -rf | --record-focus) #? 󰃽 Record focused monitor
     grim -o "${focus_monitor}" "${temp_screenshot}"
     warn_dup
@@ -146,11 +146,11 @@ case ${OPTION} in
         exit
     fi
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS}
-    cleaNotify
+    clearNotify
     ;;
 -ps | --print-snip) #? 󰄀 Drag to manually snip an area
     grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    cleaNotify
+    clearNotify
     ;;
 -rs | --record-snip) #? 󰃽 Drag to manually snip an area to screen record it
     GEOM=$(slurp)
@@ -163,13 +163,13 @@ case ${OPTION} in
         exit
     fi
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
-    cleaNotify
+    clearNotify
     ;;
 -f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
     grimblast --freeze copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}" ;;
 -pm | --print-monitor) #? 󰄀 Print focused monitor
     grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    cleaNotify
+    clearNotify
     ;;
 -sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
     check_package tesseract-data-eng tesseract
