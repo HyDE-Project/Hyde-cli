@@ -721,10 +721,10 @@ USAGE
 		Launch-Pastebin "$@"
 		: <<USAGE
 [SHOW_PASTEBIN_USAGE]
-    c  ?	list and copy selected
-    d  ?	list and delete selected
-    w  ?	wipe database
-    s  ?	options
+    --copy  ?	list and copy selected
+    --delete  ?	list and delete selected
+    --wipe  ?	wipe database
+    --option  ?	options
 [END]
 USAGE
 		;;
@@ -736,8 +736,8 @@ USAGE
 		Launch-Search "${@}"
 		: <<USAGE
 [SHOW_SEARCH_USAGE]
-    -s  ? search engine to use
-    -b  ? browser to use
+    --site  ? search engine to use
+    --browser  ? browser to use
 [END]
 USAGE
 		;;

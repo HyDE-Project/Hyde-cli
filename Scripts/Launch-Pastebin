@@ -15,14 +15,13 @@ pastebin_process() {
         # Get the total number of lines
         total_lines=${#lines[@]}
         if [[ "${lines[0]}" = *":d:e:l:e:t:e:"* ]]; then
-            Launch-Pastebin d
-            exit 0
+            "${0}" --delete
         elif [[ "${lines[0]}" = *":w:i:p:e:"* ]]; then
-            Launch-Pastebin w            
-        elif [[ "${lines[0]}" = *":b:a:r:"* ]] || [[ "${lines[0]}" = *":c:o:p:y:"* ]]   ; then
-            Launch-Pastebin c
+            "${0}" --wipe
+        elif [[ "${lines[0]}" = *":b:a:r:"* ]] || [[ "${lines[0]}" = *":c:o:p:y:"* ]]; then
+            "${0}" --copy
         elif [[ "${lines[0]}" = *":o:p:t:"* ]]; then
-        Launch-Pastebin s
+            "${0}" --option
         else
             # Iterate over each line in the array
             for ((i = 0; i < total_lines; i++)); do
@@ -39,10 +38,10 @@ pastebin_process() {
     else
         while IFS= read -r line; do
             if [[ "${line}" = *":w:i:p:e:"* ]]; then
-                Launch-Pastebin w
+                "${0}" --wipe
                 break
-                elif [[ "${line}" = *":b:a:r:"* ]]; then
-                Launch-Pastebin d
+            elif [[ "${line}" = *":b:a:r:"* ]]; then
+                "${0}" --delete
                 break
             else
                 cliphist delete <<<"${line}"
@@ -67,7 +66,7 @@ checkContent() {
 
 # clipboard action
 case $1 in
-c)
+c | -c | --copy)
     selClip=$( (
         echo -e ":o:p:t:\t Options\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
         cliphist list
@@ -80,34 +79,34 @@ c)
     pastebin_process <<<"${selClip}" | wl-copy
     pasteIt "${*}"
     ;;
-d)
-    delMode=true
+d | -d | --delete)
+    export delMode=true
     (
         cliphist list
-    ) | rofi -dmenu -multi-select -i  -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
+    ) | rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
     ;;
-w)
+w | -w | --wipe)
     r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
     if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"Clear Clipboard History?\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)" == "Yes" ]; then
         cliphist wipe
     fi
     ;;
-s)
-echo -e ":d:e:l:e:t:e:\t Delete
+o | -o | --option)
+    echo -e ":d:e:l:e:t:e:\t Delete
 :w:i:p:e:\t﫧 Wipe Pastebin
 :c:o:p:y:\t Copy Pastebin" | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "entry { placeholder: \"Pastebin Options\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | pastebin_process
-# :b:a:r:\t$(seq -s= 100 | tr -dc '=' ) 
-;;
+    # :b:a:r:\t$(seq -s= 100 | tr -dc '=' )
+    ;;
 -*)
-cat << USAGE
+    cat <<USAGE
 $(basename ${0}) [action]
-c :  list and copy selected
-d :  list and delete selected
-w :  wipe database
-s :  options  
+--copy :  list and copy selected
+--delete :  list and delete selected
+--wipe :  wipe database
+--option :  options  
 USAGE
     ;;
-*) 
-Launch-Pastebin c
-;;
+*)
+    "${0}" --copy
+    ;;
 esac

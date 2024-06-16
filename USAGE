@@ -181,10 +181,10 @@ Usage: Hyde [Function] [options]
 			 [pastebin]  ↪️  [*] Pastebin manager 
   			                  💡 pass [only once] '--ignore=initialclass' to disable autopaste
 
-						[c] ↪️ 	list and copy selected
-						[d] ↪️ 	list and delete selected
-						[w] ↪️ 	wipe database
-						[s] ↪️ 	options
+						[--copy] ↪️ 	list and copy selected
+						[--delete] ↪️ 	list and delete selected
+						[--wipe] ↪️ 	wipe database
+						[--option] ↪️ 	options
 
 			 [screencap]  ↪️  Use rofi to select screenshot options 
   			                  !!  kills another rofi session
@@ -193,8 +193,8 @@ Usage: Hyde [Function] [options]
   			                 💡supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')
   			                 💡':' is use as delimter
 
-						[-s] ↪️  search engine to use
-						[-y] ↪️  browser to use
+						[--site] ↪️  search engine to use
+						[--browser] ↪️  browser to use
  
 [run]                       ↪️ Executable utilities
 
