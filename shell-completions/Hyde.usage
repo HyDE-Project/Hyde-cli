@@ -204,8 +204,9 @@ Hyde <FUNCTIONS>
 ;
 
 <SHOW_SEARCH_USAGE> ::=
- (--site  ) " search engine to use"
-| (--browser  ) " browser to use"
+ (--reset ) "	Reset cache"
+| (--browser  ) " Browser to use"
+| (--site  ) " Search engine to use"
 ;
 
 <RUN_SCREENCAP_USAGE> ::=

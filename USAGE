@@ -199,8 +199,9 @@ Usage: Hyde [Function] [options]
   			                 💡':' is use as delimter
   			                 💡Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" )
 
-						[--site] ↪️  search engine to use
-						[--browser] ↪️  browser to use
+						[	--reset] ↪️ 	Reset cache
+						[--browser] ↪️  Browser to use
+						[--site] ↪️  Search engine to use
  
 [run]                       ↪️ Executable utilities
 

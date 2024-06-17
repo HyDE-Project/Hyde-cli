@@ -187,7 +187,7 @@ main() {
 	else
 		# Check if search engine set.
 		if [ "$SITE_TO_USE" ]; then
-			[[ -f "$CACHE_DIR/${SITE_TO_USE}.txt" ]] || print_prompt +r "[error] " +y "url not set for ${SITE_TO_USE}" && usage
+			[[ -f "$CACHE_DIR/${SITE_TO_USE}.txt" ]] || { print_prompt +r "[error] " +y "url not set for ${SITE_TO_USE}" && usage ;}
 			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$SITE_TO_USE]  Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
 			handle_query "$SITE_TO_USE" "$query"
 		else
@@ -210,12 +210,12 @@ custom_search_sites
 # Loop through all arguments
 while (($# > 0)); do
 	case $1 in
-	--site | -s)
+	--site|-s)
 		if (($# > 1)); then
 			SITE_TO_USE="$2"
 			shift # Consume the value argument
 		else
-			echo "Error: --site requires an argument."
+			print_prompt +r "[error] "  +y "--site requires an argument."
 			usage
 		fi
 		;;
@@ -224,7 +224,7 @@ while (($# > 0)); do
 			BROWSER="$2"
 			shift # Consume the value argument
 		else
-			echo "Error: --browser requires an argument."
+			print_prompt +r "[error] "  +y "--browser requires an argument."
 			usage
 		fi
 		;;
@@ -240,5 +240,4 @@ while (($# > 0)); do
 	esac
 	shift # Shift off the current option being processed
 done
-
 main "$@"
