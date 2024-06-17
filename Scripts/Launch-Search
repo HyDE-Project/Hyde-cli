@@ -4,7 +4,7 @@
 #  insipired from https://github.com/stevenliebregt/rofi-scripts/blob/master/web-search.sh
 # Modified by khing to fit on Hyde usage
 
-set -eu
+set -e
 
 CACHE_DIR="$cacheDir/hyde-search"
 # BROWSER="google-chrome-stable"
@@ -159,7 +159,7 @@ handle_input() {
 		query="${inputTxt}"
 		site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 	fi
-
+	[[ -z "${site}" ]] && exit 0
 	handle_query "$site" "$query"
 
 }
@@ -177,6 +177,7 @@ main() {
 			handle_query "$SITE_TO_USE" "$query"
 		else
 			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			[[ -z "${inputTxt}" ]] && exit 0
 			if gen_sites_list | grep -q "${inputTxt}"; then
 				site="$(gen_sites_list | grep ${inputTxt})"
 				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($site)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
