@@ -736,7 +736,8 @@ USAGE
 	screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
 		Launch-Screencap
 		;;
-	search) #? [*] Web Search\nﯦ supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')\nﯦ ':' is use as delimter
+	search) #? [*] Web Search\nﯦ supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')\nﯦ ':' is use as delimter\nﯦ Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" ) 
+
 	shift
 		Launch-Search "${@}"
 		: <<USAGE

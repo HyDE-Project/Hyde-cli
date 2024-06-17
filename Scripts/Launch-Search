@@ -4,7 +4,7 @@
 #  insipired from https://github.com/stevenliebregt/rofi-scripts/blob/master/web-search.sh
 # Modified by khing to fit on Hyde usage
 
-set -eu
+set -e
 
 CACHE_DIR="$cacheDir/hyde-search"
 # BROWSER="google-chrome-stable"
@@ -19,6 +19,7 @@ r_listview="listview { lines: ${search_line:-8}; }"
 r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
 
 declare -A SITES
+# declare -A search_sites
 
 # Set default variable value to empty string.
 SITE_TO_USE=""
@@ -31,8 +32,6 @@ SITES=(
 	["startpage"]="https://www.startpage.com/do/search?query="
 	["amazon"]="https://www.amazon.com/s?k="
 	["wikipedia"]="https://en.wikipedia.org/w/index.php?search="
-	["stackoverflow"]="https://www.stackoverflow.com/search?q="
-	["stackexchange"]="https://stackexchange.com/search?q="
 	["superuser"]="https://superuser.com/search?q="
 	["tex"]="https://tex.stackexchange.com/search?q="
 	["softwareengineering"]="https://softwareengineering.stackexchange.com/search?q="
@@ -41,7 +40,27 @@ SITES=(
 	["superuser"]="https://www.superuser.com/search?q="
 	["archlinux"]="https://archlinux.org/packages/?sort=&q="
 	["AUR"]="https://aur.archlinux.org/packages?O=0&K="
+
 )
+
+#Handle a custom search engine
+custom_search_sites() {
+	# Loop over each file in the search_file array
+	for file in "${search_file[@]}"; do
+	[[ ${file} != *.lst ]] && continue
+		# Read the file and add each line to the SITES array
+		while IFS='|' read -r key value; do
+			# Trim leading and trailing whitespace from key and value
+			key=$(xargs <<<"${key}")     # xargs trims whitespace
+			value=$(xargs <<<"${value}") # xargs trims whitespace
+			#  Check if key or value is blank, and continue with the next iteration if so
+			if [[ -z "$key" || -z "$value" ]]; then
+				continue
+			fi
+			SITES["$key"]="$value"
+		done <"$file"
+	done
+}
 
 # Show usage for the script.
 usage() {
@@ -159,12 +178,13 @@ handle_input() {
 		query="${inputTxt}"
 		site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 	fi
-
+	[[ -z "${site}" ]] && exit 0
 	handle_query "$site" "$query"
 
 }
 
 main() {
+	custom_search_sites
 	create_cache_dir
 	create_cache_files
 
@@ -177,6 +197,7 @@ main() {
 			handle_query "$SITE_TO_USE" "$query"
 		else
 			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			[[ -z "${inputTxt}" ]] && exit 0
 			if gen_sites_list | grep -q "${inputTxt}"; then
 				site="$(gen_sites_list | grep ${inputTxt})"
 				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($site)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
