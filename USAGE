@@ -197,6 +197,7 @@ Usage: Hyde [Function] [options]
 			 [search]  ↪️  [*] Web Search
   			                 💡supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')
   			                 💡':' is use as delimter
+  			                 💡Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" )
 
 						[--site] ↪️  search engine to use
 						[--browser] ↪️  browser to use
