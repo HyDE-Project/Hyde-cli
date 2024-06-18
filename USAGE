@@ -126,9 +126,14 @@ Usage: Hyde [Function] [options]
 
 			 [control]  ↪️  Edit waybar control file
 
+			 [next]  ↪️  Next waybar layout
+
+			 [prev]  ↪️  Previous waybar layout
+
 			 [reload]  ↪️  Reloads waybar
 
-			 [size]  ↪️  [*]Set waybar size
+			 [size]  ↪️  [*] Set waybar size
+  			                 💡e.g 'waybar size 30' (range 1-100)
 
 						[--all] ↪️  Change all the pre-set sizes
  
@@ -199,7 +204,7 @@ Usage: Hyde [Function] [options]
   			                 💡':' is use as delimter
   			                 💡Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" )
 
-						[	--reset] ↪️ 	Reset cache
+						[--reset] ↪️ 	Reset cache
 						[--browser] ↪️  Browser to use
 						[--site] ↪️  Search engine to use
  

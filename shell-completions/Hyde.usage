@@ -99,8 +99,10 @@ Hyde <FUNCTIONS>
 
 <WAYBAR_FUNCTION> ::=
 			  (control) 	  " Edit waybar control file"
+			 | (next) 	  " Next waybar layout"
+			 | (prev) 	  " Previous waybar layout"
 			 | (reload) 	  " Reloads waybar"
-			 | (size <WAYBAR_SIZE_USAGE> ) 	  " [*]Set waybar size"
+			 | (size <WAYBAR_SIZE_USAGE> ) 	  " [*] Set waybar size"
 ;
 
 
