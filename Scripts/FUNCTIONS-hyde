@@ -37,12 +37,12 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
         man_params=$(
             # awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | awk -v indent="\t\t\t\t\t\t" 'BEGIN { FS = "[()#?]" } { sub(/^[ \t]+/, "", $1); gsub(/\\n/, "\\n" indent, $4); printf "\t\t\t %-15s %s\n","[" $1 "]","﬌" $4 }')
             awk "/^$Function\(\) \{/,/esac;/" "$0" | grep -E '^\s+\w+\)' | while read -r pline; do
-                    # echo $pline
-                param=$(awk -F ')' '{print $1}' <<< ${pline} )
-                desc=$(awk -F '?' '{print $2}' <<< ${pline})
+                # echo $pline
+                param=$(awk -F ')' '{print $1}' <<<${pline})
+                desc=$(awk -F '?' '{print $2}' <<<${pline})
                 indent="\t\t\t"
                 # echo echo -e ${line} | awk -F '?' '{print}'
-                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌" )" "$(print_prompt "$(echo -en "${desc}" | head -n 1)")"
+                printf "${indent}%-15s %s %s\n" "$(print_prompt -y " [" "${param}" -y "] ")" "$(print_prompt -c "﬌")" "$(print_prompt "$(echo -en "${desc}" | head -n 1)")"
                 # Print the remaining lines of $desc with indentation
                 echo -e "$desc" | tail +2 | while IFS= read -r line; do
                     printf "  %s%-15s %s %s\n" "$indent" "" "" "$(print_prompt "$line")"
@@ -51,10 +51,10 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
                 if echo "${desc}" | grep -q "[*]"; then
                     name_usage=${prefix^^}_${param^^}_USAGE
                     while IFS= read -r uline; do
-                        local opt=$(awk -F '?' '{print $1}' <<< "${uline}")
-                        local desc=$(awk -F '?' '{print $2}' <<< "${uline}")
+                        local opt=$(awk -F '?' '{print $1}' <<<"${uline}")
+                        local desc=$(awk -F '?' '{print $2}' <<<"${uline}")
                         opt=${opt// /}
-                        printf "\t\t\t\t\t\t%-15s %s %s\n" "$(print_prompt -y "[" "${opt}" -y "]")" "$(print_prompt -c "﬌" )" "$(print_prompt "$desc")"
+                        printf "\t\t\t\t\t\t%-15s %s %s\n" "$(print_prompt -y "[" "${opt}" -y "]")" "$(print_prompt -c "﬌")" "$(print_prompt "$desc")"
                     done < <(parse_section "${name_usage}" "${0}")
                     echo ""
                 fi
@@ -62,10 +62,10 @@ Parameters() { #TODO: Add conditionals here like 'case' ; This is not so optimiz
             done
         )
         echo -e "${man_params}" |
-        sed -e "s|\${CloneDir}|$CloneDir|g" \
-            -e "s|\${HOME}|${HOME}|g" \
-            -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
-            -e "s|\${ctlFile}|$ctlFile|g"
+            sed -e "s|\${CloneDir}|$CloneDir|g" \
+                -e "s|\${HOME}|${HOME}|g" \
+                -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+                -e "s|\${ctlFile}|$ctlFile|g"
     fi
 }
 
@@ -143,7 +143,7 @@ inform_updates() {
 Latest Commit: $latest_hyde_version - $(git show -s --format='%B')
 
 WARN
-echo "${git_hash}"
+        echo "${git_hash}"
         if [ -n "${git_hash}" ]; then
             # Check if there are changes in the Configs directory since the commit identified by git_hash
             git diff --quiet "${git_hash}" -- ./Configs && print_prompt -y "Exec: " "[ Hyde restore Config ]" -y " to apply 'Configs' changes from to local"
@@ -165,7 +165,7 @@ rofi_pos() {
     #// set rofi scaling
 
     [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
-    r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+    fnt_override="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
     wind_border=$((hypr_border * 3 / 2))
     elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
 
@@ -289,24 +289,24 @@ shell_select() {
 }
 
 sddm_select() {
-        sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
-        sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-        sddm_theme=$(
-        find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" \
-        | awk -F 'Sddm_' '{print $2}' |\
-         awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
-        )
-        
-        [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
-        print_prompt -y "Setting into '${sddm_theme} theme'..."
-        ask_confirm "${USER}"
-        [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
-        SUPER mkdir -p "$(dirname ${sddm_conf})"
-        SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
-        SUPER touch "${sddm_conf}"
-        SUPER cp "${sddm_conf}" "${sddm_bak}"
-        SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
-        check_service sddm
+    sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
+    sddm_conf=/etc/sddm.conf.d/kde_settings.conf
+    sddm_theme=$(
+        find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" |
+            awk -F 'Sddm_' '{print $2}' |
+            awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
+    )
+
+    [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
+    print_prompt -y "Setting into '${sddm_theme} theme'..."
+    ask_confirm "${USER}"
+    [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
+    SUPER mkdir -p "$(dirname ${sddm_conf})"
+    SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
+    SUPER touch "${sddm_conf}"
+    SUPER cp "${sddm_conf}" "${sddm_bak}"
+    SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
+    check_service sddm
 }
 
 main_help_content() {
@@ -315,6 +315,6 @@ main_help_content() {
             -e "s|\${HOME}|${HOME}|g" \
             -e "s|\${hydeConfDir}|${hydeConfDir}|g" \
             -e "s|\${ctlFile}|$ctlFile|g"
-} 
+}
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

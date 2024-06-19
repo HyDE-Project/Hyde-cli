@@ -9,9 +9,9 @@ check_package wtype
 
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`
 #* I don't own anything of it
-#TODO:   Needed a way to fetch the glyph from the NerdFonts source.
-#TODO:    find a way make the  DB update
-#TODO:    make the Script run on User space
+#TODO:   Needed a way to fetch the glyph from the NerdFonts source.
+#TODO:    find a way make the  DB update
+#TODO:    make the update Script run on User space
 
 glyphDATA="${etcDir}/glyph.db"
 recentData="${cacheDir}/landing/show_glyph.recent"
@@ -35,7 +35,7 @@ combined_entries="${recent_entries}\n${main_entries}"
 #? Remove duplicates from the combined entries
 unique_entries=$(echo -e "${combined_entries}" | awk '!seen[$0]++')
 
-dataGlyph=$(echo "${unique_entries}" | rofi -dmenu -multi-select -i -theme-str  "entry { placeholder: \"Select Glyph...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
+dataGlyph=$(echo "${unique_entries}" | rofi -dmenu -multi-select -i -theme-str  "entry { placeholder: \" 🔣 Glyph\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}")
 # selGlyph=$(echo -n "${selGlyph}" | cut -d' ' -f1 | tr -d '\n' | wl-copy)
 trap save_recent EXIT
 selGlyph=$(printf "%s" "${dataGlyph}" | cut -d' ' -f1 | tr -d '\n\r' )

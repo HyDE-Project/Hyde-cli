@@ -20,7 +20,8 @@ if [ -z "$1" ]; then
 	box_me -s "Hyde-cli $hyde_cli_version"
 	print_prompt "$(main_help_content)"
 	exit 1
-elif ! (awk '{print $1}' <<<$(main_help_content) | grep -q "$1"); then
+elif ! (awk '{print $1}' <<<$(main_help_content) | grep -qw "${1}" ); then
+	echo '${*}'
 	print_prompt -crit "[unknown]: " -y "$*" "\nUsage: Hyde [Function] [Arguments] [Parameter]\n"
 	print_prompt "$(main_help_content)"
 	exit 1
@@ -716,13 +717,20 @@ USAGE
 		Launch-Bookmarks $*
 		: <<USAGE
 [SHOW_BOOKMARKS_USAGE]
+	--browser	?   Set Browser can also set 'BROWSER' env
     --rebuild   ?   force rebuild cached bookmark paths
     --no-custom ?    run without custom '.lst' bookmark files
 [END]
 USAGE
 		;;
-	emoji) #? Emoji selector
-		Launch-Emoji
+	emoji) #? [*] Emoji selector\nﯦ Add 'emoji_style=2'\n	1 = list\n	2 = grid    
+		shift
+		Launch-Emoji "${@}"
+		: <<USAGE
+[SHOW_EMOJI_USAGE]
+    --style   ?   use style [ 1 | 2 ]
+[END]
+USAGE
 		;;
 	glyph) #? Glyph selector
 		Launch-Glyph

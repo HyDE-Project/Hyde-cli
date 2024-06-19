@@ -11,8 +11,8 @@ CACHE_DIR="$cacheDir/hyde-search"
 rofi_pos
 r_width="width: ${search_width:-40em};"
 r_height="height: ${search_height:-23em};"
-r_listview="listview { lines: ${search_line:-8}; }"
-r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
+r_listview="listview { lines: ${search_line:-8}; columns: 4 ;}"
+r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} ${fnt_override} ${col_override} "
 
 declare -A SITES
 
@@ -191,7 +191,7 @@ main() {
 			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$SITE_TO_USE]  Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
 			handle_query "$SITE_TO_USE" "$query"
 		else
-			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \"   Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 			[[ -z "${inputTxt}" ]] && exit 0
 			if gen_sites_list | grep -q "${inputTxt}"; then
 				site="$(gen_sites_list | grep -m 1 ${inputTxt})"

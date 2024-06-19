@@ -128,7 +128,7 @@ Hyde <FUNCTIONS>
 <SHOW_FUNCTION> ::=
 			  (binds <SHOW_BINDS_USAGE> ) 	  " [*] Show keybind hints"
 			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
-			 | (emoji) 	  " Emoji selector"
+			 | (emoji <SHOW_EMOJI_USAGE> ) 	  " [*] Emoji selector"
 			 | (glyph) 	  " Glyph selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (screencap) 	  " Use rofi to select screenshot options "
@@ -194,8 +194,13 @@ Hyde <FUNCTIONS>
 ;
 
 <SHOW_BOOKMARKS_USAGE> ::=
- (--rebuild   ) "   force rebuild cached bookmark paths"
+ (--browser	) "   Set Browser can also set 'BROWSER' env"
+| (--rebuild   ) "   force rebuild cached bookmark paths"
 | (--no-custom ) "    run without custom '.lst' bookmark files"
+;
+
+<SHOW_EMOJI_USAGE> ::=
+ (--style   ) "   use style [ 1 | 2 ]"
 ;
 
 <SHOW_PASTEBIN_USAGE> ::=
