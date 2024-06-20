@@ -137,7 +137,8 @@ Hyde <FUNCTIONS>
 
 
 <RUN_FUNCTION> ::=
-			  (audio_idle) 	  " Inhibits idle when player status: 'Playing"
+			  (airplane_mode) 	  " Toogle airplane mode"
+			 | (audio_idle) 	  " Inhibits idle when player status: 'Playing"
 			 | (screencap <RUN_SCREENCAP_USAGE> ) 	  " [*] Screenshot and screenrecord tool"
 			 | (events) 	  " Watches hyprland events and executes actions"
 ;

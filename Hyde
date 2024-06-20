@@ -772,6 +772,10 @@ USAGE
 
 run() { #? Executable utilities
 	case $1 in
+
+	airplane_mode) #? Toogle airplane mode\n\tﯦ Toogles wifi 
+	airplane-mode
+	;;
 	audio_idle) #? Inhibits idle when player status: 'Playing
 		check_package systemd
 		local command="${0} "${FUNCNAME[0]}" ${@} --listen"
