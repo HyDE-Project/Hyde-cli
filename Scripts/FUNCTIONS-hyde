@@ -317,4 +317,20 @@ main_help_content() {
             -e "s|\${ctlFile}|$ctlFile|g"
 }
 
+
+airplane-mode() {
+# Check if any wireless device is blocked
+wifi_blocked=$(rfkill list wifi | grep -o "Soft blocked: yes")
+
+if [ -n "$wifi_blocked" ]; then
+    rfkill unblock wifi
+    notify-send 'Airplane mode: OFF'
+else
+    rfkill block wifi
+    notify-send 'Airplane mode: ON'
+fi
+}
+
+
+
 eval "$(declare -F | sed -e 's/-f /-fx /')"
