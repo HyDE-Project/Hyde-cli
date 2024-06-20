@@ -126,9 +126,14 @@ Usage: Hyde [Function] [options]
 
 			 [control]  ↪️  Edit waybar control file
 
+			 [next]  ↪️  Next waybar layout
+
+			 [prev]  ↪️  Previous waybar layout
+
 			 [reload]  ↪️  Reloads waybar
 
-			 [size]  ↪️  [*]Set waybar size
+			 [size]  ↪️  [*] Set waybar size
+  			                 💡e.g 'waybar size 30' (range 1-100)
 
 						[--all] ↪️  Change all the pre-set sizes
  
@@ -176,10 +181,16 @@ Usage: Hyde [Function] [options]
 			 [bookmarks]  ↪️  [*] Bookmark selector
   			                 💡append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
 
+						[	--browser	] ↪️    Set Browser can also set 'BROWSER' env
 						[--rebuild] ↪️    force rebuild cached bookmark paths
 						[--no-custom] ↪️     run without custom '.lst' bookmark files
 
-			 [emoji]  ↪️  Emoji selector
+			 [emoji]  ↪️  [*] Emoji selector
+  			                 💡Add 'emoji_style=2'
+  			                 	1 = list
+  			                 	2 = grid
+
+						[--style] ↪️    use style [ 1 | 2 ]
 
 			 [glyph]  ↪️  Glyph selector
 
@@ -199,8 +210,9 @@ Usage: Hyde [Function] [options]
   			                 💡':' is use as delimter
   			                 💡Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" )
 
-						[--site] ↪️  search engine to use
-						[--browser] ↪️  browser to use
+						[--reset] ↪️ 	Reset cache
+						[--browser] ↪️  Browser to use
+						[--site] ↪️  Search engine to use
  
 [run]                       ↪️ Executable utilities
 

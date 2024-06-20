@@ -7,71 +7,55 @@
 set -e
 
 CACHE_DIR="$cacheDir/hyde-search"
-# BROWSER="google-chrome-stable"
-# BROWSER="firefox"
-
-[[ -f "${CACHE_DIR}/recent.site" ]] && source "${CACHE_DIR}/recent.site"
 
 rofi_pos
 r_width="width: ${search_width:-40em};"
 r_height="height: ${search_height:-23em};"
-r_listview="listview { lines: ${search_line:-8}; }"
-r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
+r_listview="listview { lines: ${search_line:-8}; columns: 4 ;}"
+r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} ${fnt_override} ${col_override} "
 
 declare -A SITES
-# declare -A search_sites
 
 # Set default variable value to empty string.
 SITE_TO_USE=""
 
-SITES=(
-	["google"]="https://www.google.com/search?q="
-	["yahoo"]="https://search.yahoo.com/search?p="
-	["bing"]="https://www.bing.com/search?q="
-	["duckduckgo"]="https://duckduckgo.com/?q="
-	["startpage"]="https://www.startpage.com/do/search?query="
-	["amazon"]="https://www.amazon.com/s?k="
-	["wikipedia"]="https://en.wikipedia.org/w/index.php?search="
-	["superuser"]="https://superuser.com/search?q="
-	["tex"]="https://tex.stackexchange.com/search?q="
-	["softwareengineering"]="https://softwareengineering.stackexchange.com/search?q="
-	["github"]="https://www.github.com/search?q="
-	["youtube"]="https://www.youtube.com/results?search_query="
-	["superuser"]="https://www.superuser.com/search?q="
-	["archlinux"]="https://archlinux.org/packages/?sort=&q="
-	["AUR"]="https://aur.archlinux.org/packages?O=0&K="
-
+search_file+=(
+	"${etcDir}/search.lst"
 )
 
 #Handle a custom search engine
 custom_search_sites() {
-	# Loop over each file in the search_file array
-	for file in "${search_file[@]}"; do
-	[[ ${file} != *.lst ]] && continue
-		# Read the file and add each line to the SITES array
-		while IFS='|' read -r key value; do
-			# Trim leading and trailing whitespace from key and value
-			key=$(xargs <<<"${key}")     # xargs trims whitespace
-			value=$(xargs <<<"${value}") # xargs trims whitespace
-			#  Check if key or value is blank, and continue with the next iteration if so
-			if [[ -z "$key" || -z "$value" ]]; then
-				continue
-			fi
-			SITES["$key"]="$value"
-		done <"$file"
-	done
+    # Loop over each file in the search_file array
+    for file in "${search_file[@]}"; do
+        [[ ${file} != *.lst ]] && continue
+        [[ -f ${file} ]] || continue
+        # Read the file and add each line to the SITES array
+        while IFS='|' read -r key value || [[ -n "$key" ]]; do
+            # Trim leading and trailing whitespace from key and value
+            key=$(xargs <<<"${key}")     # xargs trims whitespace
+            value=$(xargs <<<"${value}") # xargs trims whitespace
+            # Check if key or value is blank, and continue with the next iteration if so
+            if [[ -z "$key" || -z "$value" ]]; then
+                continue
+            fi
+            SITES["$key"]="$value"
+        done <"$file"
+    done
 }
+
 
 # Show usage for the script.
 usage() {
 	cat <<EOF
--s [search engine]      give the search engine to use, can be one of the following:
+--reset 	Reset cache
+--browser | -b [browser]	Browser to use, defaults to xdg browser
+--site | -s [search engine]	Search-engine to use
+Available:
 $(
 		for site in "${!SITES[@]}"; do
-			echo -e "\t* $site"
-		done
+			echo -e "\t $site"
+		done | sort
 	)
--b [browser]      browser to use, follows the default xdg browser
 EOF
 
 	exit 1
@@ -80,7 +64,7 @@ EOF
 # Creates the cache directory if it does not exist.
 create_cache_dir() {
 	if [ ! -d "$CACHE_DIR" ]; then
-		echo "Hyde-cli created a directory: ${CACHE_DIR}"
+		print_prompt +g "[created] " +y "${CACHE_DIR}"
 		mkdir -p "$CACHE_DIR"
 	fi
 }
@@ -89,6 +73,7 @@ create_cache_dir() {
 create_cache_files() {
 	for site in "${!SITES[@]}"; do
 		if [ ! -f "$CACHE_DIR/$site.txt" ]; then
+			print_prompt +g "[created] " +y "$CACHE_DIR/$site.txt"
 			touch "$CACHE_DIR/$site.txt"
 		fi
 	done
@@ -99,9 +84,12 @@ create_cache_files() {
 # If a config file exists, use the sites from that list, otherwise populate
 # the list with the sites from the $SITES variable.
 gen_sites_list() {
-	for site in "${!SITES[@]}"; do
-		printf "%s\n" "$site"
-	done | sort
+	{
+		[[ -f "${CACHE_DIR}/recent.sites" ]] && awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1}' "${CACHE_DIR}/recent.sites"
+		for site in "${!SITES[@]}"; do
+			printf "%s\n" "$site"
+		done | sort
+	} | awk '!seen[$0]++'
 }
 
 # Generate the list of previously used search queries.
@@ -123,13 +111,19 @@ write_to_top() {
 	file=$1
 	content=$2
 
-	# Move old values to temporary file.
-	cat "$CACHE_DIR/$file.txt" >"$CACHE_DIR/tmp.txt"
-	# Print query to top.
-	echo "$content" >"$CACHE_DIR/$file.txt"
-	cat "$CACHE_DIR/tmp.txt" >>"$CACHE_DIR/$file.txt"
-	# Remove temporary file.
-	rm "$CACHE_DIR/tmp.txt"
+	# # Move old values to temporary file.
+	# cat "$CACHE_DIR/$file.txt" >"$CACHE_DIR/tmp.txt"
+	# # Print query to top.
+	# echo "$content" >"$CACHE_DIR/$file.txt"
+	# cat "$CACHE_DIR/tmp.txt" >>"$CACHE_DIR/$file.txt"
+	# # Remove temporary file.
+	# rm "$CACHE_DIR/tmp.txt"
+
+	#? Prepend the selected emoji to the top of the recentData file
+	# sed -i "1i\\$selEmoji" "${recentData}"
+	awk -v var="$content" 'BEGIN{print var} {print}' "${file}" >temp && mv temp "${file}"
+	#?  Use awk to remove duplicates and empty lines, moving the most recent emoji to the top
+	awk 'NF' "${file}" | awk '!seen[$0]++' >temp && mv temp "${file}"
 
 }
 
@@ -137,18 +131,19 @@ write_to_top() {
 handle_query() {
 	site=$1
 	query=$2
-	echo "recentSite=\"${site}\"" >"${CACHE_DIR}/recent.site"
 	# Write the query to file.
 	# Check if the search query already exists.
 	if grep -Fxq "$query" "$CACHE_DIR/$site.txt"; then
 		# Remove the existing entry.
 		echo "$(cat "$CACHE_DIR/$site.txt" | grep -xv "$query")" >"$CACHE_DIR/$site.txt"
 		# Write the new entry on top.
-		write_to_top "$site" "$query"
+		write_to_top "${CACHE_DIR}/${site}.txt" "$query"
 	else
 		# Write the new entry on top.
-		write_to_top "$site" "$query"
+		write_to_top "${CACHE_DIR}/${site}.txt" "$query"
 	fi
+	[[ -f "${CACHE_DIR}/recent.sites" ]] || touch "${CACHE_DIR}/recent.sites"
+	write_to_top "${CACHE_DIR}/recent.sites" "${site} | ${SITES[${site}]}"
 
 	# Open the corresponding site in google-chrome-stable.
 	# google-chrome-stable "${SITES[$site]}$query"
@@ -184,7 +179,6 @@ handle_input() {
 }
 
 main() {
-	custom_search_sites
 	create_cache_dir
 	create_cache_files
 
@@ -193,14 +187,15 @@ main() {
 	else
 		# Check if search engine set.
 		if [ "$SITE_TO_USE" ]; then
-			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($SITE_TO_USE)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
+			[[ -f "$CACHE_DIR/${SITE_TO_USE}.txt" ]] || { print_prompt +r "[error] " +y "url not set for ${SITE_TO_USE}" && usage ;}
+			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$SITE_TO_USE]  Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
 			handle_query "$SITE_TO_USE" "$query"
 		else
-			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \"   Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
 			[[ -z "${inputTxt}" ]] && exit 0
 			if gen_sites_list | grep -q "${inputTxt}"; then
-				site="$(gen_sites_list | grep ${inputTxt})"
-				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Search ($site)\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
+				site="$(gen_sites_list | grep -m 1 ${inputTxt})"
+				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$site]  Search \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
 				handle_query "$site" "$query"
 			else
 				handle_input "${inputTxt}"
@@ -209,20 +204,40 @@ main() {
 	fi
 }
 
-# Get argument options.
-while getopts ":s:b:" o; do
-	case "${o}" in
-	s)
-		SITE_TO_USE=${OPTARG}
+#* Process user search_files
+custom_search_sites
+
+# Loop through all arguments
+while (($# > 0)); do
+	case $1 in
+	--site|-s)
+		if (($# > 1)); then
+			SITE_TO_USE="$2"
+			shift # Consume the value argument
+		else
+			print_prompt +r "[error] "  +y "--site requires an argument."
+			usage
+		fi
 		;;
-	b)
-		BROWSER=${OPTARG}
+	--browser | -b)
+		if (($# > 1)); then
+			BROWSER="$2"
+			shift # Consume the value argument
+		else
+			print_prompt +r "[error] "  +y "--browser requires an argument."
+			usage
+		fi
 		;;
-	?)
+	--reset)
+		rm -fr "${CACHE_DIR}"
+		print_prompt +g "[ok] " +y "reset"
+		exit 0
+		;;
+	*)
+		echo "Unknown option: $1"
 		usage
 		;;
 	esac
+	shift # Shift off the current option being processed
 done
-shift $((OPTIND - 1))
-
 main "$@"

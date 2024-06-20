@@ -23,6 +23,16 @@ create_backup() {
     fi
 }
 
+usage() {
+cat << USAGE
+bookmarks [actions]
+--browser           Set Browser can also set 'BROWSER' env
+--rebuild           force rebuild cached bookmark paths
+--no-custom         run without custom '.lst' bookmark files
+USAGE
+exit 0
+}
+
 # process bookmarks
 process_bookmarks() {
     query="select b.title, p.url, b.id, SUBSTR(SUBSTR(p.url, INSTR(url, '//') + 2), 0, INSTR(SUBSTR(p.url, INSTR(p.url, '//') + 2), '/')) as domain from moz_bookmarks as b left outer join moz_places as p on b.fk=p.id where b.type = 1 and p.hidden=0 and b.title not null" #  and parent=$1
@@ -62,6 +72,33 @@ save_recent() {
     awk 'NF' "${recentData}" | awk '!seen[$0]++' | head -n ${recentNumber} >temp && mv temp "${recentData}"
 }
 
+isRebuild=false
+isCustom=true
+# Loop through all arguments
+while (($# > 0)); do
+	case $1 in
+	--rebuild)
+        isRebuild=true
+		;;
+	--browser | -b)
+		if (($# > 1)); then
+			BROWSER="$2"
+			shift # Consume the value argument
+		else
+			print_prompt +r "[error] "  +y "--browser requires an argument."
+			usage
+		fi
+		;;
+	--no-custom)
+		isCustom=false
+        ;;
+	-*)
+		usage
+		;;
+	esac
+	shift # Shift off the current option being processed
+done
+
 declare -a bookmarkFile
 
 # TODO List all the possible Bookmarks path if needed to be hardcoded
@@ -74,8 +111,9 @@ bookmarkFile+=(
 bookmarkFile+=(${bookmark_file[@]})
 
 #* Cache bookmark path
-if [[ "${*}" == *"--rebuild"* ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
+if [[ "${isRebuild}" == true ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
     print_prompt -y "[cache] " "bookmark paths"
+    notify-send "Caching bookmark paths"
     : >"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
     for bookmark in "${bookmark_file[@]}"; do
         echo -e "bookmarkFile+=($bookmark)" >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
@@ -105,7 +143,7 @@ mainJson=$(
             fi
             #* Custom from hyde.conf
             if grep -q ".lst" <<<"${file}"; then
-                [[ "${*}" == *"--no-custom"* ]] || custom_bookmarks "${file}"
+                [[ "${isCustom}" == false ]] || custom_bookmarks "${file}"
             fi
         fi
     done
@@ -117,7 +155,7 @@ jq empty <<<${mainJson} || { print_prompt -r "[fatal]" " Broken json data, be su
 #* sort and remove duplicates and append recent
 mainJson=$(
     (
-        [[ "${*}" == *"--no-custom"* ]] || { [ -f ${recentData} ] && custom_bookmarks "${recentData}"; }
+        [[ "${isCustom}" == false ]] || { [ -f ${recentData} ] && custom_bookmarks "${recentData}"; }
         jq -s 'unique_by(.title) | unique_by(.url) | sort_by(.title) | .[]' <<<$mainJson
     ) | jq -s
 )
@@ -126,12 +164,13 @@ listView=$(jq -r 'foreach .[] as $item (0; . + 1; "\(.)) \($item.title)")' <<<"$
 
 #* Rofi
 browser_name=$(basename $(xdg-settings get default-web-browser) .desktop)
+browser_name=${BROWSER:-${browser_name}}
 r_width="width: ${bookmark_width:-35em};"
 r_height="height: ${bookmark_height:-35em};"
 r_listview="listview { lines: ${bookmark_line:-13}; }"
 r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
 
-selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \"Launch in ${browser_name}... \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
+selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \" 🌐 Launch: ${browser_name} \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
 
 [[ -z ${selected_opt} ]] && print_prompt -r "Operation Cancelled" && exit 0
 
@@ -140,4 +179,5 @@ save_recent "$(jq -c --argjson index "$index" -cr '.[$index - 1] | "\(.title) |\
 
 #* Use index and open url
 url=$(jq -c --argjson index "$index" -cr ' .[$index - 1] | .url' <<<$mainJson)
+[ -n "${BROWSER}" ] && "${BROWSER}" "${SITES[$site]}$query" && exit 0
 xdg-open "${url}" || notify-send "Cannot accessing '$url'"

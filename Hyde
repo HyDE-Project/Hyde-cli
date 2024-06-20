@@ -20,7 +20,8 @@ if [ -z "$1" ]; then
 	box_me -s "Hyde-cli $hyde_cli_version"
 	print_prompt "$(main_help_content)"
 	exit 1
-elif ! (awk '{print $1}' <<<$(main_help_content) | grep -q "$1"); then
+elif ! (awk '{print $1}' <<<$(main_help_content) | grep -qw "${1}" ); then
+	echo '${*}'
 	print_prompt -crit "[unknown]: " -y "$*" "\nUsage: Hyde [Function] [Arguments] [Parameter]\n"
 	print_prompt "$(main_help_content)"
 	exit 1
@@ -72,6 +73,7 @@ man() { #? Show Manual
 			sed -e "s|\${CloneDir}|$CloneDir|g" \
 				-e "s|\${HOME}|${HOME}|g" \
 				-e "s|\${hydeConfDir}|${hydeConfDir}|g" \
+				-e "s||${hydeConfDir}|g" \
 				-e "s|\${ctlFile}|$ctlFile|g"
 		barLine
 		print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
@@ -551,10 +553,16 @@ waybar() { #? Waybar commands
 	control) #? Edit waybar control file
 		ConfigCtl "${waybar_ctl}" "$ACTION"
 		;;
+	next) #? Next waybar layout
+		${scrDir}/wbarconfgen.sh n
+		;;
+	prev) #? Previous waybar layout
+		${scrDir}/wbarconfgen.sh p
+		;;
 	reload) #? Reloads waybar
 		eval "${ACTION}"
 		;;
-	size) #? [*]Set waybar size
+	size) #? [*] Set waybar size\nﯦ e.g 'waybar size 30' (range 1-100)
 		shift
 		wbar_size=${1}
 		all=${2}
@@ -569,7 +577,7 @@ waybar() { #? Waybar commands
 
 			eval "${ACTION}"
 		else
-			print_prompt -r "Error: " "Valid scaling from 1-100"
+			print_prompt +r "Error: " "Valid scaling from 1-100"
 			exit 1
 		fi
 		: <<USAGE
@@ -709,13 +717,20 @@ USAGE
 		Launch-Bookmarks $*
 		: <<USAGE
 [SHOW_BOOKMARKS_USAGE]
+	--browser	?   Set Browser can also set 'BROWSER' env
     --rebuild   ?   force rebuild cached bookmark paths
     --no-custom ?    run without custom '.lst' bookmark files
 [END]
 USAGE
 		;;
-	emoji) #? Emoji selector
-		Launch-Emoji
+	emoji) #? [*] Emoji selector\nﯦ Add 'emoji_style=2'\n	1 = list\n	2 = grid    
+		shift
+		Launch-Emoji "${@}"
+		: <<USAGE
+[SHOW_EMOJI_USAGE]
+    --style   ?   use style [ 1 | 2 ]
+[END]
+USAGE
 		;;
 	glyph) #? Glyph selector
 		Launch-Glyph
@@ -742,8 +757,9 @@ USAGE
 		Launch-Search "${@}"
 		: <<USAGE
 [SHOW_SEARCH_USAGE]
-    --site  ? search engine to use
-    --browser  ? browser to use
+    --reset ?	Reset cache
+    --browser  ? Browser to use
+    --site  ? Search engine to use
 [END]
 USAGE
 		;;

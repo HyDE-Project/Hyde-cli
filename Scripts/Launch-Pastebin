@@ -11,7 +11,7 @@ pastebin_process() {
 
     if [ true != "${delMode}" ]; then
         # Read the entire input into an array
-        mapfile -t lines #! Not POSIX compiliant
+        mapfile -t lines #! Not POSIX compliant
         # Get the total number of lines
         total_lines=${#lines[@]}
         if [[ "${lines[0]}" = *":d:e:l:e:t:e:"* ]]; then
@@ -62,15 +62,16 @@ checkContent() {
         notify-send -a "Pastebin:" "Preview: ${imdx}" -i "${temprev}" -t 2000
         return 1
     fi
-}
 
+}
 # clipboard action
 case $1 in
 c | -c | --copy)
     selClip=$( (
-        echo -e ":o:p:t:\t Options\n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
+        echo -e ":o:p:t:\t⚙️ Options"
+        # \n\:b:a:r:\t$(seq -s= 100 | tr -dc '=')"
         cliphist list
-    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "entry { placeholder: \"Copy...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile)
+    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 1 -theme-str "entry { placeholder: \" 🗒️ Copy\";}  ${pos}  ${r_override}" -theme-str "${fnt_override}" -config $roFile)
     ([ -n "${selClip}" ] && echo -e "${selClip}" | checkContent) || exit 0
     if [ $? -eq 1 ]; then
         pasteIt "${*}"
@@ -78,12 +79,13 @@ c | -c | --copy)
     fi
     pastebin_process <<<"${selClip}" | wl-copy
     pasteIt "${*}"
+    echo -e "${selClip}\t" | cliphist delete
     ;;
 d | -d | --delete)
     export delMode=true
     (
         cliphist list
-    ) | rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \"Delete...\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
+    ) | rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \" 🗑️ Delete\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" | pastebin_process
     ;;
 w | -w | --wipe)
     r_override="window {height:  25%; border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {padding: 2%; border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;}"
@@ -92,14 +94,14 @@ w | -w | --wipe)
     fi
     ;;
 o | -o | --option)
-    echo -e ":d:e:l:e:t:e:\t Delete
-:w:i:p:e:\t﫧 Wipe Pastebin
-:c:o:p:y:\t Copy Pastebin" | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "entry { placeholder: \"Pastebin Options\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | pastebin_process
+    echo -e ":d:e:l:e:t:e:\t🗑️ Delete
+:w:i:p:e:\t♻️ Wipe Pastebin
+:c:o:p:y:\t🗒️ Copy Pastebin" | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "entry { placeholder: \" ⚙️  Pastebin Options\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | pastebin_process
     # :b:a:r:\t$(seq -s= 100 | tr -dc '=' )
     ;;
 -*)
     cat <<USAGE
-$(basename ${0}) [action]
+pastebin [action]
 --copy :  list and copy selected
 --delete :  list and delete selected
 --wipe :  wipe database
