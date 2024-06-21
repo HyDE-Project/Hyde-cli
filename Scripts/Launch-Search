@@ -25,24 +25,23 @@ search_file+=(
 
 #Handle a custom search engine
 custom_search_sites() {
-    # Loop over each file in the search_file array
-    for file in "${search_file[@]}"; do
-        [[ ${file} != *.lst ]] && continue
-        [[ -f ${file} ]] || continue
-        # Read the file and add each line to the SITES array
-        while IFS='|' read -r key value || [[ -n "$key" ]]; do
-            # Trim leading and trailing whitespace from key and value
-            key=$(xargs <<<"${key}")     # xargs trims whitespace
-            value=$(xargs <<<"${value}") # xargs trims whitespace
-            # Check if key or value is blank, and continue with the next iteration if so
-            if [[ -z "$key" || -z "$value" ]]; then
-                continue
-            fi
-            SITES["$key"]="$value"
-        done <"$file"
-    done
+	# Loop over each file in the search_file array
+	for file in "${search_file[@]}"; do
+		[[ ${file} != *.lst ]] && continue
+		[[ -f ${file} ]] || continue
+		# Read the file and add each line to the SITES array
+		while IFS='|' read -r key value || [[ -n "$key" ]]; do
+			# Trim leading and trailing whitespace from key and value
+			key=$(xargs <<<"${key}")     # xargs trims whitespace
+			value=$(xargs <<<"${value}") # xargs trims whitespace
+			# Check if key or value is blank, and continue with the next iteration if so
+			if [[ -z "$key" || -z "$value" ]]; then
+				continue
+			fi
+			SITES["$key"]="$value"
+		done <"$file"
+	done
 }
-
 
 # Show usage for the script.
 usage() {
@@ -162,16 +161,19 @@ handle_input() {
 				site="${parseSite}"
 			else
 				query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
-				site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+				[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \" Select a Search engine\" ;}"
+				site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_sites_list)")
 			fi
 
 		else
 			query="$(awk -F':' '{for(i=2; i<=NF; ++i) print $i}' <<<$inputTxt)"
-			site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \" Select a Search engine\" ;}"
+			site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_sites_list)")
 		fi
 	else
 		query="${inputTxt}"
-		site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \" Select a Search engine\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+		[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \" Select a Search engine\" ;}"
+		site=$(rofi -dmenu -i -no-custom -select "${recentSite}" -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_sites_list)")
 	fi
 	[[ -z "${site}" ]] && exit 0
 	handle_query "$site" "$query"
@@ -187,15 +189,18 @@ main() {
 	else
 		# Check if search engine set.
 		if [ "$SITE_TO_USE" ]; then
-			[[ -f "$CACHE_DIR/${SITE_TO_USE}.txt" ]] || { print_prompt +r "[error] " +y "url not set for ${SITE_TO_USE}" && usage ;}
-			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$SITE_TO_USE]  Search\" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $SITE_TO_USE)")
+			[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \"[$SITE_TO_USE]  Search\" ;}"
+			[[ -f "$CACHE_DIR/${SITE_TO_USE}.txt" ]] || { print_prompt +r "[error] " +y "url not set for ${SITE_TO_USE}" && usage; }
+			query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_queries_list $SITE_TO_USE)")
 			handle_query "$SITE_TO_USE" "$query"
 		else
-			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "entry { placeholder:  \"   Search a keyword or select a  Search Engine \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_sites_list)")
+			[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \"   Search a keyword or select a  Search Engine \" ;}"
+			inputTxt=$(rofi -dmenu -i -select "${recentSite}" -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_sites_list)")
 			[[ -z "${inputTxt}" ]] && exit 0
 			if gen_sites_list | grep -q "${inputTxt}"; then
 				site="$(gen_sites_list | grep -m 1 ${inputTxt})"
-				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "entry { placeholder:  \"[$site]  Search \" ;}" -config $confDir/rofi/clipboard.rasi <<<"$(gen_queries_list $site)")
+				[[ "${customRasi}" ]] || entryMsg="entry { placeholder:  \"[$site]  Search \" ;}"
+				query=$(rofi -dmenu -i -p -theme-str "${r_override}" -theme-str "${entryMsg}" -config ${roFile} <<<"$(gen_queries_list $site)")
 				handle_query "$site" "$query"
 			else
 				handle_input "${inputTxt}"
@@ -206,16 +211,15 @@ main() {
 
 #* Process user search_files
 custom_search_sites
-
 # Loop through all arguments
 while (($# > 0)); do
 	case $1 in
-	--site|-s)
+	--site | -s)
 		if (($# > 1)); then
 			SITE_TO_USE="$2"
 			shift # Consume the value argument
 		else
-			print_prompt +r "[error] "  +y "--site requires an argument."
+			print_prompt +r "[error] " +y "--site requires an argument."
 			usage
 		fi
 		;;
@@ -224,7 +228,7 @@ while (($# > 0)); do
 			BROWSER="$2"
 			shift # Consume the value argument
 		else
-			print_prompt +r "[error] "  +y "--browser requires an argument."
+			print_prompt +r "[error] " +y "--browser requires an argument."
 			usage
 		fi
 		;;
@@ -232,6 +236,15 @@ while (($# > 0)); do
 		rm -fr "${CACHE_DIR}"
 		print_prompt +g "[ok] " +y "reset"
 		exit 0
+		;;
+	--rasi)
+		[[ -z ${2} ]] && print_prompt +r "[error] " +y "--rasi requires an file.rasi config file" && exit 1
+		roFile=${2}
+		r_override=""
+		entryMsg=""
+		customRasi=true
+
+		shift
 		;;
 	*)
 		echo "Unknown option: $1"

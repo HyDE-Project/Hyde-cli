@@ -24,13 +24,13 @@ create_backup() {
 }
 
 usage() {
-cat << USAGE
+    cat <<USAGE
 bookmarks [actions]
 --browser           Set Browser can also set 'BROWSER' env
 --rebuild           force rebuild cached bookmark paths
 --no-custom         run without custom '.lst' bookmark files
 USAGE
-exit 0
+    exit 0
 }
 
 # process bookmarks
@@ -76,27 +76,32 @@ isRebuild=false
 isCustom=true
 # Loop through all arguments
 while (($# > 0)); do
-	case $1 in
-	--rebuild)
+    case $1 in
+    --rebuild)
         isRebuild=true
-		;;
-	--browser | -b)
-		if (($# > 1)); then
-			BROWSER="$2"
-			shift # Consume the value argument
-		else
-			print_prompt +r "[error] "  +y "--browser requires an argument."
-			usage
-		fi
-		;;
-	--no-custom)
-		isCustom=false
         ;;
-	-*)
-		usage
-		;;
-	esac
-	shift # Shift off the current option being processed
+    --browser | -b)
+        if (($# > 1)); then
+            BROWSER="$2"
+            shift # Consume the value argument
+        else
+            print_prompt +r "[error] " +y "--browser requires an argument."
+            usage
+        fi
+        ;;
+    --no-custom)
+        isCustom=false
+        ;;
+    --rasi)
+        [[ -z ${2} ]] && print_prompt +r "[error] " +y "--rasi requires an file.rasi config file" && exit 1
+        useRofile=${2}
+        shift
+        ;;
+    -*)
+        usage
+        ;;
+    esac
+    shift # Shift off the current option being processed
 done
 
 declare -a bookmarkFile
@@ -170,7 +175,11 @@ r_height="height: ${bookmark_height:-35em};"
 r_listview="listview { lines: ${bookmark_line:-13}; }"
 r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
 
-selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \" 🌐 Launch: ${browser_name} \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
+if [[ -n ${useRofile} ]]; then
+    selected_opt=$(rofi -dmenu -i  -config "${useRofile}" <<<"${listView}")
+else
+    selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \" 🌐 Launch: ${browser_name} \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
+fi
 
 [[ -z ${selected_opt} ]] && print_prompt -r "Operation Cancelled" && exit 0
 

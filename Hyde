@@ -707,19 +707,20 @@ show() { #? Useful GUI util
     -j   ?  Show the JSON format
     -p   ?  Show the pretty format
     -d   ?  Add custom delimiter symbol (default '>')
-    -f   ?  Add custom file
+    -f	<PATH>   ?  Add custom file
     -h   ?  Display this help message
 [END]
 USAGE
 		;;
 	bookmarks) #? [*] Bookmark selector\nﯦ append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '${hydeConfDir}/hyde.conf'
 		shift
-		Launch-Bookmarks $*
+		Launch-Bookmarks "${@}"
 		: <<USAGE
 [SHOW_BOOKMARKS_USAGE]
-	--browser	?   Set Browser can also set 'BROWSER' env
+    --browser	<PACKAGE> ?   Set Browser can also set 'BROWSER' env
     --rebuild   ?   force rebuild cached bookmark paths
     --no-custom ?    run without custom '.lst' bookmark files
+    --rasi	<PATH>?	set rofi configuration
 [END]
 USAGE
 		;;
@@ -729,6 +730,7 @@ USAGE
 		: <<USAGE
 [SHOW_EMOJI_USAGE]
     --style   ?   use style [ 1 | 2 ]
+	--rasi	<PATH>? set rofi configuration
 [END]
 USAGE
 		;;
@@ -760,6 +762,7 @@ USAGE
     --reset ?	Reset cache
     --browser  ? Browser to use
     --site  ? Search engine to use
+	--rasi	<PATH> ? set rofi configuration
 [END]
 USAGE
 		;;

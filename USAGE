@@ -175,15 +175,16 @@ Usage: Hyde [Function] [options]
 						[-j] ↪️   Show the JSON format
 						[-p] ↪️   Show the pretty format
 						[-d] ↪️   Add custom delimiter symbol (default '>')
-						[-f] ↪️   Add custom file
+						[-f	<PATH>] ↪️   Add custom file
 						[-h] ↪️   Display this help message
 
 			 [bookmarks]  ↪️  [*] Bookmark selector
   			                 💡append 'bookmark_file=("/path/to/bookmarks.lst")' line inside '/home/khing/.config/hyde/hyde.conf'
 
-						[	--browser	] ↪️    Set Browser can also set 'BROWSER' env
+						[--browser	<PACKAGE>] ↪️    Set Browser can also set 'BROWSER' env
 						[--rebuild] ↪️    force rebuild cached bookmark paths
 						[--no-custom] ↪️     run without custom '.lst' bookmark files
+						[--rasi	<PATH>] ↪️ 	set rofi configuration
 
 			 [emoji]  ↪️  [*] Emoji selector
   			                 💡Add 'emoji_style=2'
@@ -191,6 +192,7 @@ Usage: Hyde [Function] [options]
   			                 	2 = grid
 
 						[--style] ↪️    use style [ 1 | 2 ]
+						[	--rasi	<PATH>] ↪️  set rofi configuration
 
 			 [glyph]  ↪️  Glyph selector
 
@@ -213,6 +215,7 @@ Usage: Hyde [Function] [options]
 						[--reset] ↪️ 	Reset cache
 						[--browser] ↪️  Browser to use
 						[--site] ↪️  Search engine to use
+						[	--rasi	<PATH>] ↪️  set rofi configuration
  
 [run]                       ↪️ Executable utilities
 

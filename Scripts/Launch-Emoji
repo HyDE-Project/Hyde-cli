@@ -25,6 +25,11 @@ while (($# > 0)); do
             shift
         fi
         ;;
+    --rasi)
+        [[ -z ${2} ]] && print_prompt +r "[error] " +y "--rasi requires an file.rasi config file" && exit 1
+        useRofile=${2}
+        shift
+        ;;
     -*)
         cat <<HELP
 Usage: 
@@ -54,20 +59,24 @@ combined_entries="${recent_entries}\n${main_entries}"
 #? Remove duplicates from the combined entries
 unique_entries=$(echo -e "${combined_entries}" | awk '!seen[$0]++')
 
-case ${emoji_style} in
+if [[ -n ${useRofile} ]]; then
+    dataEmoji=$(rofi -dmenu -i -config "${useRofile}" <<<"${unique_entries}")
+else
 
-2 | grid)
-    size_override=""
-    dataEmoji=$(rofi -dmenu -i -display-columns 1 -display-column-separator " " -theme-str "listview {columns: 8;}" -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -theme-str "${size_override}" -config "${roFile}" <<<"${unique_entries}")
-    ;;
-*)
-    dataEmoji=$(rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${unique_entries}")
-    ;;
-esac
+    case ${emoji_style} in
+    2 | grid)
+        size_override=""
+        dataEmoji=$(rofi -dmenu -i -display-columns 1 -display-column-separator " " -theme-str "listview {columns: 8;}" -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -theme-str "${size_override}" -config "${roFile}" <<<"${unique_entries}")
+        ;;
+    *)
+        dataEmoji=$(rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${unique_entries}")
+        ;;
+    esac
+fi
 
 # selEmoji=$(echo -n "${selEmoji}" | cut -d' ' -f1 | tr -d '\n' | wl-copy)
 trap save_recent EXIT
 selEmoji=$(printf "%s" "${dataEmoji}" | cut -d' ' -f1 | tr -d '\n\r')
-[ -z "${selEmoji}" ] && exit 0 
+[ -z "${selEmoji}" ] && exit 0
 wl-copy "${selEmoji}"
 pasteIt "${*}"
