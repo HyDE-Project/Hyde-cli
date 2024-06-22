@@ -718,9 +718,10 @@ USAGE
 		: <<USAGE
 [SHOW_BOOKMARKS_USAGE]
     --browser	<PACKAGE> ?   Set Browser can also set 'BROWSER' env
-    --rebuild   ?   force rebuild cached bookmark paths
     --no-custom ?    run without custom '.lst' bookmark files
+    --persist	?	Saves bookmark file list to ~/.cache.So no re-caching after reboot
     --rasi	<PATH>?	set rofi configuration
+    --rebuild   ?   force rebuild cached bookmark paths
 [END]
 USAGE
 		;;
@@ -730,7 +731,7 @@ USAGE
 		: <<USAGE
 [SHOW_EMOJI_USAGE]
     --style   ?   use style [ 1 | 2 ]
-	--rasi	<PATH>? set rofi configuration
+    --rasi	<PATH>?	set rofi configuration
 [END]
 USAGE
 		;;
@@ -762,7 +763,7 @@ USAGE
     --reset ?	Reset cache
     --browser  ? Browser to use
     --site  ? Search engine to use
-	--rasi	<PATH> ? set rofi configuration
+    --rasi	<PATH>? set rofi configuration
 [END]
 USAGE
 		;;

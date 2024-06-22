@@ -11,43 +11,43 @@ _Hyde () {
     local words cword
     _get_comp_words_by_ref -n "$COMP_WORDBREAKS" words cword
 
-    local -a literals=("revert" "--uninstall" "wallbash" "--copy" "--opacity" "-j" "save" "unset" "3" "--stop" "--animations" "backup" "BackUp" "list" "cursor" "-p" "--no-custom" "Config" "--install" "--scan" "--record-focus" "theme" "bookmarks" "0" "-freeze" "--reset" "toggle" "pastebin" "1" "systeminfo" "--all" "theme" "--delete" "upgrade" "toggle" "waybar" "reload" "update" "all" "glyph" "--wipe" "--print-monitor" "game" "shell" "Config" "info" "search" "set" "reload" "reset" "--style" "--animations" "--site" "version" "select" "--blur" "variety" "theme" "clean" "airplane_mode" "-f" "reload" "--browser" "--print-snip" "--reset" "reload" "--rasi" "Clone" "check" "::=" "--mismatch" "prev" "--borderangle" "wallpaper" "--borderangle" "show" "inject" "power" "binds" "rebuild" "screencap" "man" "asus_patch" "events" "override" "--rebuild" "--rasi" "--blur" "restore" "-d" "--browser" "sddm" "run" "--option" "cache" "control" "prev" "chaotic_aur" "--less" "mode" "--opacity" "--reset" "Link" "audio_idle" "--print-all" "next" "-h" "select" "--preserve" "size" "next" "branch" "next" "size" "flatpak" "Config" "screencap" "emoji" "--record-snip" "prev" "2" "--revert" "set" "patch" "select" "Package" "control")
+    local -a literals=("revert" "--uninstall" "wallbash" "--copy" "--opacity" "-j" "save" "unset" "3" "--stop" "--animations" "backup" "BackUp" "list" "cursor" "-p" "--no-custom" "Config" "--install" "--scan" "--record-focus" "theme" "bookmarks" "0" "-freeze" "--reset" "toggle" "pastebin" "1" "systeminfo" "--all" "theme" "--delete" "upgrade" "toggle" "waybar" "reload" "update" "all" "glyph" "--wipe" "--print-monitor" "game" "shell" "Config" "info" "search" "set" "reload" "reset" "--style" "--animations" "--site" "version" "select" "--blur" "variety" "theme" "clean" "airplane_mode" "-f" "reload" "--browser" "--print-snip" "--reset" "reload" "--rasi" "Clone" "check" "::=" "--mismatch" "prev" "--borderangle" "wallpaper" "--borderangle" "show" "inject" "power" "--persist" "binds" "rebuild" "screencap" "man" "asus_patch" "events" "override" "--rebuild" "--rasi" "--blur" "restore" "-d" "--browser" "sddm" "run" "--option" "cache" "control" "prev" "chaotic_aur" "--less" "mode" "--opacity" "--reset" "Link" "audio_idle" "--print-all" "next" "-h" "select" "--preserve" "size" "next" "branch" "next" "size" "flatpak" "Config" "screencap" "emoji" "--record-snip" "prev" "2" "--revert" "set" "patch" "select" "Package" "control")
 
     declare -A literal_transitions
-    literal_transitions[0]="([35]=24 [68]=2 [37]=3 [53]=4 [2]=5 [36]=25 [21]=7 [91]=8 [92]=9 [111]=10 [94]=11 [43]=12 [95]=13 [81]=14 [29]=15 [11]=16 [73]=17 [14]=18 [75]=19 [76]=20 [84]=21 [33]=23 [77]=1 [88]=6)"
-    literal_transitions[1]="([26]=27 [42]=27 [6]=33 [49]=27 [7]=32)"
-    literal_transitions[2]="([125]=27 [44]=34)"
-    literal_transitions[5]="([34]=27 [99]=35)"
-    literal_transitions[6]="([102]=27 [17]=27 [12]=27 [67]=27)"
-    literal_transitions[7]="([54]=27 [105]=27 [123]=27 [96]=27 [122]=27)"
+    literal_transitions[0]="([35]=24 [68]=2 [37]=3 [53]=4 [2]=5 [36]=25 [21]=7 [92]=8 [93]=9 [112]=10 [95]=11 [43]=12 [96]=13 [82]=14 [29]=15 [11]=16 [73]=17 [14]=18 [75]=19 [76]=20 [85]=21 [33]=23 [77]=1 [89]=6)"
+    literal_transitions[1]="([26]=27 [42]=27 [6]=26 [49]=27 [7]=33)"
+    literal_transitions[2]="([126]=27 [44]=37)"
+    literal_transitions[5]="([34]=27 [100]=36)"
+    literal_transitions[6]="([103]=27 [17]=27 [12]=27 [67]=27)"
+    literal_transitions[7]="([54]=27 [106]=27 [124]=27 [97]=27 [123]=27)"
     literal_transitions[8]="([57]=27)"
-    literal_transitions[9]="([59]=27 [103]=27 [83]=27 [116]=28)"
-    literal_transitions[11]="([79]=27 [65]=27)"
-    literal_transitions[12]="([124]=27)"
-    literal_transitions[13]="([115]=27)"
+    literal_transitions[9]="([59]=27 [104]=27 [84]=27 [117]=31)"
+    literal_transitions[11]="([80]=27 [65]=27)"
+    literal_transitions[12]="([125]=27)"
+    literal_transitions[13]="([116]=27)"
     literal_transitions[16]="([13]=27 [38]=27 [58]=27 [0]=27)"
-    literal_transitions[17]="([56]=29 [107]=27 [47]=27 [110]=27 [71]=27)"
-    literal_transitions[18]="([61]=27 [45]=27 [109]=27 [31]=27)"
-    literal_transitions[19]="([117]=36 [80]=27 [27]=41 [46]=37 [39]=27 [78]=40 [22]=39)"
-    literal_transitions[20]="([82]=27 [114]=27 [97]=30)"
-    literal_transitions[24]="([113]=38 [119]=27 [48]=27 [112]=27 [126]=27)"
-    literal_transitions[28]="([9]=27 [118]=27 [20]=27 [41]=27 [24]=27 [101]=27 [63]=27 [104]=27 [19]=27)"
-    literal_transitions[29]="([64]=27)"
-    literal_transitions[30]="([1]=27 [18]=27 [121]=27)"
-    literal_transitions[31]="([69]=27)"
-    literal_transitions[32]="([4]=27 [51]=27 [74]=27 [87]=27)"
-    literal_transitions[33]="([10]=27 [55]=27 [72]=27 [100]=27)"
-    literal_transitions[34]="([108]=27 [98]=27 [70]=27)"
-    literal_transitions[35]="([23]=27 [28]=27 [120]=27 [8]=27)"
-    literal_transitions[36]="([50]=27 [86]=26)"
-    literal_transitions[37]="([52]=27 [90]=27 [86]=26 [25]=27)"
-    literal_transitions[38]="([30]=27)"
-    literal_transitions[39]="([85]=27 [16]=27 [66]=26 [62]=42)"
-    literal_transitions[40]="([5]=27 [106]=27 [15]=27 [60]=26 [89]=27)"
-    literal_transitions[41]="([93]=27 [32]=27 [40]=27 [3]=27)"
+    literal_transitions[17]="([56]=32 [108]=27 [47]=27 [111]=27 [71]=27)"
+    literal_transitions[18]="([61]=27 [45]=27 [110]=27 [31]=27)"
+    literal_transitions[19]="([118]=40 [81]=27 [27]=35 [46]=39 [39]=27 [79]=41 [22]=28)"
+    literal_transitions[20]="([83]=27 [115]=27 [98]=38)"
+    literal_transitions[24]="([114]=34 [120]=27 [48]=27 [113]=27 [127]=27)"
+    literal_transitions[26]="([10]=27 [55]=27 [72]=27 [101]=27)"
+    literal_transitions[28]="([86]=27 [16]=27 [78]=27 [66]=29 [62]=30)"
+    literal_transitions[31]="([9]=27 [119]=27 [20]=27 [41]=27 [24]=27 [102]=27 [63]=27 [105]=27 [19]=27)"
+    literal_transitions[32]="([64]=27)"
+    literal_transitions[33]="([4]=27 [51]=27 [74]=27 [88]=27)"
+    literal_transitions[34]="([30]=27)"
+    literal_transitions[35]="([94]=27 [32]=27 [40]=27 [3]=27)"
+    literal_transitions[36]="([23]=27 [28]=27 [121]=27 [8]=27)"
+    literal_transitions[37]="([109]=27 [99]=27 [70]=27)"
+    literal_transitions[38]="([1]=27 [18]=27 [122]=27)"
+    literal_transitions[39]="([52]=27 [91]=27 [87]=29 [25]=27)"
+    literal_transitions[40]="([50]=27 [66]=29)"
+    literal_transitions[41]="([5]=27 [107]=27 [15]=27 [60]=29 [90]=27)"
+    literal_transitions[42]="([69]=27)"
 
     declare -A match_anything_transitions
-    match_anything_transitions=([23]=27 [42]=27 [10]=27 [3]=27 [14]=27 [26]=27 [0]=22 [15]=27 [21]=27 [4]=27 [22]=31 [25]=27)
+    match_anything_transitions=([25]=27 [10]=27 [3]=27 [30]=27 [14]=27 [0]=22 [15]=27 [21]=27 [4]=27 [22]=42 [29]=27 [23]=27)
     declare -A subword_transitions
 
     local state=0
@@ -115,7 +115,7 @@ _Hyde () {
     fi
 
     declare -A specialized_commands
-    specialized_commands=([26]=0)
+    specialized_commands=([29]=0)
     if [[ -v "specialized_commands[$state]" ]]; then
         local command_id=${specialized_commands[$state]}
         local completions=()

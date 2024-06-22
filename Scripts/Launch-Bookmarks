@@ -27,8 +27,11 @@ usage() {
     cat <<USAGE
 bookmarks [actions]
 --browser           Set Browser can also set 'BROWSER' env
---rebuild           force rebuild cached bookmark paths
---no-custom         run without custom '.lst' bookmark files
+--no-custom         Run without custom '.lst' bookmark files
+--persist           Saves bookmark file list to ~/.cache.So no re-caching after reboot
+--rasi              Set rofi configuration
+--rebuild           Force rebuild cached bookmark paths
+
 USAGE
     exit 0
 }
@@ -72,14 +75,28 @@ save_recent() {
     awk 'NF' "${recentData}" | awk '!seen[$0]++' | head -n ${recentNumber} >temp && mv temp "${recentData}"
 }
 
+rebuild() {
+    #* Cache bookmark path
+    if [[ "${isRebuild}" == true ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
+        if [[ "${isRebuild}" != true ]] && [ -f "${cacheDir}/bookmarkFileArray" ]; then return; fi
+
+        print_prompt -y "[cache] " "bookmark paths"
+        notify-send "Caching bookmark paths"
+        [ -f "${cacheDir}/bookmarkFileArray" ] && rm "${cacheDir}/bookmarkFileArray"
+        : >"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+        for bookmark in "${bookmark_file[@]}"; do
+            echo -e "bookmarkFile+=($bookmark)" >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+        done
+        eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 |
+            xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
+    fi
+}
+
 isRebuild=false
 isCustom=true
 # Loop through all arguments
 while (($# > 0)); do
     case $1 in
-    --rebuild)
-        isRebuild=true
-        ;;
     --browser | -b)
         if (($# > 1)); then
             BROWSER="$2"
@@ -91,6 +108,12 @@ while (($# > 0)); do
         ;;
     --no-custom)
         isCustom=false
+        ;;
+    --persist)
+        [ -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ] trap 'cp "${HYDE_RUNTIME_DIR}/bookmarkFileArray"  "${cacheDir}/bookmarkFileArray"' EXIT
+        ;;
+    --rebuild)
+        isRebuild=true
         ;;
     --rasi)
         [[ -z ${2} ]] && print_prompt +r "[error] " +y "--rasi requires an file.rasi config file" && exit 1
@@ -115,19 +138,10 @@ bookmarkFile+=(
 #* parse vars inside ./hyde.conf
 bookmarkFile+=(${bookmark_file[@]})
 
-#* Cache bookmark path
-if [[ "${isRebuild}" == true ]] || [ ! -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ]; then
-    print_prompt -y "[cache] " "bookmark paths"
-    notify-send "Caching bookmark paths"
-    : >"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
-    for bookmark in "${bookmark_file[@]}"; do
-        echo -e "bookmarkFile+=($bookmark)" >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray"
-    done
-    eval "$(find "${HOME}/." -type f \( -name "places.sqlite" -o -path "*/Default/Bookmarks" \) -print0 |
-        xargs -0 -P 4 printf 'bookmarkFile+=(%q)\n' >>"${HYDE_RUNTIME_DIR}/bookmarkFileArray")"
-fi
+rebuild
 
-. "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
+#* Use cacheDir if available
+{ [ -f "${cacheDir}/bookmarkFileArray" ] && . "${cacheDir}/bookmarkFileArray"; } || . "${HYDE_RUNTIME_DIR}/bookmarkFileArray"
 
 #* Construct the main Json
 mainJson=$(
@@ -176,7 +190,7 @@ r_listview="listview { lines: ${bookmark_line:-13}; }"
 r_override="window {$r_height $r_width border: ${hypr_width}px; border-radius: ${wind_border}px;} entry {border-radius: ${elem_border}px;} element {border-radius: ${elem_border}px;} ${r_listview} "
 
 if [[ -n ${useRofile} ]]; then
-    selected_opt=$(rofi -dmenu -i  -config "${useRofile}" <<<"${listView}")
+    selected_opt=$(rofi -dmenu -i -config "${useRofile}" <<<"${listView}")
 else
     selected_opt=$(rofi -dmenu -i -theme-str "entry { placeholder: \" 🌐 Launch: ${browser_name} \";}" -theme-str "${r_override}" -theme-str "${fnt_override}" -config "${roFile}" <<<"${listView}")
 fi
@@ -188,5 +202,4 @@ save_recent "$(jq -c --argjson index "$index" -cr '.[$index - 1] | "\(.title) |\
 
 #* Use index and open url
 url=$(jq -c --argjson index "$index" -cr ' .[$index - 1] | .url' <<<$mainJson)
-{ [ -n "${BROWSER}" ] && "${BROWSER}" "${url}" ;} || xdg-open "${url}" || notify-send "Cannot accessing '$url'"
-
+{ [ -n "${BROWSER}" ] && "${BROWSER}" "${url}"; } || xdg-open "${url}" || notify-send "Cannot accessing '$url'"
