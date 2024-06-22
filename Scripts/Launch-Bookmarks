@@ -188,5 +188,5 @@ save_recent "$(jq -c --argjson index "$index" -cr '.[$index - 1] | "\(.title) |\
 
 #* Use index and open url
 url=$(jq -c --argjson index "$index" -cr ' .[$index - 1] | .url' <<<$mainJson)
-[ -n "${BROWSER}" ] && "${BROWSER}" "${SITES[$site]}$query" && exit 0
-xdg-open "${url}" || notify-send "Cannot accessing '$url'"
+{ [ -n "${BROWSER}" ] && "${BROWSER}" "${url}" ;} || xdg-open "${url}" || notify-send "Cannot accessing '$url'"
+
