@@ -110,7 +110,7 @@ while (($# > 0)); do
         isCustom=false
         ;;
     --persist)
-        [ -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ] trap 'cp "${HYDE_RUNTIME_DIR}/bookmarkFileArray"  "${cacheDir}/bookmarkFileArray"' EXIT
+        [ -f "${HYDE_RUNTIME_DIR}/bookmarkFileArray" ] && trap 'cp "${HYDE_RUNTIME_DIR}/bookmarkFileArray"  "${cacheDir}/bookmarkFileArray"' EXIT
         ;;
     --rebuild)
         isRebuild=true
