@@ -701,9 +701,9 @@ show() { #? Useful GUI util
 	binds) #? [*] Show keybind hints\n ﯦ  Click to execute
 		# Keybinds_Hint #! Moved to .extra
 		shift
-		diff "${scrDir}/keybinds_hint.sh" "${etcDir}/keybinds_hint.sh" > /dev/null && "${scrDir}"/keybinds_hint.sh "${*}"
-		bash "${etcDir}/keybinds_hint.sh" "${@}"
-		print_prompt +b "[changes available] " "copy '${etcDir}/keybinds_hint.sh' to '${scrDir}/keybinds_hint.sh' to update your keybinds_hint.sh" 
+		diff "${etcDir}/keybinds_hint.sh" "${scrDir}/keybinds_hint.sh" > /dev/null || \
+		print_prompt +b "\n[changes available] " "copy '"${etcDir}/keybinds_hint.sh"' to '${scrDir}/keybinds_hint.sh' to update your keybinds_hint.sh" 
+		"${scrDir}"/keybinds_hint.sh "${@}"
 		: <<USAGE
 [SHOW_BINDS_USAGE]
     -j   ?  Show the JSON format

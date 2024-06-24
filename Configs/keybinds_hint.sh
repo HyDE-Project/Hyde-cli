@@ -6,9 +6,8 @@
 #* Khing 🦆
 
 pkill -x rofi && exit
-. GLOBAL-hyde #? If you copy this, comment this line and uncomment the 2 lines below
-# scrDir=$(dirname "$(realpath "$0")")
-# source $scrDir/globalcontrol.sh
+scrDir=$(dirname "$(realpath "$0")")
+source $scrDir/globalcontrol.sh
 
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
