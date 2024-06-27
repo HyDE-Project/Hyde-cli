@@ -46,8 +46,12 @@ print_prompt -y "Pulling Hyde repo..."
 git stash >/dev/null
 git pull
 git stash pop 2>/dev/null
-# set_branch
+
+if [[ ${branch_opt} == "true" ]]; then  
+set_branch
+else
 current_branch=main
+fi
 check_integrity "${newCloneDir}"
 
 # export ctlFile="${cacheDir}/manage_cfg.lst"
@@ -73,7 +77,7 @@ if nvidia_detect && ask_confirm "Yy"; then export fix_nvidia=true; fi
 #? Add Custom Apps
 custom_apps="${scriptDir}/custom_apps.lst"
 cust_pkg="${HYDE_RUNTIME_DIR}/custom-app-list"
-if [[ -e ${custom_apps} ]]; then
+if [[ -e ${custom_apps} ]] && [[ "${no_package}" != true ]] ; then
     # sed 's/^#//' "${custom_apps}" | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
      { echo [Confirm] ; sed -e 's/^#//' -e 's/^[[:space:]]*//' ${custom_apps} | grep "#"  ;} \
     | fzf --multi --prompt='Optional packages: press [ TAB ] to select. [ ESC ] exit. [ RETURN ] confirm' >"${cust_pkg}"
@@ -88,18 +92,19 @@ fi
 #? Better to do a fresh restore on every Hyde-install
 Manage-Config generate_config_list
 Manage-Config make_List "" --reuse
-ask_confirm "${USER}"
+ask_confirm "Yy" || exit 1
 
 "${scriptDir}/install_pre.sh"
 
 #? Prepare package list
-cp "${scriptDir}/custom_hypr.lst" "${install_packages_list}"
+[[ "${no_package}" == true ]] || cp "${scriptDir}/custom_hypr.lst" "${install_packages_list}"
 
 if [ -f "${cust_pkg}" ] && [ ! -z "${cust_pkg}" ]; then
     cat "${cust_pkg}" >>"${install_packages_list}"
 fi
 
 #? add nvidia drivers to the list
+print_prompt -g "[detect gpu] " "${dGPU}" 
 
 if [ ${fix_nvidia} = true ]; then
     print_prompt -g "[nvidia]" "Configuring nvidia drivers"
@@ -112,7 +117,6 @@ if [ ${fix_nvidia} = true ]; then
     done
 fi
 
-echo -e "\033[0;32m[GPU]\033[0m detected // $dGPU"
 
 #----------------#
 # get user prefs #
@@ -137,8 +141,7 @@ fi
 #? install packages from the list
 
 # cat  "${install_packages_list}"
-"${scriptDir}/install_pkg.sh" "${install_packages_list}"
-rm "${install_packages_list}"
+[[ "${no_package}" == true ]] || "${scriptDir}/install_pkg.sh" "${install_packages_list}" && rm -fr "${install_packages_list}"
 
 #? restore custom configs
 
@@ -146,17 +149,17 @@ rm "${install_packages_list}"
 Restore-Config --only "${HYDE_RUNTIME_DIR}/" ${CloneDir}/Configs
 
 [ $(ls ${hydeConfDir}/themes | wc -l) -eq 0  ] && export defaultTheme="Catppuccin Mocha"
-Manage-Themes theme_patcher
+Manage-Themes theme_patcher || true
 
-shell_select
-sddm_select
+shell_select || true
+sddm_select || true
 # TODO Flatpak installation 
 
 #------------------------#
 # enable system services #
 #------------------------#
 
-set_metadata "${CloneDir}"
+# set_metadata "${CloneDir}"
 
 while read servChk; do
 

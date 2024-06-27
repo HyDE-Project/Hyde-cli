@@ -36,6 +36,39 @@ install_distro() {
     esac
 }
 
+try_relogin() {
+    if pkg_installed sddm && grep "Active: inactive (dead)" <<<"$(systemctl status sddm.service)"; then
+        print_prompt -y "It is advised to relogin on after installation.."
+        ask_confirm "Yy" || exit 0
+        print_prompt -y "Restarting to make Hyde Work"
+        systemctl restart sddm
+    fi
+}
+
+handle_install() {
+    if cd "${newCloneDir}"/Scripts; then
+        print_prompt -m "[*] " -y "Using existing directory"
+        if [[ ${is_link} == true ]]; then
+            echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
+            # set_branch
+            check_integrity
+            print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
+        else
+            install_distro
+        fi
+    else
+        install_distro --fresh
+    fi
+
+}
+
+main() {
+    if ! handle_install; then return 1; fi
+
+    set_metadata "${newCloneDir}" && try_relogin
+    "${CLI_PATH}/bin/Hyde" reload
+}
+
 # Variables
 export install_packages_list="${HYDE_RUNTIME_DIR}/temporary-apps"
 export barLine="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
@@ -57,6 +90,14 @@ while (("$#")); do
         GIT="$2"
         shift 2
         ;;
+    --no-package)
+        export no_package=true
+        shift 1
+        ;;
+    --branch-opt)
+        export branch_opt=true
+        shift 1
+        ;;
     *)
         cat <<HANDLE_ERROR
 Unknown option: $1
@@ -67,8 +108,11 @@ Advanced usage: [Hyde-install] --[options]
                                                                     Default: '${HOME}/.cache/hyde/Hyde'
         -g|--git https://gitclone/repo/link/                     Remote Repository link to be cloned
                                                                     Default: 'https://github.com/prasanthrangan/hyprdots'
-        -l|--link                                                Flag to transfer the link to a Clone Directory
+        -l|--link                                                Transfer the link to a Clone Directory
                                                                     Default: 'false'
+Flags:
+        --branch-opt                                             Ask to what branch to install
+        --no-package                                             Skip the package installation                                                                    
 HANDLE_ERROR
         exit 1
         ;;
@@ -89,21 +133,5 @@ export newCloneDir
 export GIT
 
 export CloneDir=${newCloneDir}
-    if cd "${newCloneDir}"/Scripts; then
-        print_prompt -m "[*] " -y "Using existing directory"
-        if [[ ${is_link} == true ]]; then
-            echo -e "Hyde-cli will make ${newCloneDir} your clone directory By restoring the links"
-            # set_branch
-            check_integrity
-            print_prompt -y "Successfully migrated the clone directory: ${newCloneDir}"
-        else
-            install_distro
-        fi
-    else
-        install_distro --fresh
-    fi
-set_metadata "${newCloneDir}"
-if ! grep -q "$HOME/.local/share/bin" <<<$PATH; then
-    print_prompt -y "Restarting to make Hyde Work"
-    pkg_installed sddm && systemctl restart sddm
-fi
+
+if ! main; then print_prompt -crit "[error] " "Hyde-istall Terminated"; fi

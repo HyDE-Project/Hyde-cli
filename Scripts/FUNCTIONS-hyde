@@ -279,7 +279,7 @@ shell_select() {
         Restore-Config --only "${HYDE_RUNTIME_DIR}/"
     fi
     # set shell
-    [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && exit 0
+    [ -z ${myShell} ] && print_prompt -r "Operation Cancelled" && return 1
     if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
         print_prompt -y "[SHELL] " "changing shell to ${myShell}..."
         chsh -s "$(which ${myShell})"
@@ -297,7 +297,7 @@ sddm_select() {
             awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
     )
 
-    [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && exit 0
+    [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && return 1
     print_prompt -y "Setting into '${sddm_theme} theme'..."
     ask_confirm "${USER}"
     [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"

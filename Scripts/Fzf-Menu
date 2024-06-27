@@ -92,7 +92,7 @@ fzf_theme_menu() {
         -m \
         --marker ' ' \
         --pointer=' ' \
-        --prompt '[TAB] Select [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
+        --prompt '[TAB] Select a theme [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
         --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
         --preview-window 'right:60%,border-rounded'
 
