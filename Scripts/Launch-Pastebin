@@ -2,7 +2,7 @@
 
 rofi_pos
 
-check_package wtype
+enable_package wtype
 
 delMode=false
 

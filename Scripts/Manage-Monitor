@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-check_package "nwg-displays"
+enable_package "nwg-displays"
 
 pid=$$
 monitorsConf="$confDir/hypr/monitors.conf"

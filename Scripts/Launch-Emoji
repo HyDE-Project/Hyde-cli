@@ -2,7 +2,7 @@
 
 rofi_pos
 
-check_package wtype noto-fonts-emoji
+enable_package wtype noto-fonts-emoji
 
 save_recent() {
     #? Prepend the selected emoji to the top of the recentData file

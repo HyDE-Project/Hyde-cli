@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-check_package grimblast swappy
+enable_package grimblast swappy
 
 if [ -z "${XDG_PICTURES_DIR}" ]; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
@@ -38,9 +38,9 @@ focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
 first_setup() {
     if [ ! -f "${cacheFile}" ]; then
-        check_package wl-screenrec
-        if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then check_package libva-intel-driver intel-media-driver; fi
-        if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then check_package libva-mesa-driver; fi
+        enable_package wl-screenrec
+        if lspci -nn | grep -Ei "VGA|3D" | grep -q "8086"; then enable_package libva-intel-driver intel-media-driver; fi
+        if lspci -nn | grep -Ei "VGA|3D" | grep -q "1002"; then enable_package libva-mesa-driver; fi
 
         notify-send -a "ScreenCap Initializing" "Testing on monitor: ${focus_monitor}. Please Wait..." -t 10000 -r 56789
         touch "${cacheFile}"
@@ -75,7 +75,7 @@ first_setup() {
                 echo "${vaMsg}"
                 echo "export screen_recorder=\"wf-recorder\""
             } >>"${cacheFile}"
-            check_package wf-recorder
+            enable_package wf-recorder
         fi
         sleep 3
         # Restart the script
@@ -172,7 +172,7 @@ case ${OPTION} in
     clearNotify
     ;;
 -sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
-    check_package tesseract-data-eng tesseract
+    enable_package tesseract-data-eng tesseract
     GEOM=$(slurp)
     grim -g "${GEOM}" "${temp_screenshot}"
     pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"

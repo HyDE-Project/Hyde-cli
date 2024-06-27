@@ -50,7 +50,7 @@ process_bookmarks() {
 firefox_bookmarks() {
     # Source: https://github.com/milosz/rofi-firefox-bookmarks
     # Modified: khing
-    check_package sqlite3
+    enable_package sqlite3
     # places_file="${1:-(find $HOME/.mozilla/firefox/*.default*/ -name "places.sqlite" -print -quit)}"
     places_file="${1}"
     places_backup="$(dirname "${places_file}")/places.rofi.sqlite"

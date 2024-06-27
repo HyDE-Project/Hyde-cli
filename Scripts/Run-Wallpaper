@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-check_package variety
+enable_package variety
 
 varietyDir=$confDir/variety/hyde
 varietyScript="${varietyDir}/scripts/hyde_wallpaper"

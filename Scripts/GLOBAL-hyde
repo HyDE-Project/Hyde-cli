@@ -289,7 +289,7 @@ CHECK() { #! Deprecated
     fi
 }
 
-check_package() {
+enable_package() {
     local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
     if [[ -n "${Pkg_Dep}" ]]; then
         echo -e "$0 Dependencies:\n$Pkg_Dep"
@@ -338,10 +338,10 @@ source_user() {
 [ -f "${hydeConfDir}/hyde.conf" ] && . "${hydeConfDir}/hyde.conf"
 }
 
-check_service() {
+enable_service() {
     for servChk in "$@"; do
         if [[ $(systemctl list-units --all -t service --full --no-legend "${servChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${servChk}.service" ]]; then
-            echo -e "\033[0;33m[SKIP]\033[0m ${servChk} service is active..."
+            echo -e "\033[0;33m[SKIP]\033[0m '${servChk}' service is active..."
         else
             echo -e "\033[0;32m[systemctl]\033[0m starting ${servChk} system service..."
             systemctl enable --now "${servChk}.service"

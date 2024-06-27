@@ -158,7 +158,7 @@ WARN
 
 rofi_pos() {
     pkill -x rofi && exit
-    check_package rofi jq
+    enable_package rofi jq
     source_user
     roFile="${confDir}/rofi/clipboard.rasi"
 
@@ -239,7 +239,7 @@ shell_select() {
     print_prompt -y "[Shell] " "${myShell}"
 
     if [ "${myShell}" == "zsh" ]; then
-        check_package zsh oh-my-zsh-git zsh-theme-powerlevel10k
+        enable_package zsh oh-my-zsh-git zsh-theme-powerlevel10k
         # add zsh plugins
         # set variables
         Zsh_rc="${ZDOTDIR:-${HOME}}/.zshrc"
@@ -270,7 +270,7 @@ shell_select() {
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
-        check_package fish lsd starship
+        enable_package fish lsd starship
         (
             echo 'P|${HOME}/.config|fish|fish'
             echo 'P|${HOME}/.config|lsd|lsd'
@@ -306,7 +306,7 @@ sddm_select() {
     SUPER touch "${sddm_conf}"
     SUPER cp "${sddm_conf}" "${sddm_bak}"
     SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
-    check_service sddm
+    enable_service sddm
 }
 
 main_help_content() {

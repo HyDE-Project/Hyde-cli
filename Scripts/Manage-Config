@@ -143,7 +143,7 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
 #* --reuse  ? assume that ctl_override is already present
 #* --edit ?  Modifies the control file then exit
 make_List() {
-  # check_package md5sum
+  # enable_package md5sum
   CloneDir=${1:-"${CloneDir}"}
   [ ! -d ${CloneDir}  ] && exit 0
 

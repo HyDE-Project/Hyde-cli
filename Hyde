@@ -378,7 +378,7 @@ cache() { #? Manages Hyde's cache
 
 cursor() { #? Cursor setting
 	#Case
-	check_package gsettings hyprcursor-util hyprcursor
+	enable_package gsettings hyprcursor-util hyprcursor
 	cursor_theme=$(gsettings get org.gnome.desktop.interface cursor-theme | sed "s/'//g")
 	cursor_size=$(gsettings get org.gnome.desktop.interface cursor-size | sed "s/'//g")
 
@@ -594,7 +594,7 @@ USAGE
 
 sddm() { #? Sddm commands
 
-	check_package sddm
+	enable_package sddm
 	navigate_clone
 	case $1 in
 	theme) #? Select sddm theme
@@ -783,7 +783,7 @@ run() { #? Executable utilities
 	airplane-mode
 	;;
 	audio_idle) #? Inhibits idle when player status: 'Playing
-		check_package systemd
+		enable_package systemd
 		local command="${0} "${FUNCNAME[0]}" ${@} --listen"
 		shift
 		[ "--listen" = "$1" ] && while playerctl status | grep -q "Playing"; do sleep 5; done && exit
@@ -808,7 +808,7 @@ run() { #? Executable utilities
 USAGE
 		;;
 	events) #? Watches hyprland events and executes actions
-		check_package
+		enable_package
 		shift
 		verbose=0
 		event_config=""
@@ -851,10 +851,10 @@ inject() { #? User/Device specific scripts that might be useful
 		# Add in pacman.conf
 		echo -e "\n[g14]\nServer = https://arch.asus-linux.org" | SUPER tee -a /etc/pacman.conf
 
-		check_package asusctl supergfxctl rog-control-center power-profiles-daemon
+		enable_package asusctl supergfxctl rog-control-center power-profiles-daemon
 
 		#Check First before enabling
-		check_service power-profiles-daemon.service supergfxd
+		enable_service power-profiles-daemon.service supergfxd
 		;;
 	chaotic_aur) #? [*] Add chaotic aur to you mirror
 		shift
@@ -868,7 +868,7 @@ inject() { #? User/Device specific scripts that might be useful
 USAGE
 		;;
 	flatpak) #? Flatpak setup for HyDE
-		check_package flatpak
+		enable_package flatpak
 		flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 		# flats=$(awk -F '#' '{print $1}' "${baseDir}/custom_flat.lst" | sed 's/ //g' | xargs)
 
