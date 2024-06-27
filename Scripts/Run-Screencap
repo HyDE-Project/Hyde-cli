@@ -1,5 +1,6 @@
 #!/bin/env bash
 
+#TODO revise this to not use grimblast 
 enable_package grimblast swappy
 
 if [ -z "${XDG_PICTURES_DIR}" ]; then
@@ -19,7 +20,7 @@ STOP() {
 
 #variables
 OPTION="${1}"
-PASS="${@:2}"
+PASS="${*:2}"
 logFile="${HYDE_RUNTIME_DIR}/screencap.log"
 cacheFile="${cacheDir}/screecap.meta"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
@@ -35,6 +36,13 @@ mkdir -p "${swpy_dir}"
 echo -e "[Default]\nsave_dir=${img_dir}\nsave_filename_format=${img_file}" >"${swpy_dir}"/config
 
 focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
+#! This is a workaround for now. Will revise this whole script because hyprland and wlscreenrec works better now!
+if [[ "${PASS}" = *"--cursor"* ]]; then
+PASS="${PASS//--cursor/}"
+curStat=$(hyprctl getoption cursor:no_hardware_cursors -j | jq  .int)    
+hyprctl keyword cursor:no_hardware_cursors 1
+trap 'hyprctl keyword cursor:no_hardware_cursors "${curStat}"' EXIT
+fi
 
 first_setup() {
     if [ ! -f "${cacheFile}" ]; then
@@ -131,9 +139,28 @@ if [ "${OPTION}" = "--stop" ]; then
 fi
 
 case ${OPTION} in
--pa | --print-all) #? 󰄀 Print all outputs
+-pa | --print-all) #? 󰄀 Print all screen
     grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
     clearNotify
+    ;;
+-f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
+    grimblast --freeze copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}" ;;
+-pm | --print-monitor) #? 󰄀 Print focused monitor
+    grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    clearNotify
+    ;;
+-ps | --print-snip) #? 󰄀 Drag to manually snip an area
+    grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    clearNotify
+    ;;
+-sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
+    enable_package tesseract-data-eng tesseract
+    GEOM=$(slurp)
+    grim -g "${GEOM}" "${temp_screenshot}"
+    pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
+    tesseract "${temp_screenshot}" - | wl-copy
+    notify-send -a "Screencap" "OCR preview" -i "${temp_screenshot}" -e
+    rm -f "${temp_screenshot}"
     ;;
 -ra | --record-all) notify-send -a "ScreenCap" "'--record-all' is deprecated please use --record-focus instead" ;;
 -rf | --record-focus) #? 󰃽 Record focused monitor
@@ -148,10 +175,6 @@ case ${OPTION} in
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -o "${focus_monitor}" ${PASS}
     clearNotify
     ;;
--ps | --print-snip) #? 󰄀 Drag to manually snip an area
-    grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    clearNotify
-    ;;
 -rs | --record-snip) #? 󰃽 Drag to manually snip an area to screen record it
     GEOM=$(slurp)
     grim -g "${GEOM}" "${temp_screenshot}"
@@ -164,21 +187,6 @@ case ${OPTION} in
     fi
     "${screen_recorder}" -f "${vid_dir}/${vid_file}" -g "${GEOM}" ${PASS}
     clearNotify
-    ;;
--f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
-    grimblast --freeze copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}" ;;
--pm | --print-monitor) #? 󰄀 Print focused monitor
-    grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
-    clearNotify
-    ;;
--sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
-    enable_package tesseract-data-eng tesseract
-    GEOM=$(slurp)
-    grim -g "${GEOM}" "${temp_screenshot}"
-    pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
-    tesseract "${temp_screenshot}" - | wl-copy
-    notify-send -a "Screencap" "OCR preview" -i "${temp_screenshot}" -e
-    rm -f "${temp_screenshot}"
     ;;
 --stop) #?  Stop every instance of Screencap
     :
