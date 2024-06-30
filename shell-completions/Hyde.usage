@@ -128,6 +128,7 @@ Hyde <FUNCTIONS>
 <SHOW_FUNCTION> ::=
 			  (binds <SHOW_BINDS_USAGE> ) 	  " [*] Show keybind hints"
 			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
+			 | (calc <SHOW_CALC_USAGE> ) 	  " [*] Calculator (libqalculate)"
 			 | (emoji <SHOW_EMOJI_USAGE> ) 	  " [*] Emoji selector"
 			 | (glyph) 	  " Glyph selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
@@ -190,7 +191,7 @@ Hyde <FUNCTIONS>
  (-j   ) "  Show the JSON format"
 | (-p   ) "  Show the pretty format"
 | (-d   ) "  Add custom delimiter symbol (default '>')"
-| (-f	<PATH>   ) "  Add custom file"
+| (-f	<PATH>   ) "  Add custom .conf file"
 | (-h   ) "  Display this help message"
 ;
 
@@ -200,6 +201,11 @@ Hyde <FUNCTIONS>
 | (--persist	) "	Saves bookmark file list to ~/.cache.So no re-caching after reboot"
 | (--rasi	<PATH>) "	set rofi configuration"
 | (--rebuild   ) "   force rebuild cached bookmark paths"
+;
+
+<SHOW_CALC_USAGE> ::=
+ (--rasi	<PATH>) " set rofi configuration"
+| (--reset ) "	Reset cache"
 ;
 
 <SHOW_EMOJI_USAGE> ::=
@@ -226,7 +232,7 @@ Hyde <FUNCTIONS>
 | (--record-focus  ) "  Record focused monitor"
 | (--print-snip    ) "  Drag to manually snip an area"
 | (--record-snip   ) "  Drag to manually snip an area to screen record it"
-| (-freeze         ) "  Frozen screen, drag to manually snip an area"
+| (--freeze        ) "  Frozen screen, drag to manually snip an area"
 | (--print-monitor ) "  Print focused monitor"
 | (--scan          ) "  Use 'tesseract' to scan image then add to clipboard"
 | (--stop          ) "  Stop every instance of Screencap"

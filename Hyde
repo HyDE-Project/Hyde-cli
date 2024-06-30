@@ -727,6 +727,16 @@ USAGE
 [END]
 USAGE
 		;;
+	calc) #? [*] Calculator (libqalculate)  
+	shift
+	Launch-Calculator "${@}" 
+		: <<USAGE
+[SHOW_CALC_USAGE]
+    --rasi	<PATH>? set rofi configuration
+    --reset ?	Reset cache
+[END]
+USAGE
+	;;
 	emoji) #? [*] Emoji selector\nﯦ Add 'emoji_style=2'\n	1 = list\n	2 = grid    
 		shift
 		Launch-Emoji "${@}"

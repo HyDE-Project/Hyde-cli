@@ -43,23 +43,6 @@ custom_search_sites() {
 	done
 }
 
-# Show usage for the script.
-usage() {
-	cat <<EOF
---reset 	Reset cache
---browser | -b [browser]	Browser to use, defaults to xdg browser
---site | -s [search engine]	Search-engine to use
-Available:
-$(
-		for site in "${!SITES[@]}"; do
-			echo -e "\t $site"
-		done | sort
-	)
-EOF
-
-	exit 1
-}
-
 # Creates the cache directory if it does not exist.
 create_cache_dir() {
 	if [ ! -d "$CACHE_DIR" ]; then
@@ -207,6 +190,24 @@ main() {
 			fi
 		fi
 	fi
+}
+
+# Show usage for the script.
+usage() {
+	cat <<EOF
+--reset 						Reset cache
+--browser | -b [browser]		Browser to use, defaults to xdg browser
+--site | -s [search engine]		Search-engine to use
+--rasi							Set custom .rasi file. NOte that this removes all overrides
+Available:
+$(
+		for site in "${!SITES[@]}"; do
+			echo -e "\t $site"
+		done | sort
+	)
+EOF
+
+	exit 1
 }
 
 #* Process user search_files
