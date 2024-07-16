@@ -663,30 +663,42 @@ USAGE
 
 }
 
-code() { #! Modify Vscode Extensions
+code() { #? Code editor related commands 
 	case $1 in
-	select) #? Selector for default Theme presets
+	# select) #! Selector for default Theme presets
 
-		select_theme() {
-			dir=$(grep "^1|" "${ThemeCtl}" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
-			code_SubExt=$(cat ${HOME}/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf)
-			awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" >temp && mv temp "$ThemeCtl"
-			if [ "$(grep -c "workbench.colorTheme" "${confDir}"/Code/User/settings.json)" -eq 1 ]; then
-				sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${confDir}"/Code/User/settings.json
-			else
-				sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${confDir}"/Code/User/settings.json
-			fi
+	# 	code_setting="${confDir}"/Code/User/settings.json
+
+	# 	select_theme() {
+	# 		dir=$(grep "^1|" "${ThemeCtl}" | cut -d'|' -f3 | cut -d'~' -f1 | tr '[:upper:]' '[:lower:]')
+	# 		code_SubExt=$(cat ${HOME}/.vscode/extensions/"${dir}"*/package.json | jq -r '.contributes.themes[] | .label' | fzf)
+	# 		awk -v ext="${code_SubExt}" -F'|' 'BEGIN {OFS = FS} /^1\|/ {if ($3 ~ /~/) sub(/~[^|]*/, "~" ext, $3); else $3 = $3 "~" ext} 1' "$ThemeCtl" >temp && mv temp "$ThemeCtl"
+	# 		if [ "$(grep -c "workbench.colorTheme" "${code_setting}")" -eq 1 ]; then
+	# 			sed -i "/workbench.colorTheme/c\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${code_setting}"
+	# 		else
+	# 			sed -i "/^{/a\    \"workbench.colorTheme\": \"${code_SubExt}\"," "${code_setting}"
+	# 		fi
+	# 	}
+	# 		select_theme
+	# 	;;
+	theme) #? set the code theme
+		shift
+
+		help () {
+		cat << HELP
+Provide a valid code theme name.
+No args passed will default to 'wallbash'  code theme
+HELP
 		}
-		if [[ ! -z "$(cat "${ThemeCtl}" | grep "^1|" | cut -d'|' -f3)" ]]; then
-			select_theme
-		else
-			echo "No Linked Code Extension found. Would you like to add the extension MANUALLY?"
-			ask_confirm
-			sel_ext=$($(which code) --list-extensions | fzf)
-			sed -i '/^1|/ s/[^|]*|[^|]*|[^|]*/&'"$sel_ext"'/' "$ThemeCtl"
-			select_theme
-		fi
-		;;
+	   codet=${*:-wallbash}
+	   [[ "$*" == "-"* ]] && { help ; exit 1; }
+		readarray -t codeConf < <(find "${confDir}" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" | sort)
+		print_prompt -y "Setting '${codet}' as code theme..." 
+		for i in "${!codeConf[@]}" ; do
+		    [ -f "${codeConf[i]}/User/settings.json" ] || continue
+    		jq --arg codet "${codet}" '.["workbench.colorTheme"] |= $codet' "${codeConf[i]}/User/settings.json" > tmpvsc && mv tmpvsc "${codeConf[i]}/User/settings.json"
+		done
+	;;
 	*)
 		Parameters "${FUNCNAME[0]}"
 		;;
