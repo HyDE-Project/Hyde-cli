@@ -73,6 +73,11 @@ print_prompt() {
     echo ""
 }
 
+NOTIFY () {
+print_prompt -g "[notify] " "${@}"
+nohup notify-send "${@}" -e >/dev/null 2>&1 &
+}
+
 parse_section() {
     local section="$1"
     local file="$2"
