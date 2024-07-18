@@ -152,7 +152,9 @@ Restore-Config --only "${HYDE_RUNTIME_DIR}/" ${CloneDir}/Configs
 Manage-Themes theme_patcher || true
 
 shell_select || true
-sddm_select || true
+
+	. Manage-Sddm
+sddm_install || true
 # TODO Flatpak installation 
 
 #------------------------#

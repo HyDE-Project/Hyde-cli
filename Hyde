@@ -594,16 +594,20 @@ USAGE
 
 sddm() { #? Sddm commands
 
+	. Manage-Sddm
 	enable_package sddm
-	navigate_clone
 	case $1 in
-	theme) #? Select sddm theme
-		sddm_select
+	install) #? Install and set sddm theme from HyDE clone Repo
+		navigate_clone
+		sddm_install "${@}"
 		;;
-	#   set) #? Directory   Lockscreen
-	# :    #  "${scrDir}"/sddmwall.sh
-	# #
-	#   ;;
+	list) #? List all local sddm themes
+		sddm_list_local
+		;;
+	  set) #? Set Sddm theme from the list
+	  	shift
+		sddm_set_local "${@}"
+	  ;;
 	*) Parameters "${FUNCNAME[0]}" ;;
 
 	esac;

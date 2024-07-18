@@ -288,27 +288,6 @@ shell_select() {
     fi
 }
 
-sddm_select() {
-    sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
-    sddm_conf=/etc/sddm.conf.d/kde_settings.conf
-    sddm_theme=$(
-        find "${CloneDir}/Source/arcs" -type f -name "*Sddm_*" -printf "%f\n" |
-            awk -F 'Sddm_' '{print $2}' |
-            awk -F '.tar' '{print $1}' | Fzf-Menu "${FUNCNAME[0]}"
-    )
-
-    [ -z "${sddm_theme}" ] && print_prompt -r "Operation Cancelled" && return 1
-    print_prompt -y "Setting into '${sddm_theme} theme'..."
-    ask_confirm "${USER}"
-    [ -f "${sddm_bak}" ] && SUPER rm "${sddm_bak}"
-    SUPER mkdir -p "$(dirname ${sddm_conf})"
-    SUPER tar -xzf ${CloneDir}/Source/arcs/Sddm_${sddm_theme}.tar.gz -C "/usr/share/sddm/themes/${theme}"
-    SUPER touch "${sddm_conf}"
-    SUPER cp "${sddm_conf}" "${sddm_bak}"
-    SUPER cp /usr/share/sddm/themes/${sddm_theme}/kde_settings.conf /etc/sddm.conf.d/
-    enable_service sddm
-}
-
 main_help_content() {
     grep -E '^\w+ *\( *\)\s*\{ #\?' "$0" | awk 'BEGIN { FS = "[()#?]" } { gsub(/\\n/, "\\n\t\t\t ﬌", $5); printf " %-20s %s\n", $1, $5 }' |
         sed -e "s|\${CloneDir}|$CloneDir|g" \

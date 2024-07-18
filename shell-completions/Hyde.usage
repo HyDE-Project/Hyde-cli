@@ -108,7 +108,9 @@ Hyde <FUNCTIONS>
 
 
 <SDDM_FUNCTION> ::=
-			  (theme) 	  " Select sddm theme"
+			  (install) 	  " Install and set sddm theme from HyDE clone Repo"
+			 | (list) 	  " List all local sddm themes"
+			 | (set) 	  " Set Sddm theme from the list"
 ;
 
 
