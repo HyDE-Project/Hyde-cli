@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 export CLI_PATH=$(dirname $(dirname ${0}))
 export libDir=${CLI_PATH}/lib/hyde-cli

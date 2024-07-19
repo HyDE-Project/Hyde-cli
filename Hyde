@@ -446,7 +446,8 @@ theme() { #? Theme commands
 		if [[ -z "${*}" ]]; then
 			Manage-Themes theme_patcher
 		else
-			./themepatcher.sh "$@"
+			#! ./themepatcher.sh "$@" #! This is from the repo,Decided to maintain a separate patcher
+			Patch-Theme "$@"
 		fi
 		;;
 	# remove) #? Removes a theme from the system !!  Unrecoverable

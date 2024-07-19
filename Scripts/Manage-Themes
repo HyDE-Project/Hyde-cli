@@ -136,8 +136,9 @@ theme_patcher() {
         themePath="${confDir}/hyde/themes/${themeName}"
         [ -d "${themePath}" ] || mkdir -p "${themePath}"
         [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" >"${themePath}/.sort"
-    done <"${themepatcher_lst}"
-    parallel --bar --link "${CloneDir}/Scripts/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+    done <"${themepatcher_lst}"    
+    #! parallel --bar --link "${CloneDir}/Scripts/themepatcher.sh" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+    parallel --bar --link "Patch-Theme" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
     print_prompt -g "\n[cache]" " generating cache files..."
     #TODO Clean the ScrDir
     "${scrDir}/swwwallcache.sh" -t ""

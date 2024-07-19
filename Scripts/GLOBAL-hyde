@@ -406,7 +406,6 @@ export landingDir="${cacheDir}/landing"
 # HYDE-CLI
 export CLI_PATH=$(dirname $(dirname ${0}))
 export PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
-export PATH=${PATH}:${libDir}
 export HYDE_RUNTIME_DIR=$XDG_RUNTIME_DIR/hyde
 
 # Cli Configs
