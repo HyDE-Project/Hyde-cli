@@ -33,8 +33,7 @@ sddm_exec_seleted() {
     [[ -d "$(dirname ${sddm_conf})" ]] || SUPER mkdir -p "$(dirname ${sddm_conf})"
     [[ -f "${sddm_conf}" ]] && cp -fr "${sddm_conf}" "$(dirname "${sddm_conf}")/kde_settings.t2.bkp"
     # cp "${sddm_theme_conf}" "$(dirname "${sddm_conf}")"
-    cp "${sddm_theme_conf}" "${sddm_conf}"
-
+    cp "${sddm_theme_conf}" "${sddm_conf}" && print_prompt -y "[ok] " "Sddm theme set"
 }
 
 sddm_list_local() {
@@ -97,7 +96,7 @@ sddm_set_local() {
     if [ ! -w "$(dirname ${sddm_conf})" ] || [ ! -w "${sddm_conf}" ]; then
         NOTIFY -a " HyDE-cli " "Run 'sudo chmod -R a+wr $(dirname ${sddm_conf})' to set the permissions one time"
         print_prompt -c "[note] " "Run 'sudo chmod -R a+wr $(dirname ${sddm_conf})'  to set the permissions one time"
-        
+
         pkexec bash -c ". ${CLI_PATH}/lib/hyde-cli/Package-Manager ;. ${CLI_PATH}/lib/hyde-cli/Manage-Sddm;sddm_exec_seleted ${sddm_theme_conf}" || exit 1
     else
         sddm_exec_seleted "${sddm_theme_conf}"
