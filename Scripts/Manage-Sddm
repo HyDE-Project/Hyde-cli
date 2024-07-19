@@ -33,12 +33,13 @@ sddm_exec_seleted() {
     [[ -d "$(dirname ${sddm_conf})" ]] || SUPER mkdir -p "$(dirname ${sddm_conf})"
     [[ -f "${sddm_conf}" ]] && cp -fr "${sddm_conf}" "$(dirname "${sddm_conf}")/kde_settings.t2.bkp"
     # cp "${sddm_theme_conf}" "$(dirname "${sddm_conf}")"
-    cp "${sddm_theme_conf}" "${sddm_conf}" && print_prompt -y "[ok] " "Sddm theme set"
+    cp -fr "${sddm_theme_conf}" "${sddm_conf}" && print_prompt -y "[ok] " "Sddm theme set"
 }
 
 sddm_list_local() {
     declare -A sddm_themes
     output=$(find "${sddm_theme_dir}" -name "kde_settings.conf" -exec grep -H "Current" {} \;)
+    [[ -z "${output}" ]] && print_prompt -crit "[error] "  "No settings detected.Do themes have 'kde_settings.conf' declared? " && exit 1
 
     # Populate the associative array
     while IFS=':' read -r path theme_name; do
@@ -58,7 +59,7 @@ sddm_set_local() {
 
     declare -A sddm_themes
     output=$(find "${sddm_theme_dir}" -name "kde_settings.conf" -exec grep -H "Current" {} \;)
-
+    [[ -z "${output}" ]] && print_prompt -crit "[error] "  "No settings detected.Do themes have 'kde_settings.conf' declared? " && exit 1
     # Populate the associative array
     while IFS=':' read -r path theme_name; do
         # Remove "Current=" from the theme_name
@@ -96,7 +97,6 @@ sddm_set_local() {
     if [ ! -w "$(dirname ${sddm_conf})" ] || [ ! -w "${sddm_conf}" ]; then
         NOTIFY -a " HyDE-cli " "Run 'sudo chmod -R a+wr $(dirname ${sddm_conf})' to set the permissions one time"
         print_prompt -c "[note] " "Run 'sudo chmod -R a+wr $(dirname ${sddm_conf})'  to set the permissions one time"
-
         pkexec bash -c ". ${CLI_PATH}/lib/hyde-cli/Package-Manager ;. ${CLI_PATH}/lib/hyde-cli/Manage-Sddm;sddm_exec_seleted ${sddm_theme_conf}" || exit 1
     else
         sddm_exec_seleted "${sddm_theme_conf}"
