@@ -35,14 +35,11 @@ event_monitorremoved() {
 event_monitoradded() {
   : # MONITORNAME
     hyprctl dispatch exec 'swwwallpaper.sh'
-#    Hyprdots show monitors
 }
 
 event_monitoraddedv2() {
   : # MONITORNAME
     # hyprctl dispatch exec 'swwwallpaper.sh'
-#    Hyprdots show monitors
-
 }
 
 event_createworkspace() {
