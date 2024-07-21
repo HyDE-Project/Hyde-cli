@@ -69,11 +69,15 @@ Supported Archive Format:
     | Gtk_            | \$GTK-THEME        | \$HOME/.themes           |
     | Icon_           | \$ICON-THEME       | \$HOME/.icons            |
     | Cursor_         | \$CURSOR-THEME     | \$HOME/.icons            |
-    | Sddm_           | \$SDDM-THEME       | /usr/share/sddm/themes  |
+    | Sddm_           | \$SDDM-THEME       | /usr/share/sddm/themes  | 
     | Font_           | \$FONT             | \$HOME/local/share/fonts |
     | Document-Font_  | \$DOCUMENT-FONT    | \$HOME/local/share/fonts |
     | Monospace-Font_ | \$MONOSPACE-FONT   | \$HOME/local/share/fonts |
 
+Note: 
+    Target directories without enough permissions will be skipped. 
+        run 'sudo chmod -R 777 <target directory>'
+            example: 'sudo chmod -R 777 /usr/share/sddm/themes'
 HELP
 }
 
@@ -193,6 +197,8 @@ check_tars() {
             ;;
         esac
     )"
+    # fallback to older imple
+    gsVal=${gsVal:-$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'${gsLow}'-theme[[:space:]]*/ {last=$2} END {print last}' "${Fav_Theme_Dir}/hypr.theme")}
 
     if [ ! -z "${gsVal}" ]; then
         print_prompt -g "[OK] " "hypr.theme :: [${gsLow}]" -b " ${gsVal}"
@@ -243,9 +249,15 @@ for indx in "${!prefix[@]}"; do
     [[ "${FORCE_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir[indx]}/${tgtChk}" ] && print_prompt -y "[skip] " "\"${tgtDir[indx]}/${tgtChk}\" already exists" && continue; }
     print_prompt -g "[extracting] " "${tarFile} --> ${tgtDir[indx]}"
     if [ ! -w "${tgtDir[indx]}" ]; then
-        print_prompt -c "[note] " "Run 'sudo chmod -R a+wr ${tgtDir[indx]}'  to set the permissions one time"
-        sudo tar -xf "${tarFile}" -C "${tgtDir[indx]}"
-        sudo chmod -R 755 "${tgtDir[indx]}/${tgtChk}"
+      # Sddm themes can still be accessible
+        NOTIFY -a "[HyDE-CLI] " "Run 'sudo chmod -R 777 ${tgtDir[indx]}'  to set the permissions one time" -t 10
+        print_prompt -c "[note] " "Run 'sudo chmod -R 777 ${tgtDir[indx]}'  to set the permissions one time"
+        print_prompt -r "[skip] " "${tarFile} =! ${tgtDir[indx]} permission not set"
+        continue
+    elif [ ! -w "${tgtDir[indx]}/${tgtChk}" ];then
+        tar -xf "${tarFile}" -C  "${cacheDir}/landing"
+        chmod -R 775 "${cacheDir}/landing/${tgtChk}"
+        mv "${cacheDir}/landing/${tgtChk}" "${tgtDir[indx]}/"
     else
         tar -xf "${tarFile}" -C "${tgtDir[indx]}"
     fi
