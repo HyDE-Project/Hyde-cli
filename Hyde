@@ -27,7 +27,7 @@ elif ! (awk '{print $1}' <<<$(main_help_content) | grep -qw "${1}" ); then
 	exit 1
 fi
 
-initiate_hyde_command
+initiate_hyde_command &
 #! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols
 #! +----------------------------------------------------------------|
 #? Add functions below this section

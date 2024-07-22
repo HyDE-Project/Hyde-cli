@@ -74,8 +74,8 @@ print_prompt() {
 }
 
 NOTIFY () {
-print_prompt -g "[notify] " "${@}"
-nohup notify-send "${@}" -e >/dev/null 2>&1 &
+print_prompt -g "[notify] " "${*}"
+nohup notify-send "${*}" -e >/dev/null 2>&1 &
 }
 
 parse_section() {
