@@ -641,6 +641,10 @@ power() { #? Power Options
     --borderangle   ? Disable border angle animation
     --blur          ? Disable blur
     --opacity       ? Disable tranparency
+    --all         	? Disable all to save more power
+    on				? Disable all fancy things to save more power
+    off				? Disables the power saving mode
+
 [END]
 USAGE
 		;;
@@ -655,6 +659,7 @@ USAGE
     --borderangle   ? Default border angle animation
     --blur          ? Default blur
     --opacity       ? Default tranparency
+    --all         ? Remove power saving mode
 [END]
 USAGE
 		;;

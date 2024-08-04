@@ -159,6 +159,9 @@ Usage: Hyde [Function] [options]
 						[--borderangle] ↪️  Disable border angle animation
 						[--blur] ↪️  Disable blur
 						[--opacity] ↪️  Disable tranparency
+						[--all	] ↪️  Disable all to save more power
+						[on				] ↪️  Disable all fancy things to save more power
+						[off				] ↪️  Disables the power saving mode
 
 			 [toggle]  ↪️  Toggle 💡 Set/unset current changes'
 
@@ -168,6 +171,7 @@ Usage: Hyde [Function] [options]
 						[--borderangle] ↪️  Default border angle animation
 						[--blur] ↪️  Default blur
 						[--opacity] ↪️  Default tranparency
+						[--all] ↪️  Remove power saving mode
 
 			 [game]  ↪️  Toggle game mode
  
@@ -265,7 +269,7 @@ Usage: Hyde [Function] [options]
 			 [flatpak]  ↪️  Flatpak setup for HyDE
  
 [reload]                    ↪️ Just reload
-===========================================================================================================================================================================
+============================================================================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
@@ -288,6 +292,6 @@ Usage: Hyde-tool [Function] [options]
 			 [out]  ↪️  Zoom out
 
 			 [reset]  ↪️  Reset Zoom
-===========================================================================================================================================================================
+============================================================================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
