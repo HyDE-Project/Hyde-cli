@@ -6,7 +6,6 @@ source_user
 screencap_annotate="${annotation_tool:-swappy}"
 
 enable_package grimblast $screencap_annotate
-echo $screencap_annotate
 
 if [ -z "${XDG_PICTURES_DIR}" ]; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
