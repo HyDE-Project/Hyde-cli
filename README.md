@@ -184,7 +184,7 @@ If you would like to support this project, but don't know how, here are some way
 - Submit PRs. Even if it's formatting improvements or fixing spelling mistakes, they are all appreciated!
 - Report issues. Major or minor, doesn't matter, please report any you find.
 - I don't really know what the use of the stars is, but feel free to leave one!
-
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A3TECUZ) 
 ## Roadmap
 
 This is the current unfinished and completed plans of the project:
