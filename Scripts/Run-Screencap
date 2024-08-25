@@ -1,7 +1,12 @@
 #!/bin/env bash
 
 #TODO revise this to not use grimblast 
-enable_package grimblast swappy
+
+source_user
+screencap_annotate="${annotation_tool:-swappy}"
+
+enable_package grimblast $screencap_annotate
+echo $screencap_annotate
 
 if [ -z "${XDG_PICTURES_DIR}" ]; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
@@ -15,7 +20,7 @@ STOP() {
     pkill -SIGINT "${screen_recorder}"
     pkill slurp
     pkill hyprpicker
-    rm -f "${HYDE_RUNTIME_DIR}/*screenshot.png"
+    rm -fr "${HYDE_RUNTIME_DIR}/*screenshot.png"
 }
 
 #variables
@@ -25,15 +30,23 @@ logFile="${HYDE_RUNTIME_DIR}/screencap.log"
 cacheFile="${cacheDir}/screecap.meta"
 vid_dir="${XDG_VIDEOS_DIR}/Recordings"
 vid_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenrecord.mp4')
-swpy_dir="${XDG_CONFIG_HOME:-$HOME/.config}/swappy"
+annotate_dir="${XDG_CONFIG_HOME:-$HOME/.config}/$screencap_annotate"
 img_dir="${XDG_PICTURES_DIR}/Screenshots"
 img_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
 temp_screenshot="${HYDE_RUNTIME_DIR}/${img_file}"
 
 mkdir -p "${img_dir}"
 mkdir -p "${vid_dir}"
-mkdir -p "${swpy_dir}"
-echo -e "[Default]\nsave_dir=${img_dir}\nsave_filename_format=${img_file}" >"${swpy_dir}"/config
+mkdir -p "${annotate_dir}"
+
+case "${screencap_annotate}" in
+    swappy)
+    screencap_annotate="swappy --output-file ${img_dir}/${img_file}"
+    ;;
+    satty)
+    screencap_annotate="satty  --output-filename ${img_dir}/${img_file}"
+    ;;
+esac
 
 focus_monitor=$(hyprctl activeworkspace -j | jq -r '.monitor')
 #! This is a workaround for now. Will revise this whole script because hyprland and wlscreenrec works better now!
@@ -140,17 +153,17 @@ fi
 
 case ${OPTION} in
 -pa | --print-all) #? 󰄀 Print all screen
-    grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    grimblast copysave screen "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
-    grimblast --freeze copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}" ;;
+    grimblast --freeze copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}" ;;
 -pm | --print-monitor) #? 󰄀 Print focused monitor
-    grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    grimblast copysave output "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -ps | --print-snip) #? 󰄀 Drag to manually snip an area
-    grimblast copysave area "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+    grimblast copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
