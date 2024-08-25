@@ -124,6 +124,7 @@ print_error() {
     cat <<HELP
 Screenrecord: '${screen_recorder}'
 Screenshot: 'grimblast'
+Annotation tool: '$annotation_tool' (set annotation_tool variable in '${hydeConfDir}/hyde.conf')
 
 [Usage] Hyde run screencap [option]
 
