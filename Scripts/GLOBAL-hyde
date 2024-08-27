@@ -410,7 +410,7 @@ export HYDE_RUNTIME_DIR=$XDG_RUNTIME_DIR/hyde
 
 # Cli Configs
 export etcDir="/etc/hyde-cli"
- [[ "/usr" == *"${CLI_PATH}"* ]] || etcDir="$HOME/.hyde-cli"
+ [[ "${CLI_PATH}" == *"/usr"* ]] || etcDir="$HOME/.hyde-cli"
 export usrDir="${CLI_PATH}/share/hyde-cli"
 
 # Config
