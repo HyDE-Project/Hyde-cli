@@ -29,6 +29,7 @@ themepatcher_lst="${hyde_gallery_dir}/themepatcher.lst"
 loading_spinner $! $?
 [ ! -d "${hyde_gallery_dir}" ] && exit 1
 
+#! Deprectaed I'll be using json now...
 parse_ini() {
     local section="$1"
     local in_section=false
@@ -57,12 +58,24 @@ parse_ini() {
     done <"${file_DB}"
 }
 
+export_DB() {
+theme_name="${1}"
+
+eval "$(jq -r --arg THEME "$theme_name" '
+  .[] | 
+  select(.THEME == $THEME) | 
+  to_entries | 
+.[] | 
+"export \(.key)=\"\(.value)\" "
+' < "${hyde_gallery_dir}/hyde-themes.json")"
+}
+
 generate_theme_list() {
     theme_menu
     # echo -e "${patchList}"
     : >"${themepatcher_lst}"
     while IFS= read -r selected_theme; do
-        parse_ini "${selected_theme}"
+        export_DB "${selected_theme}"
         echo -e "\"$selected_theme\"" "\"$LINK\"" >>"${themepatcher_lst}"
     done <<<"$patchList"
 }
@@ -95,8 +108,8 @@ EOF
 preview_theme() {
     clear
     export THEME="$1"
-    parse_ini "${THEME}"
-    print_prompt -c " \\\ $THEME \\\ " -g "\nLink: " "$LINK" -y "\nOwner: " "${OWNER}\n"
+    export_DB "${THEME}"
+    print_prompt -c " \\\ $THEME \\\ " -g "\nLink: " "${LINK}" -y "\nOwner: " "${OWNER}\n" -c "Description: " "${DESCRIPTION}\n"
     hyde_gallery_dir="${hyde_gallery_dir}/${THEME}"
     [ ! -f "${hyde_gallery_dir}" ] && mkdir -p "${hyde_gallery_dir}"
     if [[ $(find "${hyde_gallery_dir}" -maxdepth 1 -type f | wc -l) -gt 1 ]]; then
