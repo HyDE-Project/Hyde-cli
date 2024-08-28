@@ -611,7 +611,7 @@ sddm() { #? Sddm commands
 		#! sddm_set_local "${@}"
 		sddm_set_theme "${@}"
 	  ;;
-	  unset) #? Unset a any theme set by 'set' command
+	  unset) #? Unset a theme set by 'set' command
 	    sddm_unset
 	  ;;
 	  test) #? Test a theme
