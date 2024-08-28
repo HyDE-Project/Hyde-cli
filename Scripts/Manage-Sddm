@@ -117,6 +117,8 @@ sddm_test() {
         test_theme=${1}
     fi
     print_prompt -g "[try] " "${test_theme} theme"
+    
+    [ -z "${selected_theme}" ] && print_prompt -r "Operation Cancelled" && return 1
     sddm-greeter --test-mode --theme "${sddm_theme_dir}/${test_theme}"
 }
 sddm_unset() {
@@ -131,8 +133,8 @@ sddm_unset() {
 
 sddm_info() {
     output=$(find /etc/sddm.conf.d/ -type f -name "*.conf" -exec grep -H "Current" {} \; | tail -n 1)
-    cat << STAT
-Current theme: $( awk -F ':Current=' '{print $2}' <<< ${output} )  
-theme directory: $( awk -F ':Current=' '{print $1}' <<< ${output})  
+    cat <<STAT
+Current theme: $(awk -F ':Current=' '{print $2}' <<<${output})  
+theme directory: $(awk -F ':Current=' '{print $1}' <<<${output})  
 STAT
 }
