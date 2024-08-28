@@ -145,6 +145,12 @@ Usage: Hyde [Function] [options]
 			 [list]  ↪️  List all local sddm themes
 
 			 [set]  ↪️  Set Sddm theme from the list
+
+			 [unset]  ↪️  Unset a any theme set by 'set' command
+
+			 [test]  ↪️  Test a theme
+
+			 [info]  ↪️  Check sddm theme status
  
 [shell]                     ↪️ Shell commands
 
@@ -270,7 +276,7 @@ Usage: Hyde [Function] [options]
 			 [flatpak]  ↪️  Flatpak setup for HyDE
  
 [reload]                    ↪️ Just reload
-=====================================================================================================================================================================================
+============================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
@@ -293,7 +299,7 @@ Usage: Hyde-tool [Function] [options]
 			 [out]  ↪️  Zoom out
 
 			 [reset]  ↪️  Reset Zoom
-=====================================================================================================================================================================================
+============================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 ```

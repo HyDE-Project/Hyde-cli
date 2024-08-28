@@ -111,6 +111,9 @@ Hyde <FUNCTIONS>
 			  (install) 	  " Install and set sddm theme from HyDE clone Repo"
 			 | (list) 	  " List all local sddm themes"
 			 | (set) 	  " Set Sddm theme from the list"
+			 | (unset) 	  " Unset a any theme set by 'set' command"
+			 | (test) 	  " Test a theme"
+			 | (info) 	  " Check sddm theme status"
 ;
 
 
