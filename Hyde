@@ -77,7 +77,7 @@ man() { #? Show Manual
 				-e "s|\${ctlFile}|$ctlFile|g"
 		barLine
 		print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
-	) | { less || more || cat -; } 2>/dev/null
+	) | cat - 2>/dev/null
 }
 
 version() { #? Hyde-cli version
