@@ -140,6 +140,8 @@ sddm_info() {
     cat <<STAT
 Current theme: ${theme}  
 Theme directory: $(awk -F ':Current=' '{print $1}' <<<${output})
+Available themes: 
+$(find "${sddm_theme_dir}" -maxdepth 2 -name "theme.conf" -exec dirname {} \; | awk -F "${sddm_theme_dir}/" '{print $2}')
 
 STAT
 }
