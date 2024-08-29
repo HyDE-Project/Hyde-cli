@@ -2,9 +2,9 @@
 
 if ! pkg_installed sddm; then exit 0; fi
 
-sddm_bak=/etc/sddm.conf.d/kde_settings.t2.bkp
+sddm_bak=/etc/sddm.conf.d/kde_settings.hyde.bak
 export sddm_conf_dir=/etc/sddm.conf.d
-export sddm_conf="${sddm_conf_dir}/kde_settings.conf"
+#! export sddm_conf="${sddm_conf_dir}/kde_settings.conf"
 sddm_theme_dir="/usr/share/sddm/themes"
 
 sddm_set() {
@@ -18,6 +18,8 @@ sddm_set() {
     SUPER cp "${sddm_conf_dir}/kde_settings.conf" "${sddm_bak}"
     SUPER cp ${sddm_theme_dir}/${sddm_theme}/kde_settings.conf "${sddm_conf_dir}"
     enable_service sddm
+    print_prompt -y "Re-login to apply changes?"
+    ask_confirm && systemctl restart --now display-manager
 
 }
 
@@ -100,7 +102,7 @@ sddm_set_theme() {
         sddm_set_selected "${selected_theme}"
     fi
     enable_service sddm
-    print_prompt -y "Restart sddm?"
+    print_prompt -y "Re-login to apply changes?"
     ask_confirm && systemctl restart --now display-manager
 }
 
@@ -117,8 +119,8 @@ sddm_test() {
         test_theme=${1}
     fi
     print_prompt -g "[try] " "${test_theme} theme"
-    
-    [ -z "${selected_theme}" ] && print_prompt -r "Operation Cancelled" && return 1
+
+    [ -z "${test_theme}" ] && print_prompt -r "Operation Cancelled" && return 1
     sddm-greeter --test-mode --theme "${sddm_theme_dir}/${test_theme}"
 }
 sddm_unset() {

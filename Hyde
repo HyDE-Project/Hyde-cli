@@ -600,6 +600,7 @@ sddm() { #? Sddm commands
 	case $1 in
 	install) #? Install and set sddm theme from HyDE clone Repo
 		navigate_clone
+		sddm_unset
 		sddm_install "${@}"
 		;;
 	list) #? List all local sddm themes
