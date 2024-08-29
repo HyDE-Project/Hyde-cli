@@ -270,10 +270,10 @@ shell_select() {
         sed -i "/^plugins=/c\plugins=($w_plugin)$Fix_Completion" $Zsh_rc
 
     elif [ "${myShell}" == "fish" ]; then
-        enable_package fish eza starship
+        enable_package fish lsd starship
         (
             echo 'P|${HOME}/.config|fish|fish'
-            # echo 'P|${HOME}/.config|lsd|lsd'
+            echo 'P|${HOME}/.config|lsd|lsd'
         ) >${ctl_override}
 
         Restore-Config --only "${HYDE_RUNTIME_DIR}/"
