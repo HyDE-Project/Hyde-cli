@@ -17,9 +17,10 @@ sddm_set() {
     SUPER touch "${sddm_conf_dir}/kde_settings.conf"
     SUPER cp "${sddm_conf_dir}/kde_settings.conf" "${sddm_bak}"
     SUPER cp ${sddm_theme_dir}/${sddm_theme}/kde_settings.conf "${sddm_conf_dir}"
+    sddm_set_selected ${sddm_theme}
     enable_service sddm
-    print_prompt -y "Re-login to apply changes?"
-    ask_confirm && systemctl restart --now display-manager
+    # print_prompt -y "Re-login to apply changes?"
+    # ask_confirm && systemctl restart --now display-manager
 
 }
 
@@ -102,8 +103,8 @@ sddm_set_theme() {
         sddm_set_selected "${selected_theme}"
     fi
     enable_service sddm
-    print_prompt -y "Re-login to apply changes?"
-    ask_confirm && systemctl restart --now display-manager
+    # print_prompt -y "Re-login to apply changes?"
+    # ask_confirm && systemctl restart --now display-manager
 }
 
 sddm_install() {
@@ -135,8 +136,10 @@ sddm_unset() {
 
 sddm_info() {
     output=$(find /etc/sddm.conf.d/ -type f -name "*.conf" -exec grep -H "Current" {} \; | tail -n 1)
+    theme=$(awk -F ':Current=' '{print $2}' <<<${output})
     cat <<STAT
-Current theme: $(awk -F ':Current=' '{print $2}' <<<${output})  
-theme directory: $(awk -F ':Current=' '{print $1}' <<<${output})  
+Current theme: ${theme}  
+Theme directory: $(awk -F ':Current=' '{print $1}' <<<${output})
+
 STAT
 }
