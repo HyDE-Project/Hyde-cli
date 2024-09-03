@@ -70,9 +70,9 @@ Supported Archive Format:
     | Icon_           | \$ICON-THEME       | \$HOME/.icons            |
     | Cursor_         | \$CURSOR-THEME     | \$HOME/.icons            |
     | Sddm_           | \$SDDM-THEME       | /usr/share/sddm/themes  | 
-    | Font_           | \$FONT             | \$HOME/local/share/fonts |
-    | Document-Font_  | \$DOCUMENT-FONT    | \$HOME/local/share/fonts |
-    | Monospace-Font_ | \$MONOSPACE-FONT   | \$HOME/local/share/fonts |
+    | Font_           | \$FONT             | \$HOME/.local/share/fonts |
+    | Document-Font_  | \$DOCUMENT-FONT    | \$HOME/.local/share/fonts |
+    | Monospace-Font_ | \$MONOSPACE-FONT   | \$HOME/.local/share/fonts |
 
 Note: 
     Target directories without enough permissions will be skipped. 
@@ -236,9 +236,9 @@ tgtDir=(
     "$HOME/.icons"
     "$HOME/.icons"
     "/usr/share/sddm/themes"
-    "$HOME/local/share/fonts"
-    "$HOME/local/share/fonts"
-    "$HOME/local/share/fonts"
+    "$HOME/.local/share/fonts"
+    "$HOME/.local/share/fonts"
+    "$HOME/.local/share/fonts"
 )
 
 for indx in "${!prefix[@]}"; do
