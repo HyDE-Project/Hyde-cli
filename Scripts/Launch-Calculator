@@ -1,6 +1,6 @@
 #!/bin/bash
 
-enable_package qalc
+enable_package libqalculate
 rofi_pos
 r_width="width: ${calc_width:-40em};"
 r_height="height: ${calc_height:-23em};"
