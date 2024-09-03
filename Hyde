@@ -444,7 +444,7 @@ theme() { #? Theme commands
 	select) #? Theme selector
 		"${scrDir}"/themeselect.sh
 		;;
-	patch) #! Import a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
+	patch) #! Patch a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
 		print_prompt -r "[warn] Command will be deprecated\n Use  'Hyde theme import' instead"
 		shift
 		navigate_clone
@@ -462,6 +462,7 @@ theme() { #? Theme commands
 			Manage-Themes theme_patcher
 		else
 			#! ./themepatcher.sh "${@}" #! This is from the repo,Decided to maintain a separate patcher
+			export SINGLE_THEME_ONLY=true
 			Patch-Theme "${@}"
 		fi
 		;;

@@ -138,11 +138,18 @@ theme_menu() {
 
 theme_patcher() {
     generate_theme_list
+    themeCount="$(wc -l <<< "${patchList}")"
     [ ! -f "${themepatcher_lst}" ] && return
-    # print_prompt -g "[themepatcher]" " Patching the following themes..."
+    [ "${themeCount}" == 1 ] && export SINGLE_THEME_ONLY=true
+    print_prompt -g "[themepatcher]" " Patching ${themeCount} theme/s..."
+    barLine
     print_prompt "${patchList}"
+    barLine
     ask_confirm
 
+if [ "${SINGLE_THEME_ONLY}" = true ]; then
+eval Patch-Theme "$(cat "${themepatcher_lst}")"
+else
     while IFS='"' read -r null1 themeName null2 themeRepo; do
         themeNameQ+=("${themeName//\"/}")
         themeRepoQ+=("${themeRepo//\"/}")
@@ -167,6 +174,7 @@ theme_patcher() {
             print_prompt -r "[ERROR]" " $theme"
         fi
     done
+fi
 }
 
 eval "$(declare -F | sed -e 's/-f /-fx /')"

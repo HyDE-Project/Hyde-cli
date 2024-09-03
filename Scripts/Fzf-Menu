@@ -98,6 +98,20 @@ fzf_theme_menu() {
 
 }
 
+#? Wallpaper patch Menu
+fzf_select_theme_wallpaper() {
+    fzf \
+        --cycle \
+        --preview '[ {} = "[Confirm]" ] || Fzf-Preview {}' \
+        -m \
+        --marker ' ' \
+        --pointer=' ' \
+        --prompt '[TAB] Select a theme [Esc] Exit | CTRL A : mark all | CTRL D : unmark all: ' \
+        --bind 'ctrl-a:select-all,ctrl-d:deselect-all' \
+        --preview-window 'right:60%,border-rounded'
+
+}
+
 #? sddm theme
 fzf_sddm_list_arcs() {
 

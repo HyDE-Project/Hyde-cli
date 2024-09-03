@@ -81,6 +81,14 @@ Note:
 HELP
 }
 
+
+select_theme_wallpaper() {
+[ "${SINGLE_THEME_ONLY}" = true ] || return
+wallpapers="$(find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | Fzf-Menu "${FUNCNAME[0]}" )"
+print_prompt -g "[wallpapers]"
+awk -F "${Fav_Theme_Dir}" '{print $2}' <<< "${wallpapers}"
+}
+
 if [[ -z $1 || -z $2 ]]; then
     ask_help
     exit 1
@@ -158,8 +166,9 @@ readonly restore_list
 
 # Get Wallpapers
 wallpapers=$(find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
+select_theme_wallpaper
 wallcount="$(echo "${wallpapers}" | wc -l)"
-{ [ -z "${wallpapers}" ] && print_prompt -r "[ERROR] " "No wallpapers found" && exit_flag=true; } || { readonly wallpapers && print_prompt -g "\n[OK] " "wallpapers :: [count] ${wallcount} (.gif+.jpg+.jpeg+.png)"; }
+{ [ -z "${wallpapers}" ] && print_prompt -r "[ERROR] " "No wallpapers found/selected" && exit_flag=true; } || { readonly wallpapers && print_prompt -g "\n[OK] " "wallpapers :: [count] ${wallcount} (.gif+.jpg+.jpeg+.png)"; }
 
 # overparsing 😁
 check_tars() {
