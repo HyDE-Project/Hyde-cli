@@ -868,7 +868,7 @@ run() { #? Executable utilities
 USAGE
 		;;
 	events) #? Watches hyprland events and executes actions
-		enable_package
+		enable_package socat
 		shift
 		verbose=0
 		event_config=""
