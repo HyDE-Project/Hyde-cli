@@ -237,10 +237,10 @@ repo_info() {
 
 # shellcheck disable=SC2120
 navigate_clone() {
-    if [ ! -f "${meta_file}" ]; then
-        handle_error "Sourcing ${meta_file} failed.\nIt's possible you didn't install this with the hyde-cli.\n Don't worry, you can still manage Hyde configuration below."
+    if [ ! -f "${META_FILE}" ]; then
+        handle_error "Sourcing ${META_FILE} failed.\nIt's possible you didn't install this with the hyde-cli.\n Don't worry, you can still manage Hyde configuration below."
     fi
-    source "${meta_file}"
+    source "${META_FILE}"
     export CloneDir
     export ScriptDir="${CloneDir}/Scripts"
     cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
@@ -264,13 +264,13 @@ set_metadata() {
     modify_date="$(git log -1 --pretty=format:" %cd")"
     # commit_message="'$(git show -s --format='%B')'"
     commit_message="$(git show -s --format='%B' | tr -d '`')"
-    [ ! -f "${meta_file}" ] && touch "${meta_file}"
-    SUPER chattr -i "${meta_file}" || { print_prompt -crit "Setting metadata failed" && exit 1 ;}
-    trap 'SUPER chattr +i "${meta_file}"' RETURN
-    cat <<METADATA >"${meta_file}"
+    [ ! -f "${META_FILE}" ] && touch "${META_FILE}"
+    SUPER chattr -i "${META_FILE}" || { print_prompt -crit "Setting metadata failed" && exit 1 ;}
+    trap 'SUPER chattr +i "${META_FILE}"' RETURN
+    cat <<METADATA >"${META_FILE}"
 #? This is a meta file generated for hyde-cli
 #! Do not touch this!
-#* Use 'chattr -i "${meta_file}"' to lift protection attributes   
+#* Use 'chattr -i "${META_FILE}"' to lift protection attributes   
 export CloneDir="$CloneDir"
 export current_branch="${current_branch}"
 export git_url="${git_url}"
@@ -396,12 +396,12 @@ eval "$(declare -F | sed -e 's/-f /-fx /')"
 
 # Cache-dir
 export cacheDir="${HOME}/.cache/hyde"
-export meta_file="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to disable perms
+export META_FILE="${cacheDir}/hyde.meta" #! This is almost immovable! use chattr to disable perms
 export settingDir="${cacheDir}/hyde-settings"
 export landingDir="${cacheDir}/landing"
 
 #! Temporary
-[ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${meta_file}"
+[ -e "${cacheDir}/hyde-cli/hyde.meta" ] && mv "${HOME}/.cache/hyde-cli/hyde.meta" "${META_FILE}"
 
 # HYDE-CLI
 export CLI_PATH=$(dirname $(dirname ${0}))

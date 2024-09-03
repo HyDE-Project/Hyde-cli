@@ -79,7 +79,8 @@ Hyde <FUNCTIONS>
 			 | (next) 	  " Next theme"
 			 | (prev) 	  " Previous theme"
 			 | (select) 	  " Theme selector"
-			 | (patch) 	  " Patch a theme from different repository."
+			 | (patch) 	  ""
+			 | (import) 	  " Import a theme from different repository."
 ;
 
 
@@ -111,7 +112,7 @@ Hyde <FUNCTIONS>
 			  (install) 	  " Install and set sddm theme from HyDE clone Repo"
 			 | (list) 	  " List all local sddm themes"
 			 | (set) 	  " Set Sddm theme from the list"
-			 | (unset) 	  " Unset a any theme set by 'set' command"
+			 | (unset) 	  " Unset a theme set by 'set' command"
 			 | (test) 	  " Test a theme"
 			 | (info) 	  " Check sddm theme status"
 ;

@@ -6,10 +6,12 @@ if [ "$(whoami)" = "root" ] || [ "$(id -u)" -eq 0 ]; then
 	exit 1
 fi
 
-export CLI_PATH=$(dirname $(dirname ${0}))
-export PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
+CLI_PATH="$(dirname "$(dirname "${0}")")"
+PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
+export CLI_PATH 
+export PATH
 
-hyde_cli_version=$(cat ${CLI_PATH}/share/hyde-cli/.hyde-cli.ver | head -1)
+hyde_cli_version="$( head -1 "${CLI_PATH}/share/hyde-cli/.hyde-cli.ver")"
 
 . GLOBAL-hyde
 . DEVEL-hyde
@@ -20,15 +22,15 @@ if [ -z "$1" ]; then
 	box_me -s "Hyde-cli $hyde_cli_version"
 	print_prompt "$(main_help_content)"
 	exit 1
-elif ! (awk '{print $1}' <<<$(main_help_content) | grep -qw "${1}" ); then
-	echo '${*}'
+elif ! (awk '{print $1}' <<<"$(main_help_content)" | grep -qw "${1}" ); then
 	print_prompt -crit "[unknown]: " -y "$*" "\nUsage: Hyde [Function] [Arguments] [Parameter]\n"
 	print_prompt "$(main_help_content)"
 	exit 1
 fi
 
 # initiate_hyde_command &
-#! DO NOT USE ANY BASH FORMATTER HERE that NUKES some ';' symbols
+#! DO NOT USE ANY BASH FORMATTER HERE, that NUKES some ';' symbols
+#! That are used to specify as EOL for case;;esac;
 #! +----------------------------------------------------------------|
 #? Add functions below this section
 #? Be careful with spaces in your Function definitions
@@ -55,7 +57,8 @@ fi
 #! +----------------------------------------------------------------|
 
 man() { #? Show Manual
-	. "${meta_file}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+	# shellcheck disable=SC1090
+	. "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
 	manPage=$(
 		echo -e "Hyde-cli ${hyde_cli_version}"
 		[ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
@@ -87,7 +90,8 @@ version() { #? Hyde-cli version
 	[[ ${CLI_PATH} != *"/usr"* ]] && print_prompt -y "Locally installed by $USER"
 	barLine
 	{
-		. "${meta_file}" 2>/dev/null && box_me -s "Hyde version" -c 209
+		# shellcheck disable=SC1090
+		. "${META_FILE}" 2>/dev/null && box_me -s "Hyde version" -c 209
 		repo_info
 		barLine
 		inform_updates
@@ -97,7 +101,7 @@ version() { #? Hyde-cli version
 systeminfo() { #? System information
 	echo -e "**Hyde-cli version:**"
 	cat "${usrDir}/.hyde-cli.ver"
-	[[ ${CLI_PATH} != *"/usr"* ]] && echo "***Locally installed by $USER***"
+	[[ ${CLI_PATH} != *"/usr"* ]] && echo "** Locally installed by user: $USER **"
 
 	echo -e "\n**Hyde repository:**"
 	repo_info
@@ -172,20 +176,20 @@ check() { #? Information about Hyde and its components
 					while IFS= read -r line; do
 						pFile="$(eval echo "${line}")"
 						if [[ ${pFile} = $targetFile ]]; then
-							grep -q -e '--preserve' <<<$@ && barLine
+							grep -q -e '--preserve' <<<"${@}" && barLine
 							print_prompt -y "[preserved]" " ${targetFile}" -y " != " "$file"
-							grep -q -e '--preserve' <<<$@ && barLine && diff -y --color=always "${targetFile}" "$file" && barLine
+							grep -q -e '--preserve' <<<"${@}" && barLine && diff -y --color=always "${targetFile}" "$file" && barLine
 							continue 2
 						fi
 					done <<<"$preserve"
-					grep -q -e '--mismatch' <<<$@ && barLine
+					grep -q -e '--mismatch' <<<"${@}" && barLine
 					print_prompt -crit "[mismatch]" " ${targetFile}" -crit " != " "$file"
-					grep -q -e '--mismatch' <<<$@ && barLine && diff -y --color=always "${targetFile}" "$file" && barLine
+					grep -q -e '--mismatch' <<<"${@}" && barLine && diff -y --color=always "${targetFile}" "$file" && barLine
 				fi
 			done
 		} | {
-			grep -q -e '--less' <<<$@ && less ||
-				grep -q -e '--clip' <<<$@ && wl-copy ||
+			grep -q -e '--less' <<<"${@}" && less ||
+				grep -q -e '--clip' <<<"${@}" && wl-copy ||
 				cat -
 		}
 		barLine
@@ -440,14 +444,25 @@ theme() { #? Theme commands
 	select) #? Theme selector
 		"${scrDir}"/themeselect.sh
 		;;
-	patch) #? Patch a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
+	patch) #! Import a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
+		print_prompt -r "[warn] Command will be deprecated\n Use  'Hyde theme import' instead"
 		shift
 		navigate_clone
 		if [[ -z "${*}" ]]; then
 			Manage-Themes theme_patcher
 		else
-			#! ./themepatcher.sh "$@" #! This is from the repo,Decided to maintain a separate patcher
-			Patch-Theme "$@"
+			#! ./themepatcher.sh "${@}" #! This is from the repo,Decided to maintain a separate patcher
+			Patch-Theme "${@}"
+		fi
+		;;
+	import) #? Import a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
+		shift
+		navigate_clone
+		if [[ -z "${*}" ]]; then
+			Manage-Themes theme_patcher
+		else
+			#! ./themepatcher.sh "${@}" #! This is from the repo,Decided to maintain a separate patcher
+			Patch-Theme "${@}"
 		fi
 		;;
 	# remove) #? Removes a theme from the system !!  Unrecoverable
@@ -644,10 +659,10 @@ power() { #? Power Options
 
 	case $1 in
 	reset) #? Reset changes
-		Manage-Power "$@"
+		Manage-Power "${@}"
 		;;
 	save) #? [*] Save power by disabling features
-		Manage-Power "$@"
+		Manage-Power "${@}"
 		: <<USAGE
 [POWER_SAVE_USAGE]
     --animations    ? Disable animations
@@ -662,10 +677,10 @@ power() { #? Power Options
 USAGE
 		;;
 	toggle) #? Toggle ﯦ  Set/unset current changes'
-		Manage-Power "$@"
+		Manage-Power "${@}"
 		;;
 	unset) #? [*] Unset specific changes
-		Manage-Power "$@"
+		Manage-Power "${@}"
 		: <<USAGE
 [POWER_UNSET_USAGE]
     --animations    ? Default animations
@@ -677,7 +692,7 @@ USAGE
 USAGE
 		;;
 	game) #? Toggle game mode
-		Manage-Power "$@"
+		Manage-Power "${@}"
 		;;
 	*)
 		Parameters "${FUNCNAME[0]}"
@@ -788,7 +803,7 @@ USAGE
 	pastebin) #? [*] Pastebin manager \n ﯦ  pass [only once] '--ignore=initialclass' to disable autopaste
 		[[ $* == *"--ignore"* ]] && pasteIt "${*}"
 		shift
-		Launch-Pastebin "$@"
+		Launch-Pastebin "${@}"
 		: <<USAGE
 [SHOW_PASTEBIN_USAGE]
     --copy  ?	list and copy selected
@@ -829,7 +844,7 @@ run() { #? Executable utilities
 	;;
 	audio_idle) #? Inhibits idle when player status: 'Playing
 		enable_package systemd
-		local command="${0} "${FUNCNAME[0]}" ${@} --listen"
+		local command="${0} ${FUNCNAME[0]} ${*} --listen"
 		shift
 		[ "--listen" = "$1" ] && while playerctl status | grep -q "Playing"; do sleep 5; done && exit
 		playerctl status | grep -q "Playing" && systemd-inhibit --what=idle --mode=block ${command}
@@ -837,7 +852,7 @@ run() { #? Executable utilities
 		;;
 	screencap) #? [*] Screenshot and screenrecord tool
 		shift
-		Run-Screencap "$@"
+		Run-Screencap "${@}"
 		: <<USAGE
 [RUN_SCREENCAP_USAGE]
     --print-all     ?  Print all outputs
@@ -925,8 +940,8 @@ USAGE
 		flatpak --user override --filesystem=~/.themes
 		flatpak --user override --filesystem=~/.icons
 
-		flatpak --user override --env=GTK_THEME=${gtkTheme}
-		flatpak --user override --env=ICON_THEME=${gtkIcon}
+		flatpak --user override --env=GTK_THEME="${gtkTheme}"
+		flatpak --user override --env=ICON_THEME="${gtkIcon}"
 		;;
 	*)
 		Parameters "${FUNCNAME[0]}"
@@ -944,5 +959,5 @@ reload() { #? Just reload
 }
 
 #! +----------------------------------------------------------------|
-"$@" #? Call the appropriate Function based on the first argument.  |
+"${@}" #? Call the appropriate Function based on the first argument.  |
 #! +----------------------------------------------------------------|

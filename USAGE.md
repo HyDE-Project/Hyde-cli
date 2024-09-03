@@ -93,7 +93,9 @@ Usage: Hyde [Function] [options]
 
 			 [select]  ↪️  Theme selector
 
-			 [patch]  ↪️  Patch a theme from different repository.
+			 [patch]  ↪️ 
+
+			 [import]  ↪️  Import a theme from different repository.
   			                 💡Invoking without args will launch a menu from Hyde-gallery DB
  
 [wallpaper]                 ↪️ Wallpaper commands
@@ -146,7 +148,7 @@ Usage: Hyde [Function] [options]
 
 			 [set]  ↪️  Set Sddm theme from the list
 
-			 [unset]  ↪️  Unset a any theme set by 'set' command
+			 [unset]  ↪️  Unset a theme set by 'set' command
 
 			 [test]  ↪️  Test a theme
 
@@ -276,7 +278,7 @@ Usage: Hyde [Function] [options]
 			 [flatpak]  ↪️  Flatpak setup for HyDE
  
 [reload]                    ↪️ Just reload
-============================================================================================================================================================================
+====================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
@@ -299,7 +301,7 @@ Usage: Hyde-tool [Function] [options]
 			 [out]  ↪️  Zoom out
 
 			 [reset]  ↪️  Reset Zoom
-============================================================================================================================================================================
+====================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 ```

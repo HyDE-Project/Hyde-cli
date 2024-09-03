@@ -50,7 +50,7 @@ fi
 man() { #? Show Manual
 . FUNCTIONS-hyde
 . GLOBAL-hyde
-    . "${meta_file}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+    . "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
     manPage=$(
         echo -e "Hyde-cli ${hyde_cli_version}"
     [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
@@ -84,10 +84,10 @@ zoom() { #? Zoom in/out Hyprland
     ;;
     out) #? Zoom out
     hyprctl keyword cursor:no_hardware_cursors 1
-        hyprctl keyword cursor:zoom_factor $(\
+        hyprctl keyword cursor:zoom_factor "$(\
         hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '
-    if (.float - ($zoomFactor | tonumber)) < 1 then 1 else (.float - ($zoomFactor | tonumber)) end'\ 
-        )
+    if (.float - ($zoomFactor | tonumber)) < 1 then 1 else (.float - ($zoomFactor | tonumber)) end'\
+        )"
     ;;
     reset) #? Reset Zoom
     hyprctl keyword cursor:zoom_factor 1

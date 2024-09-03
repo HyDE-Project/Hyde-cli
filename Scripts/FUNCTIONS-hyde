@@ -2,7 +2,7 @@
 
 initiate_hyde_command() {
 
-    if [ -f "${meta_file}" ] && { [ ! -f "${cacheDir}/landing/update.check" ] || [[ $(find "${cacheDir}/landing/update.check" -mmin +4320) ]]; }; then
+    if [ -f "${META_FILE}" ] && { [ ! -f "${cacheDir}/landing/update.check" ] || [[ $(find "${cacheDir}/landing/update.check" -mmin +4320) ]]; }; then
         navigate_clone
         print_prompt -y "Checking for updates (This prompts every 3 Days or after you run Hyde update)"
         NOTIFY "Checking for updates (This prompts every 3 Days or after you run Hyde update)"
