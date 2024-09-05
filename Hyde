@@ -59,14 +59,15 @@ fi
 man() { #? Show Manual
 	# shellcheck disable=SC1090
 	. "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
-	if [ -f  "$HYDE_RUNTIME_DIR/Hyde_man" ] ; then 
-		[[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde_man" && return 
-		local man_ver="$(grep "Hyde-cli Version:"  "$HYDE_RUNTIME_DIR/Hyde_man" | cut -d ":" -f2)"
+	[ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] && [[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde-tool_man" 
+	if [ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] ; then 
+		local man_ver="$(grep "Hyde-cli Version:"  "$HYDE_RUNTIME_DIR/Hyde-tool_man" | cut -d ":" -f2)"
 		if grep -q "${man_ver}" <<< "${hyde_cli_version}"; then
-			cat "$HYDE_RUNTIME_DIR/Hyde_man"
+			cat "$HYDE_RUNTIME_DIR/Hyde-tool_man"
 			exit
 		else
 		echo "Updating man page..."
+		print_prompt -g "[update] " "updating man page to ${man_ver}..."
 		fi
 	fi
 	manPage=$(
@@ -92,7 +93,7 @@ man() { #? Show Manual
 		print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
 		print_prompt "\nCheck for dependencies by appending '--deps' flag. eg ' Hyde show pastebin --deps ' "
 		print_prompt "\nRegenerate this 'man' page by appending '--reload' flag. 'Hyde man --reload' " 
-	) | cat - 2>/dev/null | tee "$HYDE_RUNTIME_DIR/Hyde_man"
+	) | cat - 2>/dev/null | tee "$HYDE_RUNTIME_DIR/Hyde-tool_man"
 }
 
 version() { #? Hyde-cli version

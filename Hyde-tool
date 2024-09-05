@@ -51,6 +51,17 @@ man() { #? Show Manual
 . FUNCTIONS-hyde
 . GLOBAL-hyde
     . "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+    [ -f  "$HYDE_RUNTIME_DIR/Hyde_man" ] && [[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde_man" 
+	if [ -f  "$HYDE_RUNTIME_DIR/Hyde_man" ] ; then 
+		local man_ver="$(grep "Hyde-cli Version:"  "$HYDE_RUNTIME_DIR/Hyde_man" | cut -d ":" -f2)"
+		if grep -q "${man_ver}" <<< "${hyde_cli_version}"; then
+			cat "$HYDE_RUNTIME_DIR/Hyde_man"
+			exit
+		else
+		echo "Updating man page..."
+		print_prompt -g "[update] " "updating man page to ${man_ver}..."
+		fi
+    fi
     manPage=$(
         echo -e "Hyde-cli ${hyde_cli_version}"
     [ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
@@ -71,7 +82,8 @@ man() { #? Show Manual
             -e "s|\${ctlFile}|$ctlFile|g"
     barLine
     print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
-    ) | { less || more || cat - ;} 2> /dev/null 
+	print_prompt "\nRegenerate this 'man' page by appending '--reload' flag. 'Hyde-tool man --reload' " 
+    ) | cat - 2>/dev/null | tee "$HYDE_RUNTIME_DIR/Hyde_man"
 }
 
 zoom() { #? Zoom in/out Hyprland  
