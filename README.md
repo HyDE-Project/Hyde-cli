@@ -138,6 +138,12 @@ View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE.md)
       ```
       Hyde-install --link
       ```
+3) **Sync changes**
+  - If you want to get the latest changes from the `hyprdots/HyDE` repo and apply to your local install
+    ```
+    Hyde update
+    Hyde restore Config
+    ```
 
 > [!Important]
 > If you have previously installed HyDE without using the CLI, you can still use the CLI to manage your installation.
