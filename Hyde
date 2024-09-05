@@ -59,6 +59,16 @@ fi
 man() { #? Show Manual
 	# shellcheck disable=SC1090
 	. "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+	if [ -f  "$HYDE_RUNTIME_DIR/Hyde_man" ] ; then 
+		[[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde_man" && return 
+		local man_ver="$(grep "Hyde-cli Version:"  "$HYDE_RUNTIME_DIR/Hyde_man" | cut -d ":" -f2)"
+		if grep -q "${man_ver}" <<< "${hyde_cli_version}"; then
+			cat "$HYDE_RUNTIME_DIR/Hyde_man"
+			exit
+		else
+		echo "Updating man page..."
+		fi
+	fi
 	manPage=$(
 		echo -e "Hyde-cli ${hyde_cli_version}"
 		[ -d "${CloneDir}" ] && echo "Hyde Clone Directory: ${CloneDir}"
@@ -80,7 +90,9 @@ man() { #? Show Manual
 				-e "s|\${ctlFile}|$ctlFile|g"
 		barLine
 		print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
-	) | cat - 2>/dev/null
+		print_prompt "\nCheck for dependencies by appending '--deps' flag. eg ' Hyde show pastebin --deps ' "
+		print_prompt "\nRegenerate this 'man' page by appending '--reload' flag. 'Hyde man --reload' " 
+	) | cat - 2>/dev/null | tee "$HYDE_RUNTIME_DIR/Hyde_man"
 }
 
 version() { #? Hyde-cli version
@@ -775,6 +787,7 @@ USAGE
     --persist	?	Saves bookmark file list to ~/.cache.So no re-caching after reboot
     --rasi	<PATH>?	set rofi configuration
     --rebuild   ?   force rebuild cached bookmark paths
+	--deps  ? check and resolve dependencies
 [END]
 USAGE
 		;;
@@ -785,6 +798,7 @@ USAGE
 [SHOW_CALC_USAGE]
     --rasi	<PATH>? set rofi configuration
     --reset ?	Reset cache
+	--deps  ? check and resolve dependencies
 [END]
 USAGE
 	;;
@@ -795,11 +809,17 @@ USAGE
 [SHOW_EMOJI_USAGE]
     --style   ?   use style [ 1 | 2 ]
     --rasi	<PATH>?	set rofi configuration
+	--deps  ? check and resolve dependencies	
 [END]
 USAGE
 		;;
-	glyph) #? Glyph selector
-		Launch-Glyph
+	glyph) #? [*] Glyph selector
+		Launch-Glyph "${@}"
+		: <<USAGE
+[SHOW_GLYPH_USAGE]
+    --deps  ? check and resolve dependencies
+[END]
+USAGE
 		;;
 	pastebin) #? [*] Pastebin manager \n ﯦ  pass [only once] '--ignore=initialclass' to disable autopaste
 		[[ $* == *"--ignore"* ]] && pasteIt "${*}"
@@ -807,10 +827,11 @@ USAGE
 		Launch-Pastebin "${@}"
 		: <<USAGE
 [SHOW_PASTEBIN_USAGE]
-    --copy  ?	list and copy selected
+    --copy  ? list and copy selected
     --delete  ?	list and delete selected
     --wipe  ?	wipe database
     --option  ?	options
+    --deps  ? check and resolve dependencies
 [END]
 USAGE
 		;;

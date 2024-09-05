@@ -3,7 +3,9 @@
 pkg_installed() {
     local PkgIn=$1
 
-    if pacman -Qi $PkgIn &>/dev/null; then
+    if command -v $PkgIn &>/dev/null; then
+        return 0
+    elif pacman -Qi $PkgIn &>/dev/null; then
         return 0
     else
         return 1

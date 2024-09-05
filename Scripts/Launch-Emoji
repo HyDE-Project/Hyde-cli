@@ -2,7 +2,7 @@
 
 rofi_pos
 
-enable_package wtype noto-fonts-emoji
+DEPENDENCIES+=(wtype noto-fonts-emoji)
 
 save_recent() {
     #? Prepend the selected emoji to the top of the recentData file
@@ -29,6 +29,10 @@ while (($# > 0)); do
         [[ -z ${2} ]] && print_prompt +r "[error] " +y "--rasi requires an file.rasi config file" && exit 1
         useRofile=${2}
         shift
+        ;;
+    --deps)
+        resolve_deps
+        exit 0
         ;;
     -*)
         cat <<HELP

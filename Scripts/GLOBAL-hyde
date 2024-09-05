@@ -295,7 +295,13 @@ CHECK() { #! Deprecated
 }
 
 enable_package() {
-    local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
+        local Pkg_Dep=()
+    for PkgIn in "$@"; do
+        if ! pkg_installed "$PkgIn"; then
+            Pkg_Dep+=("$PkgIn")
+        fi
+    done
+
     if [[ -n "${Pkg_Dep}" ]]; then
         echo -e "$0 Dependencies:\n$Pkg_Dep"
         get_aurhlpr

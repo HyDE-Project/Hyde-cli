@@ -158,7 +158,7 @@ WARN
 
 rofi_pos() {
     pkill -x rofi && exit
-    enable_package rofi jq
+    export DEPENDENCIES+=(rofi jq)
     source_user
     roFile="${confDir}/rofi/clipboard.rasi"
 
@@ -296,6 +296,10 @@ main_help_content() {
             -e "s|\${ctlFile}|$ctlFile|g"
 }
 
+resolve_deps() {
+    echo Dependencies: "${DEPENDENCIES[@]}"
+    enable_package "${DEPENDENCIES[@]}" && print_prompt -g "[ok] " "All dependencies are installed"
+}
 
 airplane-mode() {
 # Check if any wireless device is blocked

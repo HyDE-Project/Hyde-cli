@@ -4,7 +4,8 @@ pkill -x rofi && exit
 
 rofi_pos
 
-enable_package wtype
+DEPENDENCIES+=(wtype)
+[[ $* == *"--deps"* ]] && resolve_deps && exit 0   
 # trap 'killall wtype' EXIT
 
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`

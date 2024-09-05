@@ -1,9 +1,7 @@
 #!/bin/env bash
 
 rofi_pos
-
-enable_package wtype
-
+DEPENDENCIES+=(wtype)
 delMode=false
 
 #? MultiSelect
@@ -98,6 +96,9 @@ o | -o | --option)
 :w:i:p:e:\t♻️ Wipe Pastebin
 :c:o:p:y:\t🗒️ Copy Pastebin" | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "entry { placeholder: \" ⚙️  Pastebin Options\";} ${pos} ${r_override}" -theme-str "${fnt_override}" -config $roFile | pastebin_process
     # :b:a:r:\t$(seq -s= 100 | tr -dc '=' )
+    ;;
+--deps)
+    resolve_deps
     ;;
 -*)
     cat <<USAGE

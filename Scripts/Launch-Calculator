@@ -1,6 +1,6 @@
 #!/bin/bash
 
-enable_package libqalculate
+DEPENDENCIES+=(libqalculate)
 rofi_pos
 r_width="width: ${calc_width:-40em};"
 r_height="height: ${calc_height:-23em};"
@@ -40,7 +40,7 @@ main() {
         add_to_history "${history_file}" "${equation}"
         unset result
         result="$(result_from_equation "${equation}")"
-        NOTIFY -a "Result: " "${result}" & #-i ${usrDir}/show-calculator.svg 
+        NOTIFY -a "Result: " "${result}" & #-i ${usrDir}/show-calculator.svg
         wl-copy "${result}"
     done
 }
@@ -67,6 +67,10 @@ while (($# > 0)); do
         customRoFile=${2}
         shift
         ;;
+    --deps)
+        resolve_deps
+        exit 0
+        ;;
     *)
         echo "Unknown option: $1"
         usage
@@ -77,7 +81,5 @@ done
 
 # Always update currency at background
 nohup qalc -e >/dev/null 2>&1 &
-
-
 
 main "$@"
