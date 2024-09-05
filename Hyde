@@ -468,7 +468,7 @@ theme() { #? Theme commands
 			Patch-Theme "${@}"
 		fi
 		;;
-	import) #? Import a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
+	import) #? [*] Import a theme from different repository.\nﯦ Invoking without args will launch a menu from Hyde-gallery DB
 		shift
 		navigate_clone
 		if [[ -z "${*}" ]]; then
@@ -478,6 +478,11 @@ theme() { #? Theme commands
 			export SINGLE_THEME_ONLY=true
 			Patch-Theme "${@}"
 		fi
+		: <<USAGE
+[THEME_IMPORT_USAGE]
+	<PATH>
+[END]
+USAGE
 		;;
 	# remove) #? Removes a theme from the system !!  Unrecoverable
 	# :
@@ -490,12 +495,17 @@ theme() { #? Theme commands
 
 wallpaper() { #? Wallpaper commands
 	case $1 in
-	set) #? Set /Path/to/Wallpaper
+	set) #? [*] Set /Path/to/Wallpaper
 		print_prompt +r "[deprecated] " +y "add 'wallAddCustomPath=( \"path/to/wallpapers\" \"...\" )' in '${hydeConfDir}/hyde.conf' instead"
 		shift
 		# cd - || exit
 		if [[ -z "${*}" ]] ; then echo "Missing /Path/to/Wallpaper: ${*}" ; exit 1 ; fi
 		"${scrDir}"/swwwallpaper.sh -s "${1}"
+		: <<USAGE
+[WALLPAPER_SET_USAGE]
+	<PATH>
+[END]
+USAGE
 		;;
 	next) #? Next wallppaer
 		"${scrDir}"/swwwallpaper.sh -n

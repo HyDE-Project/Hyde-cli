@@ -95,12 +95,16 @@ Usage: Hyde [Function] [options]
 
 			 [patch]  ↪️ 
 
-			 [import]  ↪️  Import a theme from different repository.
+			 [import]  ↪️  [*] Import a theme from different repository.
   			                 💡Invoking without args will launch a menu from Hyde-gallery DB
+
+						[	<PATH>] ↪️ 
  
 [wallpaper]                 ↪️ Wallpaper commands
 
-			 [set]  ↪️  Set /Path/to/Wallpaper
+			 [set]  ↪️  [*] Set /Path/to/Wallpaper
+
+						[	<PATH>] ↪️ 
 
 			 [next]  ↪️  Next wallppaer
 
@@ -207,11 +211,13 @@ Usage: Hyde [Function] [options]
 						[--persist	] ↪️ 	Saves bookmark file list to ~/.cache.So no re-caching after reboot
 						[--rasi	<PATH>] ↪️ 	set rofi configuration
 						[--rebuild] ↪️    force rebuild cached bookmark paths
+						[	--deps] ↪️  check and resolve dependencies
 
 			 [calc]  ↪️  [*] Calculator (libqalculate)
 
 						[--rasi	<PATH>] ↪️  set rofi configuration
 						[--reset] ↪️ 	Reset cache
+						[	--deps] ↪️  check and resolve dependencies
 
 			 [emoji]  ↪️  [*] Emoji selector
   			                 💡Add 'emoji_style=2'
@@ -220,16 +226,20 @@ Usage: Hyde [Function] [options]
 
 						[--style] ↪️    use style [ 1 | 2 ]
 						[--rasi	<PATH>] ↪️ 	set rofi configuration
+						[	--deps] ↪️  check and resolve dependencies	
 
-			 [glyph]  ↪️  Glyph selector
+			 [glyph]  ↪️  [*] Glyph selector
+
+						[--deps] ↪️  check and resolve dependencies
 
 			 [pastebin]  ↪️  [*] Pastebin manager 
   			                  💡 pass [only once] '--ignore=initialclass' to disable autopaste
 
-						[--copy] ↪️ 	list and copy selected
+						[--copy] ↪️  list and copy selected
 						[--delete] ↪️ 	list and delete selected
 						[--wipe] ↪️ 	wipe database
 						[--option] ↪️ 	options
+						[--deps] ↪️  check and resolve dependencies
 
 			 [screencap]  ↪️  Use rofi to select screenshot options 
   			                  !!  kills another rofi session
@@ -282,6 +292,10 @@ Usage: Hyde [Function] [options]
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
+Check for dependencies by appending '--deps' flag. eg ' Hyde show pastebin --deps ' 
+
+Regenerate this 'man' page by appending '--reload' flag. 'Hyde man --reload' 
+
 
 
 
@@ -304,4 +318,6 @@ Usage: Hyde-tool [Function] [options]
 ====================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
+
+Regenerate this 'man' page by appending '--reload' flag. 'Hyde-tool man --reload' 
 ```

@@ -80,12 +80,12 @@ Hyde <FUNCTIONS>
 			 | (prev) 	  " Previous theme"
 			 | (select) 	  " Theme selector"
 			 | (patch) 	  ""
-			 | (import) 	  " Import a theme from different repository."
+			 | (import <THEME_IMPORT_USAGE> ) 	  " [*] Import a theme from different repository."
 ;
 
 
 <WALLPAPER_FUNCTION> ::=
-			  (set) 	  " Set /Path/to/Wallpaper"
+			  (set <WALLPAPER_SET_USAGE> ) 	  " [*] Set /Path/to/Wallpaper"
 			 | (next) 	  " Next wallppaer"
 			 | (prev) 	  " Previous wallpaper"
 			 | (select) 	  " Wallpaper selector"
@@ -142,7 +142,7 @@ Hyde <FUNCTIONS>
 			 | (bookmarks <SHOW_BOOKMARKS_USAGE> ) 	  " [*] Bookmark selector"
 			 | (calc <SHOW_CALC_USAGE> ) 	  " [*] Calculator (libqalculate)"
 			 | (emoji <SHOW_EMOJI_USAGE> ) 	  " [*] Emoji selector"
-			 | (glyph) 	  " Glyph selector"
+			 | (glyph <SHOW_GLYPH_USAGE> ) 	  " [*] Glyph selector"
 			 | (pastebin <SHOW_PASTEBIN_USAGE> ) 	  " [*] Pastebin manager "
 			 | (screencap) 	  " Use rofi to select screenshot options "
 			 | (search <SHOW_SEARCH_USAGE> ) 	  " [*] Web Search"
@@ -168,6 +168,14 @@ Hyde <FUNCTIONS>
  (--mismatch  ) "   Diff mismatched dotfiles"
 | (--preserve  ) "   Diff preserved dotfiles"
 | (--less  ) "   Pipes STDOUT to less"
+;
+
+<THEME_IMPORT_USAGE> ::=
+ (<PATH>) ""
+;
+
+<WALLPAPER_SET_USAGE> ::=
+ (<PATH>) ""
 ;
 
 <WALLPAPER_VARIETY_USAGE> ::=
@@ -217,23 +225,31 @@ Hyde <FUNCTIONS>
 | (--persist	) "	Saves bookmark file list to ~/.cache.So no re-caching after reboot"
 | (--rasi	<PATH>) "	set rofi configuration"
 | (--rebuild   ) "   force rebuild cached bookmark paths"
+| (--deps  ) " check and resolve dependencies"
 ;
 
 <SHOW_CALC_USAGE> ::=
  (--rasi	<PATH>) " set rofi configuration"
 | (--reset ) "	Reset cache"
+| (--deps  ) " check and resolve dependencies"
 ;
 
 <SHOW_EMOJI_USAGE> ::=
  (--style   ) "   use style [ 1 | 2 ]"
 | (--rasi	<PATH>) "	set rofi configuration"
+| (--deps  ) " check and resolve dependencies"
+;
+
+<SHOW_GLYPH_USAGE> ::=
+ (--deps  ) " check and resolve dependencies"
 ;
 
 <SHOW_PASTEBIN_USAGE> ::=
- (--copy  ) "	list and copy selected"
+ (--copy  ) " list and copy selected"
 | (--delete  ) "	list and delete selected"
 | (--wipe  ) "	wipe database"
 | (--option  ) "	options"
+| (--deps  ) " check and resolve dependencies"
 ;
 
 <SHOW_SEARCH_USAGE> ::=
