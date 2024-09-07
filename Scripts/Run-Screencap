@@ -5,8 +5,6 @@
 source_user
 screencap_annotate="${annotation_tool:-swappy}"
 
-enable_package grimblast $screencap_annotate
-
 if [ -z "${XDG_PICTURES_DIR}" ]; then
     XDG_PICTURES_DIR="${HOME}/Pictures"
 fi
@@ -16,10 +14,11 @@ if [ -z "${XDG_VIDEOS_DIR}" ]; then
 fi
 
 STOP() {
-    pkill -SIGINT "${screen_recorder}"
+    pgrep wl-screenrec && pkill -SIGINT wl-screenrec
+    pgrep wf-recorder && pkill -SIGINT wf-recorder
     pkill slurp
     pkill hyprpicker
-    rm -fr "${HYDE_RUNTIME_DIR}/*screenshot.png"
+    rm -f "${temp_screenshot}"
 }
 
 #variables
@@ -122,7 +121,7 @@ print_error() {
 
     cat <<HELP
 Screenrecord: '${screen_recorder}'
-Screenshot: 'grimblast'
+Screenshot: 'grimblast_hyde'
 Annotation tool: '$annotation_tool' (set annotation_tool variable in '${hydeConfDir}/hyde.conf')
 
 [Usage] Hyde run screencap [option]
@@ -147,23 +146,23 @@ clearNotify() {
 
 # first_setup "${*}"
 
-if [ "${OPTION}" = "--stop" ]; then
-    STOP
-fi
+# if [ "${OPTION}" = "--stop" ]; then
+    # STOP
+# fi
 
 case ${OPTION} in
 -pa | --print-all) #? 󰄀 Print all screen
-    grimblast copysave screen "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
+    grimblast_hyde copysave screen "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -f | --freeze) #? 󰄀 Frozen screen, drag to manually snip an area
-    grimblast --freeze copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}" ;;
+    grimblast_hyde --freeze copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}" ;;
 -pm | --print-monitor) #? 󰄀 Print focused monitor
-    grimblast copysave output "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
+    grimblast_hyde copysave output "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -ps | --print-snip) #? 󰄀 Drag to manually snip an area
-    grimblast copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
+    grimblast_hyde copysave area "${temp_screenshot}" && $screencap_annotate -f "${temp_screenshot}"
     clearNotify
     ;;
 -sc | --scan) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
@@ -202,12 +201,15 @@ case ${OPTION} in
     clearNotify
     ;;
 --stop) #?  Stop every instance of Screencap
-    :
+    STOP && exit 0  
     ;;
 --reset) #?  Reinitialize screencap
     rm -f "${cacheFile}"
     first_setup "${*}"
     ;;
+--deps) #?  Check and resolve dependencies
+    enable_package "${DEPENDENCIES[@]}" && print_prompt -g "[ok] " "All dependencies are installed"
+;;
 GUI) : ;;
 *) # invalid option
     . "${cacheFile}"

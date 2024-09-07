@@ -896,7 +896,8 @@ run() { #? Executable utilities
     --print-monitor ?  Print focused monitor
     --scan          ?  Use 'tesseract' to scan image then add to clipboard
     --stop          ?  Stop every instance of Screencap
-    --reset         ?  Reinitialize screencap
+    --reset         ?  Reinitialize 
+    --deps          ?  Chek and resolve dependencies
 [END]
 USAGE
 		;;

@@ -110,9 +110,9 @@ wait
 case ${OPT} in
 "${cap}"*)
     if ! ${snip}; then
-        grimblast copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+        grimblast_hyde copysave screen "${temp_screenshot}" && swappy -f "${temp_screenshot}"
     elif [[ -z ${GEOM} ]]; then
-        grimblast copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
+        grimblast_hyde copysave output "${temp_screenshot}" && swappy -f "${temp_screenshot}"
     else
         swappy -f "${temp_screenshot}"
     fi
