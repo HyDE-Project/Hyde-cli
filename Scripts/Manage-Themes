@@ -128,7 +128,8 @@ preview_theme() {
 }
 
 theme_menu() {
-    patchList=$({ echo [Confirm] ; sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}" ;} | Fzf-Menu "${FUNCNAME[0]}")
+#!    patchList=$({ echo [Confirm] ; sed -n 's/.*\[\(.*\)\].*/\1/p' "${file_DB}" ;} | Fzf-Menu "${FUNCNAME[0]}")
+    patchList=$({ echo [Confirm] ; jq -r '.[].THEME' "${hyde_gallery_dir}/hyde-themes.json" ;} | Fzf-Menu "${FUNCNAME[0]}")
     patchList=$(sed '/\[Confirm\]/d' <<< "${patchList}")
     patchList=${patchList:-${defaultTheme}}
     [ -z "${patchList}" ] && exit 0
