@@ -108,7 +108,7 @@ version() { #? Hyde-cli version
 		repo_info
 		barLine
 		inform_updates
-	} || print_prompt -r "Looks like you did not run 'Hyde-install'! "
+	} 
 }
 
 systeminfo() { #? System information
