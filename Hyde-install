@@ -3,6 +3,7 @@
 export CLI_PATH=$(dirname $(dirname ${0}))
 export libDir=${CLI_PATH}/lib/hyde-cli
 export PATH="$libDir:$PATH"
+fresh=false
 
 export is_fresh_install=true
 
