@@ -123,11 +123,11 @@ else
     Git_Path=${Git_Repo#*://*/}
     Git_Owner=${Git_Path%/*}
     branch_dir=${branch//\//_}
-    Theme_Dir="${cacheDir}/themepatcher/${branch_dir}-${Git_Owner}"
+    Theme_Dir="${cacheDir}/themepatcher/${Git_Owner}.${branch_dir}.${Fav_Theme}"
 
     if [ -d "$Theme_Dir" ]; then
-        print_prompt "Directory $Theme_Dir already exists. Using existing directory."
-        if cd "$Theme_Dir"; then
+        print_prompt "Directory ${Theme_Dir} already exists. Using existing directory."
+        if cd "${Theme_Dir}"; then
             git fetch --all &>/dev/null
             git reset --hard @{upstream} &>/dev/null
             cd - &>/dev/null
@@ -135,8 +135,8 @@ else
             print_prompt -y "Could not navigate to $Theme_Dir. Skipping git pull."
         fi
     else
-        print_prompt "Directory $Theme_Dir does not exist. Cloning repository into new directory."
-        git clone -b "$branch" --depth 1 "$Git_Repo" "$Theme_Dir" &>/dev/null
+        print_prompt "Directory ${Theme_Dir} does not exist. Cloning repository into new directory."
+        git clone -b "${branch}" --depth 1 "${Git_Repo}" "${Theme_Dir}" &>/dev/null
         if [ $? -ne 0 ]; then
             print_prompt "Git clone failed"
             exit 1
