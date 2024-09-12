@@ -754,7 +754,7 @@ HELP
 		}
 	   codet=${*:-wallbash}
 	   [[ "$*" == "-"* ]] && { help ; exit 1; }
-		readarray -t codeConf < <(find "${confDir}" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" | sort)
+		readarray -t codeConf < <(find "${confDir}" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor" | sort)
 		print_prompt -y "Setting '${codet}' as code theme..." 
 		for i in "${!codeConf[@]}" ; do
 		    [ -f "${codeConf[i]}/User/settings.json" ] || continue

@@ -81,7 +81,7 @@ SelectOption() { #! Can be improved soon using other package.:-  Used fzf.
 
 ConfigCtl() {
     FILE="$1"
-    EDITOR="${EDITOR:-code}" #* Use VS Code as the default editor
+    EDITOR="${EDITOR:-xdg-open}" #* Use VS Code as the default editor
     echo -e "[Editor]: $EDITOR (\"export EDITOR=pref_editor\") \n[Modifying]: $FILE \nPress Any Key if done editing"
     #kitty -o allow_remote_control=yes -o listen_on=unix:/${HYDE_RUNTIME_DIR}/mykitty $(which $EDITOR) "$FILE" > /dev/null 2>&1 &
     kitty "$(which $EDITOR)" "$FILE" >/dev/null 2>&1 &
