@@ -15,24 +15,19 @@ check_user_sddm_theme_writable() {
 
         if [ ! -f "${user_sddm_theme}" ]; then
             print_prompt -y "File does not exist. Attempting to create..."
-            touch "${user_sddm_theme}" || {
+            touch "${user_sddm_theme}" 2>/dev/null || SUPER touch "${user_sddm_theme}" || {
                 print_prompt -r "Failed to create ${user_sddm_theme}"
                 return 1
             }
-        else
-            # If file exists but is not writable, change permissions to make it writable by all users
-            SUPER chmod 666 "${user_sddm_theme}" || {
-                print_prompt -r "Failed to change permissions of ${user_sddm_theme}"
-                return 1
-            }
         fi
-
-        # Ensure the file has the correct permissions
-        chmod 666 "${user_sddm_theme}" || {
-            print_prompt -r "Failed to set correct permissions for ${user_sddm_theme}"
+        
+        # Make the file writable by all users
+        SUPER chmod 666 "${user_sddm_theme}" || {
+            print_prompt -r "Failed to change permissions of ${user_sddm_theme}"
             return 1
         }
-
+        
+        print_prompt -y "Made ${user_sddm_theme} writable by all users"
         print_prompt -g "Successfully made ${user_sddm_theme} writable by user"
     fi
     return 0
@@ -83,7 +78,7 @@ sddm_set_selected() {
 Current=${set_theme}
 THEME
 
-    bottom_conf=$(find /etc/sddm.conf.d/ -maxdepth 1 | tail -n 1)
+    bottom_conf=$(find /etc/sddm.conf.d/ -maxdepth 1 | sort | tail -n 1)
     [ "${bottom_conf}" != "${user_sddm_theme}" ] && print_prompt -y "[warning] " "${bottom_conf} is overriding the config\nSddm theme might not be setted"
 
 }
@@ -132,7 +127,11 @@ sddm_set_theme() {
     if [ ! -w "${sddm_conf_dir}" ]; then
         NOTIFY -a " HyDE-cli " "Run 'sudo chmod -R a+wr ${sddm_conf_dir}' to set the permissions one time" -t 10000
         print_prompt -c "[note] " "Run 'sudo chmod -R a+wr ${sddm_conf_dir}'  to set the permissions one time"
-        pkexec bash -c ". ${CLI_PATH}/lib/hyde-cli/Package-Manager ;. ${CLI_PATH}/lib/hyde-cli/Manage-Sddm;sddm_set_selected ${selected_theme}" || exit 1
+        pkexec bash -c "
+. ${CLI_PATH}/lib/hyde-cli/Package-Manager ;\
+. ${CLI_PATH}/lib/hyde-cli/lib-hyde ;\
+. ${CLI_PATH}/lib/hyde-cli/Manage-Sddm;\
+        sddm_set_selected ${selected_theme}" || exit 1
     else
         :
         sddm_set_selected "${selected_theme}"
@@ -165,13 +164,19 @@ sddm_unset() {
     check_user_sddm_theme_writable
 
     if [ -f "${user_sddm_theme}" ]; then
-        # If the user's SDDM theme file exists, remove it
-        print_prompt -y "[info] " "Removing user's SDDM theme configuration"
-        rm "${user_sddm_theme}"
-        print_prompt -g "[success] " "User's SDDM theme configuration has been removed"
+        # Check if the file is empty or has only whitespace
+        if [ -s "${user_sddm_theme}" ] && [ "$(tr -d '[:space:]' < "${user_sddm_theme}" | wc -c)" -ne 0 ]; then
+            # File exists and is not empty
+            line_count=$(wc -l < "${user_sddm_theme}")
+            : > "${user_sddm_theme}"
+            print_prompt -g "[success] " "User's SDDM theme configuration has been cleared (${line_count} lines removed)"
+        else
+            # File exists but is already empty
+            print_prompt -y "[info] " "User's SDDM theme configuration is already empty"
+        fi
     else
-        # If the user's SDDM theme file doesn't exist, inform the user
-        print_prompt -y "[warn] " "User's HYDE SDDM theme is not set"
+        # File doesn't exist
+        print_prompt -y "[warn] " "User's HYDE SDDM theme file does not exist"
         print_prompt -c "[note] " "No action needed"
     fi
 }

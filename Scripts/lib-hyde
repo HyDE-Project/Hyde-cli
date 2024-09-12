@@ -1,0 +1,397 @@
+#! /bin/env bash
+
+SUPER() {
+    local command="$*"
+    print_prompt -y "[ROOT] " "${command}"
+    if command -v doas >/dev/null 2>&1 && [ -f /etc/doas.conf ]; then
+        doas sh -c "$command"
+    else
+        sudo sh -c "$command"
+    fi
+}
+
+export -f SUPER
+
+barLine() {
+    printf '=%.0s' $(seq 3 "$(tput cols)")
+    echo
+}
+
+print_prompt() {
+    while (("$#")); do
+        case "$1" in
+        -r|+r)
+            echo -ne "\e[31m$2\e[0m"
+            shift 2
+            ;; # Red
+        -g|+g)
+            echo -ne "\e[32m$2\e[0m"
+            shift 2
+            ;; # Green
+        -y|+y)
+            echo -ne "\e[33m$2\e[0m"
+            shift 2
+            ;; # Yellow
+        -b|+b)
+            echo -ne "\e[34m$2\e[0m"
+            shift 2
+            ;; # Blue
+        -m|+m)
+            echo -ne "\e[35m$2\e[0m"
+            shift 2
+            ;; # Magenta
+        -c|+c)
+            echo -ne "\e[36m$2\e[0m"
+            shift 2
+            ;; # Cyan
+        -wt|+w)
+            echo -ne "\e[37m$2\e[0m"
+            shift 2
+            ;; # White
+        -n|+n)
+            echo -ne "\e[96m$2\e[0m"
+            shift 2
+            ;; # Neon
+        -crit)
+            echo -ne "\e[38;5;160m$2\e[0m"
+            shift 2
+            ;; # Neon            
+        +)
+            echo -ne "\e[38;5;$2m$3\e[0m"
+            shift 3
+            ;;
+        *)
+            echo -ne "$1"
+            shift
+            ;;
+        esac
+    done
+    echo ""
+}
+
+NOTIFY () {
+print_prompt -g "[notify] " "${*}"
+nohup notify-send "${*}" -e >/dev/null 2>&1 &
+}
+
+parse_section() {
+    local section="$1"
+    local file="$2"
+
+    # Use awk to print lines between the specified section and the next section
+    awk -v section="$section" '
+        BEGIN { in_section = 0 }
+        /^\[/ { in_section = ($0 == "[" section "]") }
+        in_section && !/^\[/ && !/^#/ && !/^$/ { print}
+    ' "$file"
+}
+
+box_me() {
+    local sender="Hyde-cli: "
+    local color=3
+
+    while (("$#")); do
+        case "$1" in
+        -s)
+            sender="$2"
+            shift 2
+            ;;
+        -c)
+            color="$2"
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+        esac
+    done
+
+    local s="${sender}$*"
+    tput setaf ${color}
+    echo -e " ═${s//?/═}"
+    echo -e "║$s ║"
+    echo -e " ═${s//?/═}"
+    tput sgr0
+}
+
+ask_confirm() {
+    local key=$1
+    if [[ "$key" == "Yy" ]]; then
+        while true; do
+            read -n 1 -s -r -p "$(print_prompt -n "[y] " -wt "yes (default) " -m "[n] " -wt "no:\n")" key
+            [[ -z "$key" ]] && key=y
+            if [[ "$key" == "y" ]] || [[ "$key" == "Y" ]]; then
+                return 0
+            elif [[ "$key" == "n" ]] || [[ "$key" == "N" ]]; then
+                return 1
+            else
+                echo "[Y]es or [N]o?"
+            fi
+        done
+    else
+        while true; do
+            if [ -z "$key" ]; then
+                read -n 1 -s -r -p "$(print_prompt -y "[ENTER] " -wt "continue " -m "[ANY] " -wt " Exit:\n")" key
+                [[ -z "$key" ]] && break || exit 0
+            else
+                read -p "Please type '$(print_prompt -m "$key")' to continue: " answer
+                if [[ "$answer" == "$key" ]]; then
+                    break
+                else
+                    print_prompt -r "Invalid input, please try again."
+                fi
+            fi
+        done
+    fi
+}
+
+handle_error() {
+    print_prompt -r "Looks like I forgot your clone directory!"
+    if [ -d "${cacheDir}/Hyde-Clone" ]; then
+        print_prompt -y "Using the Clone Directory: " -wt "${cacheDir}/Hyde-Clone"
+        Hyde-install -d "${cacheDir}/Hyde-Clone" -l && exit 0
+    fi
+
+    cat <<HANDLE_ERROR
+$(print_prompt -r "${*}")
+=======================================================================================
+Please run:
+           'Hyde-install'                                 Install Hyde (default)
+For advanced usage see options below
+        -l|--link                                                Flag to transfer the link to a Clone Directory
+                                                                    ﯦ  This is useful if you already have a Hyde
+                                                                    Default: 'false'
+        -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
+                                                                Default: '${cacheDir}/Hyde'
+        -g|--git https://gitclone/link/                          Upstream repository link to be cloned
+                                                                Default: 'https://github.com/prasanthrangan/hyprdots'
+[ TIP] Looks like you already have a clone directory somewhere
+      To reuse that clone directory run 'Hyde-install -d ${HOME}/custom/Hyde/directory --link'
+      Then 'Hyde-cli' will remember this directory
+
+HANDLE_ERROR
+    exit 1
+}
+
+check_Ping() {
+    if ! ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+        box_me "Error: No internet connection."
+        exit 1
+    fi
+}
+
+set_branch() {
+    check_Ping
+    print_prompt -wt "Fetching upstream"
+    if ! git config --get-regexp 'remote.origin.fetch' | grep -q 'refs/heads/\*:refs/remotes/origin/\*'; then
+        git remote set-branches origin '*'
+    fi
+    git fetch --all
+    git_branch=$(git branch -a | fzf --prompt='Choose a branch (default main): ')
+    [[ -z ${git_branch} ]] && print_prompt -r "Operation cancelled" && exit 0
+    if [[ $git_branch == *"*"* ]]; then
+        export current_branch="${git_branch//\* /}"
+        print_prompt -y "Already in branch: ${current_branch}"
+        return 1
+    else
+        # Extract the branch name without the remote prefix and trim leading whitespace
+        export current_branch=$(echo "${git_branch}" | sed 's/.*\///' | sed 's/^[[:space:]]*//')
+        current_branch=${current_branch:-main}
+        # Switch to the selected branch
+        git checkout "${current_branch}"
+        echo "On branch: ${current_branch}"
+    fi
+}
+
+hyde_header() {
+cat << HYDER
+           ░░░░
+         ░▒▒▒▒░░░
+       ░▒▒▒▒▒▒▒░░░
+     ░░▒▒▒▒▒▒░░░░▓▓          ____________
+    ░░▒▒▒▒▒░░░░░▓▓        //____________/
+   ░░░▒▒▒░░░░░░▓▓     _   _ _     _ ______
+   ░░░▒▒▒░░░░░▓▓▓▓▓▓ | | | | |   | |  ___/
+    ░░░▒▒░░░░▓▓   ▓▓ | |_| | |__/ /| |_____
+     ░░░▒▒░░▓▓   ▓▓   \__  |_____/ |______/
+       ░░▒▒▓▓   ▓▓  //____/                       
+                            $hyde_version
+                                 
+HYDER
+}
+
+repo_info() {
+    # [[ $* != *"--local"* ]] &&
+    navigate_clone
+    echo -e "CloneDirectory: ${CloneDir}"
+    echo -e "Git URL: ${git_url}"
+    echo -e "Git Branch: ${current_branch}"
+    echo -e "Hyde version: ${hyde_version}"
+    echo -e "Modified: ${modify_date}"
+    echo -e "Commit message: ${commit_message}"
+}
+
+# shellcheck disable=SC2120
+navigate_clone() {
+    if [ ! -f "${META_FILE}" ]; then
+        handle_error "Sourcing ${META_FILE} failed.\nIt's possible you didn't install this with the hyde-cli.\n Don't worry, you can still manage Hyde configuration below."
+    fi
+    source "${META_FILE}"
+    export CloneDir
+    export ScriptDir="${CloneDir}/Scripts"
+    cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+    current_branch=$(git branch --show-current)
+    git_url=$(git remote get-url origin)
+    # check changes on the restore lst
+}
+
+set_metadata() {
+    print_prompt -y "Setting metadata"
+    CloneDir=${1:-${CloneDir}}
+    export CloneDir
+    export ScriptDir="${CloneDir}/Scripts"
+    cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+    current_branch=$(git branch --show-current)
+    git_url=$(git remote get-url origin)
+    # check changes on the restore lst
+    restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
+    git_hash=$(git rev-parse HEAD)
+    hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
+    modify_date="$(git log -1 --pretty=format:" %cd")"
+    # commit_message="'$(git show -s --format='%B')'"
+    commit_message="$(git show -s --format='%B' | tr -d '`')"
+    [ ! -f "${META_FILE}" ] && touch "${META_FILE}"
+    SUPER chattr -i "${META_FILE}" || { print_prompt -crit "Setting metadata failed" && exit 1 ;}
+    trap 'SUPER chattr +i "${META_FILE}"' RETURN
+    cat <<METADATA >"${META_FILE}"
+#? This is a meta file generated for hyde-cli
+#! Do not touch this!
+#* Use 'chattr -i "${META_FILE}"' to lift protection attributes   
+export CloneDir="$CloneDir"
+export current_branch="${current_branch}"
+export git_url="${git_url}"
+export restore_cfg_hash="${restore_cfg_hash}"
+export git_hash="${git_hash}"
+export hyde_version="${hyde_version}"
+export modify_date="${modify_date}"
+export commit_message="${commit_message}"
+METADATA
+echo "Metadata updated."
+}
+
+CHECK() { #! Deprecated
+    local Pkg_Dep=$(for PkgIn in "$@"; do ! pkg_installed $PkgIn && echo "$PkgIn"; done)
+
+    if [[ -n "${Pkg_Dep}" ]]; then
+        echo -e "$0 Dependencies:\n$Pkg_Dep"
+        notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'"
+        get_aurhlpr
+        { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
+    fi
+}
+
+enable_package() {
+        local Pkg_Dep=()
+    for PkgIn in "$@"; do
+        if ! pkg_installed "$PkgIn"; then
+            Pkg_Dep+=("$PkgIn")
+        fi
+    done
+
+    if [[ -n "${Pkg_Dep}" ]]; then
+        echo -e "$0 Dependencies:\n$Pkg_Dep"
+        get_aurhlpr
+        if [ -n "${DISPLAY}" ]; then
+            notify-send -a "${0}" "Confirm to install dependencies: '${Pkg_Dep}'" -t 10000
+            print_prompt -y "Confirm to install dependencies: '${Pkg_Dep}'"
+            { pkexec --user "${USER}" env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY "${aurhlpr}" -S $Pkg_Dep --noconfirm && notify-send "Installed: ${Pkg_Dep}"; } || { notify-send "Operation Cancelled" && exit 1; }
+        else
+            print_prompt -y "Confirm to install dependencies: '${Pkg_Dep}'"
+            { "${aurhlpr}" -S $Pkg_Dep --noconfirm && print_prompt -y "Installed: ${Pkg_Dep}"; } || { print_prompt -r "Operation dancelled" && exit 1; }
+        fi
+
+    fi
+}
+
+check_integrity() {
+    # CheckDir="${1:-${CloneDir}}"
+    # #! Requirements
+    # config=(
+    #     ".local/share/bin/globalcontrol.sh"
+    #     ".config/hyde/themes/*/kvantum/kvantum.theme"
+    #     ".config/hyde/themes/*/kvantum/kvconfig.theme"
+    #     ".config/hyde/themes/*/kitty.theme"
+    #     ".config/hyde/themes/*/rofi.theme"
+    #     ".config/hyde/themes/*/waybar.theme"
+    #     ".config/hyde/themes/*/hypr.theme"
+    #     ".config/hyde/themes/*/wallpapers"
+    # )
+
+    # exit_flag=false
+    # for fchk in "${config[@]}" ; do
+    #     # Use find to search for files matching the pattern
+    #     file=$(find "${CheckDir}/Configs" -path "*${fchk}*" -print -quit)
+    #     if [[ -z "${file}" ]]; then
+    #         print_prompt -r "[ERROR] " -wt "${fchk} --> does not exist in ${CheckDir}/Configs/"
+    #         exit_flag=true
+    #     fi
+    # done
+
+    # [[ "$exit_flag" = true ]] && echo "Exiting script due to missing files." && exit 1
+    :
+}
+
+source_user() {
+[ -f "${hydeConfDir}/hyde.conf" ] && . "${hydeConfDir}/hyde.conf"
+}
+
+enable_service() {
+    for servChk in "$@"; do
+        if [[ $(systemctl list-units --all -t service --full --no-legend "${servChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${servChk}.service" ]]; then
+            echo -e "\033[0;33m[SKIP]\033[0m '${servChk}' service is active..."
+        else
+            echo -e "\033[0;32m[systemctl]\033[0m starting ${servChk} system service..."
+            systemctl enable --now "${servChk}.service"
+            systemctl enable --now "${servChk}.service"
+        fi
+    done
+}
+
+do_contain() {
+    local etc_file="$1"
+    local conf_file="$2"
+    local tag_line=$(grep -i "Hyde-cli tag:" "${etc_file}")
+
+    if [[ ! -f "${conf_file}" ]] || grep -qF "${tag_line}" "${conf_file}"; then
+        cp "${etc_file}" "${conf_file}"
+        echo "Copied $etc_file to ${conf_file} because it contained '${tag_line}'"
+    else
+        :
+        # echo "Did not copy ${etc_file} to ${conf_file} because it did not contain '${tag_line}'"
+        print_prompt -r "Warning:" -m "File was changed: ${conf_file}" -wt "\n Delete file to receive updates"
+    fi
+}
+
+case_help() {
+    OPTION="$1"
+    sed -n "/case \${$OPTION} in/,/esac/p" "${0}" | grep '#?' | awk -F') #?' '{gsub(/ #?/, "", $1); gsub(/?/, "", $2); printf "%-30s %s\n", $1, $2}'
+}
+
+loading_spinner() {
+    local stat=${2:-0}
+    local pid=$1 # Process ID of the command to monitor
+    local spinstr='|/-\\'
+    local temp
+    while kill -0 $pid 2>/dev/null; do
+        temp="${spinstr#?}"
+        printf " [%c] " "${spinstr}"
+        spinstr=${temp}${spinstr%"${temp}"}
+        sleep 0.1
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b" # Clear the spinner
+
+    if [ "${stat}" -ne 0 ]; then exit 1; fi
+}
+
+eval "$(declare -F | sed -e 's/-f /-fx /')"
