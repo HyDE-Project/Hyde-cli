@@ -70,7 +70,8 @@ sddm_set_theme() {
         sddm_themes["$theme"]="$theme"
     done
 
-    if [[ -z "${1}" ]]; then
+    if [[ -z "$1" ]]; then
+        if [[ -z "$TERM" || "$TERM" == "dumb" ]];then print_prompt -y "[sddm set] " "unknown terminal: '$TERM'"; exit 0 ;fi
         selected_theme=$(
             # Print the associative array to verify
             for theme_name in "${!sddm_themes[@]}"; do
