@@ -757,7 +757,8 @@ HELP
 		readarray -t codeConf < <(find "${confDir}" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor" | sort)
 		print_prompt -y "Setting '${codet}' as code theme..." 
 		for i in "${!codeConf[@]}" ; do
-		    [ -f "${codeConf[i]}/User/settings.json" ] || continue
+		    [ -d "${codeConf[i]}/User" ] || continue
+    		[ -f "${codeConf[i]}/User/settings.json" ] ||  echo -e "{\n \"workbench.colorTheme\":\"wallbash\" \n}" > "${codeConf[i]}/User/settings.json"
     		jq --arg codet "${codet}" '.["workbench.colorTheme"] |= $codet' "${codeConf[i]}/User/settings.json" > tmpvsc && mv tmpvsc "${codeConf[i]}/User/settings.json"
 		done
 	;;
