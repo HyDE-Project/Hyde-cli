@@ -137,7 +137,7 @@ systeminfo() { #? System information
 check() { #? Information about Hyde and its components
 	case $1 in
 	Config) #? [*] Hyde Config File & Directory status
-		navigate_clone
+		navigate_cloneQ
 		ConfigDir="${CloneDir}/Configs"
 		dynamic=(
 			".t2"
@@ -268,7 +268,7 @@ update() { #? Pull updates from Hyde repository
 	print_prompt -y "Checking Hyde CLI updates..."
 	[[ ${CLI_PATH} != *"/usr"* ]] && export HYDE_LOCAL=1
 	export HYDE_UPDATE=1 && print_prompt -y "Locally installed by $USER"
-	curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
+	curl -sL https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/install.sh | bash
 	barLine
 	inform_updates
 }
