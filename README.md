@@ -5,11 +5,11 @@
 
   <br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-  <a href="https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE.md"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
+  <a href="https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/USAGE.md"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
   <a href="#faq"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
   <a href="#roadmap"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
-  <a href="https://github.com/kRHYME7/Hyde-cli/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
+  <a href="https://github.com/HyDE-Project/Hyde-cli/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
   <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> HyDE Discord <br> </kbd></a>
   <br><br><br>
 
@@ -28,7 +28,7 @@ For example, we have a functional TUI restore tool that follows `restore_cfg.lst
 To install, execute the following command:
 
 ```
-curl -sL https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/install.sh | bash
+curl -sL https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/install.sh | bash
 ```
 
 > [!Note]
@@ -64,7 +64,7 @@ Install required dependencies: `git make fzf tree ttf-jetbrains-mono-nerd`.
 Clone:
 
 ```
-git clone https://github.com/kRHYME7/Hyde-cli
+git clone https://github.com/HyDE-Project/Hyde-cli
 cd ./Hyde-cli
 ```
 
@@ -93,7 +93,7 @@ make update clean install
 
 Run: `Hyde man` if Hyde-cli is installed.
 <br>
-View [USAGE](https://raw.githubusercontent.com/kRHYME7/Hyde-cli/master/USAGE.md)
+View [USAGE](https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/USAGE.md)
 
 ---
 
