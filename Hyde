@@ -137,7 +137,7 @@ systeminfo() { #? System information
 check() { #? Information about Hyde and its components
 	case $1 in
 	Config) #? [*] Hyde Config File & Directory status
-		navigate_cloneQ
+		navigate_clone
 		ConfigDir="${CloneDir}/Configs"
 		dynamic=(
 			".t2"
