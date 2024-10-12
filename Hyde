@@ -652,10 +652,15 @@ sddm() { #? Sddm commands
 		#! sddm_list_local # Deprecatd for simpler approach
 		sddm_list_theme
 		;;
-	  set) #? Set Sddm theme from the list
+	  select) #? Select Sddm theme from the list
 	  	shift
 		#! sddm_set_local "${@}"
 		sddm_set_theme "${@}"
+	  ;;
+	  set) #? Set Sddm theme
+	  	shift
+		[ -z ${1} ] && print_prompt -r "Missing theme name" && exit 1
+		sddm_set_theme "${1}"
 	  ;;
 	  unset) #? Unset a theme set by 'set' command
 	    sddm_unset

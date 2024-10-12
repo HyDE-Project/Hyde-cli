@@ -111,7 +111,8 @@ Hyde <FUNCTIONS>
 <SDDM_FUNCTION> ::=
 			  (install) 	  " Install and set sddm theme from HyDE clone Repo"
 			 | (list) 	  " List all local sddm themes"
-			 | (set) 	  " Set Sddm theme from the list"
+			 | (select) 	  " Select Sddm theme from the list"
+			 | (set) 	  " Set Sddm theme"
 			 | (unset) 	  " Unset a theme set by 'set' command"
 			 | (test) 	  " Test a theme"
 			 | (info) 	  " Check sddm theme status"
@@ -268,7 +269,8 @@ Hyde <FUNCTIONS>
 | (--print-monitor ) "  Print focused monitor"
 | (--scan          ) "  Use 'tesseract' to scan image then add to clipboard"
 | (--stop          ) "  Stop every instance of Screencap"
-| (--reset         ) "  Reinitialize screencap"
+| (--reset         ) "  Reinitialize"
+| (--deps          ) "  Chek and resolve dependencies"
 ;
 
 <INJECT_CHAOTIC_AUR_USAGE> ::=

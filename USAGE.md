@@ -39,7 +39,7 @@ Usage: Hyde [Function] [options]
  
 [restore]                   ↪️ Restore dots
 
-			 [Config]  ↪️  Only restores dots from default '/home/khing/HyDE/Configs'
+			 [Config]  ↪️  Only restores dots from default '/home/khing/.cache/hyde/Hyde-Clone/Configs'
 
 			 [Clone]  ↪️  Restores dots from a clone repository 
   			                  💡 Provide ~/path/to/clone/directory
@@ -142,7 +142,7 @@ Usage: Hyde [Function] [options]
 			 [size]  ↪️  [*] Set waybar size
   			                 💡e.g 'waybar size 30' (range 1-100)
 
-						[--all] ↪️  Change all the pre-set sizes
+						[	--all] ↪️  Change all the pre-set sizes
  
 [sddm]                      ↪️ Sddm commands
 
@@ -150,7 +150,9 @@ Usage: Hyde [Function] [options]
 
 			 [list]  ↪️  List all local sddm themes
 
-			 [set]  ↪️  Set Sddm theme from the list
+			 [select]  ↪️  Select Sddm theme from the list
+
+			 [set]  ↪️  Set Sddm theme
 
 			 [unset]  ↪️  Unset a theme set by 'set' command
 
@@ -271,7 +273,8 @@ Usage: Hyde [Function] [options]
 						[--print-monitor] ↪️   Print focused monitor
 						[--scan] ↪️   Use 'tesseract' to scan image then add to clipboard
 						[--stop] ↪️   Stop every instance of Screencap
-						[--reset] ↪️   Reinitialize screencap
+						[--reset] ↪️   Reinitialize 
+						[--deps] ↪️   Chek and resolve dependencies
 
 			 [events]  ↪️  Watches hyprland events and executes actions
  
@@ -288,7 +291,7 @@ Usage: Hyde [Function] [options]
 			 [flatpak]  ↪️  Flatpak setup for HyDE
  
 [reload]                    ↪️ Just reload
-====================================================================================================================================================================
+=================================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
@@ -315,7 +318,7 @@ Usage: Hyde-tool [Function] [options]
 			 [out]  ↪️  Zoom out
 
 			 [reset]  ↪️  Reset Zoom
-====================================================================================================================================================================
+=================================================================================================================================================================================
 
 Descriptions with [*] can be expanded to show more information. Append [--help]
 
