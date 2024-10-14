@@ -4,11 +4,11 @@
 ![hyde_cli_banner](https://raw.githubusercontent.com/krhyme7/hyde-cli/master/Assets/hyde_cli_banner.png)
 
   <br>
-  <a href="https://hyde-shell.pages.dev/guides/installation/"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
+  <a href="https://hydeproject.pages.dev/guides/installation/"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
   <a href="https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/USAGE.md"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
-  <a href="https://hyde-shell.pages.dev/reference/faqs/"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
+  <a href="https://hydeproject.pages.dev/reference/faqs/"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
-  <a href="https://hyde-shell.pages.dev/reference/roadmap/"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
+  <a href="https://hydeproject.pages.dev/reference/roadmap/"><kbd> <br> Roadmap <br> </kbd></a>&ensp;&ensp;
   <a href="https://github.com/HyDE-Project/Hyde-cli/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
   <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> HyDE Discord <br> </kbd></a>
   <br><br><br>
