@@ -169,7 +169,7 @@ case ${OPTION} in
     enable_package tesseract-data-eng tesseract
     GEOM=$(slurp)
     grim -g "${GEOM}" "${temp_screenshot}"
-    pkg_installed imagemagick && convert "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
+    pkg_installed imagemagick && magick "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
     tesseract "${temp_screenshot}" - | wl-copy
     notify-send -a "Screencap" "OCR preview" -i "${temp_screenshot}" -e
     rm -f "${temp_screenshot}"
