@@ -66,13 +66,13 @@ Options:
 Supported Archive Format:
     | File prfx       | Hyprland variable | Target dir              |
     | --------------- | ----------------- | ----------------------- |
-    | Gtk_            | \$GTK-THEME        | \$HOME/.themes           |
-    | Icon_           | \$ICON-THEME       | \$HOME/.icons            |
-    | Cursor_         | \$CURSOR-THEME     | \$HOME/.icons            |
-    | Sddm_           | \$SDDM-THEME       | /usr/share/sddm/themes  | 
+    | Gtk_            | \$GTK_THEME        | \$HOME/.themes           |
+    | Icon_           | \$ICON_THEME       | \$HOME/.icons            |
+    | Cursor_         | \$CURSOR_THEME     | \$HOME/.icons            |
+    | Sddm_           | \$SDDM_THEME       | /usr/share/sddm/themes  | 
     | Font_           | \$FONT             | \$HOME/.local/share/fonts |
-    | Document-Font_  | \$DOCUMENT-FONT    | \$HOME/.local/share/fonts |
-    | Monospace-Font_ | \$MONOSPACE-FONT   | \$HOME/.local/share/fonts |
+    | Document-Font_  | \$DOCUMENT_FONT    | \$HOME/.local/share/fonts |
+    | Monospace-Font_ | \$MONOSPACE_FONT   | \$HOME/.local/share/fonts |
 
 Note: 
     Target directories without enough permissions will be skipped. 
@@ -184,25 +184,25 @@ check_tars() {
     local gsVal="$(
         case "${gsLow}" in
         sddm)
-            grep "^[[:space:]]*\$SDDM-THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$SDDM[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         gtk)
-            grep "^[[:space:]]*\$GTK-THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$GTK[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         icon)
-            grep "^[[:space:]]*\$ICON-THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$ICON[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         cursor)
-            grep "^[[:space:]]*\$CURSOR-THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$CURSOR[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         font)
             grep "^[[:space:]]*\$FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         document-font)
-            grep "^[[:space:]]*\$DOCUMENT-FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$DOCUMENT[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         monospace-font)
-            grep "^[[:space:]]*\$MONOSPACE-FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$MONOSPACE[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
 
         *) # fallback to older imple
@@ -285,6 +285,7 @@ done <<<"${wallpapers}"
 
 # restore configs with theme override
 echo -en "${restore_list}" >"${Theme_Dir}/restore_cfg.lst"
+trap 'rm "${Theme_Dir}/restore_cfg.lst"' EXIT
 print_prompt -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
 "${CloneDir}/Scripts/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
 [ "${3}" == "--skipcaching" ] || "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
