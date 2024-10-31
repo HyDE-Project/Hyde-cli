@@ -20,13 +20,13 @@ check_user_sddm_theme_writable() {
                 return 1
             }
         fi
-        
+
         # Make the file writable by all users
         SUPER chmod 666 "${user_sddm_theme}" || {
             print_prompt -r "Failed to change permissions of ${user_sddm_theme}"
             return 1
         }
-        
+
         print_prompt -y "Made ${user_sddm_theme} writable by all users"
         print_prompt -g "Successfully made ${user_sddm_theme} writable by user"
     fi
@@ -165,10 +165,10 @@ sddm_unset() {
 
     if [ -f "${user_sddm_theme}" ]; then
         # Check if the file is empty or has only whitespace
-        if [ -s "${user_sddm_theme}" ] && [ "$(tr -d '[:space:]' < "${user_sddm_theme}" | wc -c)" -ne 0 ]; then
+        if [ -s "${user_sddm_theme}" ] && [ "$(tr -d '[:space:]' <"${user_sddm_theme}" | wc -c)" -ne 0 ]; then
             # File exists and is not empty
-            line_count=$(wc -l < "${user_sddm_theme}")
-            : > "${user_sddm_theme}"
+            line_count=$(wc -l <"${user_sddm_theme}")
+            : >"${user_sddm_theme}"
             print_prompt -g "[success] " "User's SDDM theme configuration has been cleared (${line_count} lines removed)"
         else
             # File exists but is already empty
@@ -182,11 +182,11 @@ sddm_unset() {
 }
 
 sddm_info() {
-    output=$(find /etc/sddm.conf.d/ -type f -name "*.conf" -exec grep -H "Current" {} \; | tail -n 1)
-    theme=$(awk -F ':Current=' '{print $2}' <<<${output})
+    output=$(find /etc/sddm.conf.d/ -type f -name "*.conf" -exec grep -H "Current" {} \; | sort | tail -n 1)
+    theme=$(awk -F ':Current=' '{print $2}' <<<"${output}")
     cat <<STAT
 Current theme: ${theme}  
-Theme directory: $(awk -F ':Current=' '{print $1}' <<<${output})
+Theme directory: $(awk -F ':Current=' '{print $1}' <<<"${output}")
 Available themes: 
 $(find "${sddm_theme_dir}" -maxdepth 2 -name "theme.conf" -exec dirname {} \; | awk -F "${sddm_theme_dir}/" '{print $2}')
 
