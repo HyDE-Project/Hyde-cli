@@ -76,6 +76,8 @@ sddm_set_selected() {
 
 [Theme]
 Current=${set_theme}
+CursorTheme=${SDDM_CURSOR_THEME}
+CursorSize=${SDDM_CURSOR_SIZE}
 THEME
 
     bottom_conf=$(find /etc/sddm.conf.d/ -maxdepth 1 | sort | tail -n 1)
@@ -131,6 +133,8 @@ sddm_set_theme() {
 . ${CLI_PATH}/lib/hyde-cli/Package-Manager ;\
 . ${CLI_PATH}/lib/hyde-cli/lib-hyde ;\
 . ${CLI_PATH}/lib/hyde-cli/Manage-Sddm;\
+[ -f "${confDir}/hyde/hyde.conf" ] && . ${confDir}/hyde/hyde.conf;\
+export SDDM_CURSOR_THEME=${SDDM_CURSOR_THEME:-$CURSOR_THEME} SDDM_CURSOR_SIZE=${SDDM_CURSOR_SIZE:-$CURSOR_SIZE};\
         sddm_set_selected ${selected_theme}" || exit 1
     else
         :
