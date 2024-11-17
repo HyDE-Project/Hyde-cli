@@ -997,10 +997,12 @@ USAGE
 }
 
 reload() { #? Just reload
-	if printenv HYPRLAND_INSTANCE_SIGNATURE &>/dev/null; then
+	if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
 		box_me "Reloading Dots"
-		"$HOME/.local/share/bin/swwwallcache.sh" -t ""
+		[ -f "$HOME/.local/share/bin/swwwallcache.sh"  ] && $HOME/.local/share/bin/swwwallcache.sh -t ""
+		[ -f "$HOME/.local/lib/hyde/swwwallcache.sh"  ] && $HOME/.local/lib/hyde/swwwallcache.sh -t ""
 		{ [ -n "$hydeTheme" ] && "${scrDir}/themeswitch.sh" -s "$hydeTheme"; } || "${scrDir}/swwwallcache.sh"
+	
 	fi
 }
 

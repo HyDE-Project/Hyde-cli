@@ -1,4 +1,6 @@
 #! /bin/env bash
+    # shellcheck disable=SC2154
+    # shellcheck disable=SC1090
 
 SUPER() {
     local command="$*"
@@ -107,7 +109,7 @@ box_me() {
     done
 
     local s="${sender}$*"
-    tput setaf ${color}
+    tput setaf "${color}"
     echo -e " ═${s//?/═}"
     echo -e "║$s ║"
     echo -e " ═${s//?/═}"
@@ -239,7 +241,7 @@ navigate_clone() {
     source "${META_FILE}"
     export CloneDir
     export ScriptDir="${CloneDir}/Scripts"
-    cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+    cd "${ScriptDir}" || handle_error "Cannot Change Directory to "${ScriptDir}""
     current_branch=$(git branch --show-current)
     git_url=$(git remote get-url origin)
     # check changes on the restore lst
@@ -250,11 +252,11 @@ set_metadata() {
     CloneDir=${1:-${CloneDir}}
     export CloneDir
     export ScriptDir="${CloneDir}/Scripts"
-    cd $ScriptDir || handle_error "Cannot Change Directory to $ScriptDir"
+    cd "${ScriptDir}" || handle_error "Cannot Change Directory to "${ScriptDir}""
     current_branch=$(git branch --show-current)
     git_url=$(git remote get-url origin)
     # check changes on the restore lst
-    restore_cfg_hash="$(md5sum $ScriptDir/restore_cfg.lst | cut -d' ' -f1)"
+    restore_cfg_hash="$(md5sum "${ScriptDir}"/restore_cfg.lst | cut -d' ' -f1)"
     git_hash=$(git rev-parse HEAD)
     hyde_version="$(printf "%s" "$(git describe --tags --always --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')")"
     modify_date="$(git log -1 --pretty=format:" %cd")"
@@ -298,7 +300,7 @@ enable_package() {
         fi
     done
 
-    if [[ -n "${Pkg_Dep}" ]]; then
+    if [[ -n "${Pkg_Dep[*]}" ]]; then
         echo -e "$0 Dependencies:\n$Pkg_Dep"
         get_aurhlpr
         if [ -n "${DISPLAY}" ]; then
