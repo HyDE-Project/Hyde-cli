@@ -100,6 +100,7 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
   # restore_directory is the  Source directory for Configs
   restore_directory="${1:-${CloneDir}/Configs}"
   # echo "$restore_directory"
+  # shellcheck disable=SC2154
   : >"${ctl_override}"
   # Read the file line by line
   while IFS= read -r line; do
@@ -134,7 +135,7 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
         ;;
       esac
     done
-  done <"$(dirname ${restore_directory})/Scripts/restore_cfg.lst"
+  done <"$(dirname "${restore_directory}")/Scripts/restore_cfg.lst"
 }
 
 # shellcheck disable=SC2120
@@ -145,14 +146,14 @@ generate_config_list() { #* Check the content of a Directory and make a restore 
 make_List() {
   # enable_package md5sum
   CloneDir=${1:-"${CloneDir}"}
-  [ ! -d ${CloneDir}  ] && exit 0
+  [ ! -d "${CloneDir}"  ] && exit 0
 
   #? If the ctlFile is present and no reuse flag do this
   if [ -e "${ctlFile}" ] && [[ $* != *"--reuse"* ]]; then
       show_restore_list "${ctlFile}"
     now_restore_cfg_hash="$(md5sum "${CloneDir}/Scripts/restore_cfg.lst" | cut -d' ' -f1)"
 
-      if [ "$now_restore_cfg_hash" != "$restore_cfg_hash" ]; then
+      if [ "$now_restore_cfg_hash" != "${restore_cfg_hash}" ]; then
         generate_config_list "${CloneDir}/Configs"
         print_prompt -g "\n\n\nNew Files has been added/removed!" "\nCreate a new control file to avoid conflicts!\n"
       else
