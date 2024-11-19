@@ -40,6 +40,7 @@ export ctl_override
 
 scrDir=""$(dirname $(which globalcontrol.sh 2>/dev/null) 2>/dev/null)""
 [ ! -e "${scrDir}/globalcontrol.sh" ] && export scrDir="$HOME/.local/share/bin/"
+[ ! -e "${scrDir}/globalcontrol.sh" ] && export scrDir="$HOME/.local/lib/hyde/"
 [ ! -e "${scrDir}/globalcontrol.sh" ] && [[ ${is_fresh_install} != true ]] && handle_error "Scripts for HyDE not detected at ${scrDir}"
 
 export scrDir

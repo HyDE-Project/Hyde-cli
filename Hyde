@@ -8,7 +8,7 @@ fi
 
 CLI_PATH="$(dirname "$(dirname "${0}")")"
 PATH=$PATH:${CLI_PATH}/lib/hyde-cli/
-export CLI_PATH 
+export CLI_PATH
 export PATH
 
 hyde_cli_version="$( head -1 "${CLI_PATH}/share/hyde-cli/.hyde-cli.ver")"
@@ -59,8 +59,8 @@ fi
 man() { #? Show Manual
 	# shellcheck disable=SC1090
 	. "${META_FILE}" 2>/dev/null || print_prompt -r "Looks like you did not run 'Hyde-install'! "
-	[ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] && [[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde-tool_man" 
-	if [ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] ; then 
+	[ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] && [[ $* == *"--reload"* ]] && rm "$HYDE_RUNTIME_DIR/Hyde-tool_man"
+	if [ -f  "$HYDE_RUNTIME_DIR/Hyde-tool_man" ] ; then
 		local man_ver="$(grep "Hyde-cli Version:"  "$HYDE_RUNTIME_DIR/Hyde-tool_man" | cut -d ":" -f2)"
 		if grep -q "${man_ver}" <<< "${hyde_cli_version}"; then
 			cat "$HYDE_RUNTIME_DIR/Hyde-tool_man"
@@ -92,7 +92,7 @@ man() { #? Show Manual
 		barLine
 		print_prompt "\nDescriptions with" -y " [*]" " can be expanded to show more information. Append [--help]"
 		print_prompt "\nCheck for dependencies by appending '--deps' flag. eg ' Hyde show pastebin --deps ' "
-		print_prompt "\nRegenerate this 'man' page by appending '--reload' flag. 'Hyde man --reload' " 
+		print_prompt "\nRegenerate this 'man' page by appending '--reload' flag. 'Hyde man --reload' "
 	) | cat - 2>/dev/null | tee "$HYDE_RUNTIME_DIR/Hyde-tool_man"
 }
 
@@ -108,7 +108,7 @@ version() { #? Hyde-cli version
 		repo_info
 		barLine
 		inform_updates
-	} 
+	}
 }
 
 systeminfo() { #? System information
@@ -516,7 +516,7 @@ USAGE
 	select) #? Wallpaper selector
 		"${scrDir}"/swwwallselect.sh
 		;;
-	variety) #? [*] Use variety package to manage wallpapers\nﯦ Add 'exec-once=Hyde wallpaper variety' in ./userprfs.conf 
+	variety) #? [*] Use variety package to manage wallpapers\nﯦ Add 'exec-once=Hyde wallpaper variety' in ./userprfs.conf
 		shift
 		Run-Wallpaper "${@}"
 		: <<USAGE
@@ -671,7 +671,7 @@ sddm() { #? Sddm commands
 	  ;;
 	  info) #? Check sddm theme status
         sddm_info
-	  ;; 
+	  ;;
 	*) Parameters "${FUNCNAME[0]}" ;;
 
 	esac;
@@ -736,7 +736,7 @@ USAGE
 
 }
 
-code() { #? Code editor related commands 
+code() { #? Code editor related commands
 	case $1 in
 	# select) #! Selector for default Theme presets
 
@@ -766,7 +766,7 @@ HELP
 	   codet=${*:-wallbash}
 	   [[ "$*" == "-"* ]] && { help ; exit 1; }
 		readarray -t codeConf < <(find "${confDir}" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor" | sort)
-		print_prompt -y "Setting '${codet}' as code theme..." 
+		print_prompt -y "Setting '${codet}' as code theme..."
 		for i in "${!codeConf[@]}" ; do
 		    [ -d "${codeConf[i]}/User" ] || continue
     		[ -f "${codeConf[i]}/User/settings.json" ] ||  echo -e "{\n \"workbench.colorTheme\":\"wallbash\" \n}" > "${codeConf[i]}/User/settings.json"
@@ -788,7 +788,7 @@ show() { #? Useful GUI util
 		# Keybinds_Hint #! Moved to .extra
 		shift
 		diff "${etcDir}/keybinds_hint.sh" "${scrDir}/keybinds_hint.sh" > /dev/null || \
-		print_prompt +b "\n[changes available] " "copy '"${etcDir}/keybinds_hint.sh"' to '${scrDir}/keybinds_hint.sh' to update your keybinds_hint.sh" 
+		print_prompt +b "\n[changes available] " "copy '"${etcDir}/keybinds_hint.sh"' to '${scrDir}/keybinds_hint.sh' to update your keybinds_hint.sh"
 		"${scrDir}"/keybinds_hint.sh "${@}"
 		: <<USAGE
 [SHOW_BINDS_USAGE]
@@ -814,9 +814,9 @@ USAGE
 [END]
 USAGE
 		;;
-	calc) #? [*] Calculator (libqalculate)  
+	calc) #? [*] Calculator (libqalculate)
 	shift
-	Launch-Calculator "${@}" 
+	Launch-Calculator "${@}"
 		: <<USAGE
 [SHOW_CALC_USAGE]
     --rasi	<PATH>? set rofi configuration
@@ -825,14 +825,14 @@ USAGE
 [END]
 USAGE
 	;;
-	emoji) #? [*] Emoji selector\nﯦ Add 'emoji_style=2'\n	1 = list\n	2 = grid    
+	emoji) #? [*] Emoji selector\nﯦ Add 'emoji_style=2'\n	1 = list\n	2 = grid
 		shift
 		Launch-Emoji "${@}"
 		: <<USAGE
 [SHOW_EMOJI_USAGE]
     --style   ?   use style [ 1 | 2 ]
     --rasi	<PATH>?	set rofi configuration
-	--deps  ? check and resolve dependencies	
+	--deps  ? check and resolve dependencies
 [END]
 USAGE
 		;;
@@ -861,7 +861,7 @@ USAGE
 	screencap) #? Use rofi to select screenshot options \n !!  kills another rofi session
 		Launch-Screencap
 		;;
-	search) #? [*] Web Search\nﯦ supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')\nﯦ ':' is use as delimiter\nﯦ Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" ) 
+	search) #? [*] Web Search\nﯦ supports shorthand e.g 'g: some thing' (this uses google.com to search for 'some thing')\nﯦ ':' is use as delimiter\nﯦ Custom search-engines should be in 'search.lst' and be declared inside ./hyde.conf ( e.g search_file="$HOME/.config/hyde/search.lst" )
 
 	shift
 		Launch-Search "${@}"
@@ -884,7 +884,7 @@ USAGE
 run() { #? Executable utilities
 	case $1 in
 
-	airplane_mode) #? Toggle airplane mode\n\tﯦ Toogles wifi 
+	airplane_mode) #? Toggle airplane mode\n\tﯦ Toogles wifi
 	airplane-mode
 	;;
 	audio_idle) #? Inhibits idle when player status: 'Playing
@@ -908,7 +908,7 @@ run() { #? Executable utilities
     --print-monitor ?  Print focused monitor
     --scan          ?  Use 'tesseract' to scan image then add to clipboard
     --stop          ?  Stop every instance of Screencap
-    --reset         ?  Reinitialize 
+    --reset         ?  Reinitialize
     --deps          ?  Check and resolve dependencies
 [END]
 USAGE
@@ -999,10 +999,10 @@ USAGE
 reload() { #? Just reload
 	if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
 		box_me "Reloading Dots"
-		[ -f "$HOME/.local/share/bin/swwwallcache.sh"  ] && $HOME/.local/share/bin/swwwallcache.sh -t ""
-		[ -f "$HOME/.local/lib/hyde/swwwallcache.sh"  ] && $HOME/.local/lib/hyde/swwwallcache.sh -t ""
+		[ -f "$HOME/.local/share/bin/swwwallcache.sh"  ] && "$HOME/.local/share/bin/swwwallcache.sh" -t ""
+		[ -f "$HOME/.local/lib/hyde/swwwallcache.sh"   ] && "$HOME/.local/lib/hyde/swwwallcache.sh"-t ""
 		{ [ -n "$hydeTheme" ] && "${scrDir}/themeswitch.sh" -s "$hydeTheme"; } || "${scrDir}/swwwallcache.sh"
-	
+
 	fi
 }
 

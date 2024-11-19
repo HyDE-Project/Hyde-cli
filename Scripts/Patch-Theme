@@ -69,24 +69,23 @@ Supported Archive Format:
     | Gtk_            | \$GTK_THEME        | \$HOME/.themes           |
     | Icon_           | \$ICON_THEME       | \$HOME/.icons            |
     | Cursor_         | \$CURSOR_THEME     | \$HOME/.icons            |
-    | Sddm_           | \$SDDM_THEME       | /usr/share/sddm/themes  | 
+    | Sddm_           | \$SDDM_THEME       | /usr/share/sddm/themes  |
     | Font_           | \$FONT             | \$HOME/.local/share/fonts |
     | Document-Font_  | \$DOCUMENT_FONT    | \$HOME/.local/share/fonts |
     | Monospace-Font_ | \$MONOSPACE_FONT   | \$HOME/.local/share/fonts |
 
-Note: 
-    Target directories without enough permissions will be skipped. 
+Note:
+    Target directories without enough permissions will be skipped.
         run 'sudo chmod -R 777 <target directory>'
             example: 'sudo chmod -R 777 /usr/share/sddm/themes'
 HELP
 }
 
-
 select_theme_wallpaper() {
-[ "${SINGLE_THEME_ONLY}" = true ] || return
-wallpapers="$(find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | Fzf-Menu "${FUNCNAME[0]}" )"
-print_prompt -g "[wallpapers]"
-awk -F "${Fav_Theme_Dir}" '{print $2}' <<< "${wallpapers}"
+    [ "${SINGLE_THEME_ONLY}" = true ] || return
+    wallpapers="$(find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | Fzf-Menu "${FUNCNAME[0]}")"
+    print_prompt -g "[wallpapers]"
+    awk -F "${Fav_Theme_Dir}" '{print $2}' <<<"${wallpapers}"
 }
 
 if [[ -z $1 || -z $2 ]]; then
@@ -162,9 +161,9 @@ while IFS= read -r fchk; do
         print_prompt -y "[!!] " "${fchk} --> do not exist in ${Theme_Dir}/Configs/"
     fi
 done <<<"$config"
-if [ -f "${Fav_Theme_Dir}/theme.dcol" ];then
-print_prompt -n "[ok] "  "found theme.dcol to override wallpaper dominant colors"
-restore_list+="Y|Y|\${HOME}/.config/hyde/themes/${Fav_Theme}|theme.dcol|hyprland\n"
+if [ -f "${Fav_Theme_Dir}/theme.dcol" ]; then
+    print_prompt -n "[ok] " "found theme.dcol to override wallpaper dominant colors"
+    restore_list+="Y|Y|\${HOME}/.config/hyde/themes/${Fav_Theme}|theme.dcol|hyprland\n"
 fi
 readonly restore_list
 
@@ -262,13 +261,13 @@ for indx in "${!prefix[@]}"; do
     [[ "${FORCE_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir[indx]}/${tgtChk}" ] && print_prompt -y "[skip] " "\"${tgtDir[indx]}/${tgtChk}\" already exists" && continue; }
     print_prompt -g "[extracting] " "${tarFile} --> ${tgtDir[indx]}"
     if [ ! -w "${tgtDir[indx]}" ]; then
-      # Sddm themes can still be accessible
+        # Sddm themes can still be accessible
         NOTIFY -a "[HyDE-CLI] " "Run 'sudo chmod -R 777 ${tgtDir[indx]}'  to set the permissions one time" -t 10
         print_prompt -c "[note] " "Run 'sudo chmod -R 777 ${tgtDir[indx]}'  to set the permissions one time"
         print_prompt -r "[skip] " "${tarFile} =! ${tgtDir[indx]} permission not set"
         continue
-    elif [ ! -w "${tgtDir[indx]}/${tgtChk}" ];then
-        tar -xf "${tarFile}" -C  "${cacheDir}/landing"
+    elif [ ! -w "${tgtDir[indx]}/${tgtChk}" ]; then
+        tar -xf "${tarFile}" -C "${cacheDir}/landing"
         chmod -R 775 "${cacheDir}/landing/${tgtChk}"
         mv "${cacheDir}/landing/${tgtChk}" "${tgtDir[indx]}/"
     else
@@ -288,6 +287,10 @@ echo -en "${restore_list}" >"${Theme_Dir}/restore_cfg.lst"
 trap 'rm "${Theme_Dir}/restore_cfg.lst"' EXIT
 print_prompt -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
 "${CloneDir}/Scripts/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
-[ "${3}" == "--skipcaching" ] || "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
+
+if [ "${3}" == "--skipcaching" ]; then
+    [ -f "$HOME/.local/share/bin/swwwallcache.sh" ] && "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
+    [ -f "$HOME/.local/lib/hyde/swwwallcache.sh" ] && "$HOME/.local/lib/hyde/swwwallcache.sh" -t "${Fav_Theme}"
+fi
 
 exit 0

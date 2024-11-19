@@ -1,5 +1,6 @@
 {
     "[markdown]": {
         "editor.defaultFormatter": "xaver.clang-format"
-    }
+    },
+    "makefile.configureOnOpen": false
 }
