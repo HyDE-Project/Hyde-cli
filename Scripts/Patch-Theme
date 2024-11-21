@@ -64,15 +64,15 @@ Options:
     'export FORCE_THEME_UPDATE=true'       Overwrites the archived files (useful for updates and changes in gtk/icons/cursor archives)
 
 Supported Archive Format:
-    | File prfx       | Hyprland variable | Target dir              |
-    | --------------- | ----------------- | ----------------------- |
-    | Gtk_            | \$GTK_THEME        | \$HOME/.themes           |
-    | Icon_           | \$ICON_THEME       | \$HOME/.icons            |
-    | Cursor_         | \$CURSOR_THEME     | \$HOME/.icons            |
-    | Sddm_           | \$SDDM_THEME       | /usr/share/sddm/themes  |
-    | Font_           | \$FONT             | \$HOME/.local/share/fonts |
-    | Document-Font_  | \$DOCUMENT_FONT    | \$HOME/.local/share/fonts |
-    | Monospace-Font_ | \$MONOSPACE_FONT   | \$HOME/.local/share/fonts |
+    | File prfx       | Hyprland variable | Target dir                      |
+    | --------------- | ----------------- | --------------------------------|
+    | Gtk_            | \$GTK_THEME        | \$HOME/.local/share/themes     |
+    | Icon_           | \$ICON_THEME       | \$HOME/.local/share/icons      |
+    | Cursor_         | \$CURSOR_THEME     | \$HOME/.local/share/icons      |
+    | Sddm_           | \$SDDM_THEME       | /usr/share/sddm/themes         |
+    | Font_           | \$FONT             | \$HOME/.local/share/fonts      |
+    | Document-Font_  | \$DOCUMENT_FONT    | \$HOME/.local/share/fonts      |
+    | Monospace-Font_ | \$MONOSPACE_FONT   | \$HOME/.local/share/fonts      |
 
 Note:
     Target directories without enough permissions will be skipped.
@@ -244,14 +244,21 @@ prefix=(
     "Monospace-Font"
 )
 tgtDir=(
-    "$HOME/.themes"
-    "$HOME/.icons"
-    "$HOME/.icons"
+    "${HOME}/.local/share/themes"
+    "${HOME}/.local/share/icons"
+    "${HOME}/.local/share/icons"
     "/usr/share/sddm/themes"
-    "$HOME/.local/share/fonts"
-    "$HOME/.local/share/fonts"
-    "$HOME/.local/share/fonts"
+    "${HOME}/.local/share/fonts"
+    "${HOME}/.local/share/fonts"
+    "${HOME}/.local/share/fonts"
 )
+
+# Fallback to ~/.themes and ~/.icons if The newer path does not exist
+[ -e "${HOME}/.local/lib/hyde" ] || tgtDir[0]="${HOME}/.themes"
+[ -e "${HOME}/.local/lib/hyde" ] || {
+    tgtDir[1]="${HOME}/.icons"
+    tgtDir[2]="${HOME}/.icons"
+}
 
 for indx in "${!prefix[@]}"; do
     tarFile="$(find "${Theme_Dir}" -type f -name "${prefix[indx]}_*.tar.*")"
@@ -289,8 +296,11 @@ print_prompt -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"$
 "${CloneDir}/Scripts/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
 
 if [ "${3}" == "--skipcaching" ]; then
-    [ -f "$HOME/.local/share/bin/swwwallcache.sh" ] && "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
-    [ -f "$HOME/.local/lib/hyde/swwwallcache.sh" ] && "$HOME/.local/lib/hyde/swwwallcache.sh" -t "${Fav_Theme}"
+    if [ -f "$HOME/.local/lib/hyde/swwwallcache.sh" ]; then
+        "$HOME/.local/lib/hyde/swwwallcache.sh" -t "${Fav_Theme}"
+    elif [ -f "$HOME/.local/share/bin/swwwallcache.sh" ]; then
+        "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
+    fi
 fi
 
 exit 0

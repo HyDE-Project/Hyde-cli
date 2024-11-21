@@ -999,10 +999,12 @@ USAGE
 reload() { #? Just reload
 	if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]]; then
 		box_me "Reloading Dots"
-		[ -f "$HOME/.local/share/bin/swwwallcache.sh"  ] && "$HOME/.local/share/bin/swwwallcache.sh" -t ""
-		[ -f "$HOME/.local/lib/hyde/swwwallcache.sh"   ] && "$HOME/.local/lib/hyde/swwwallcache.sh"-t ""
+		if [ -f "$HOME/.local/lib/hyde/swwwallcache.sh"  ];then
+			"$HOME/.local/lib/hyde/swwwallcache.sh" -t ""
+		elif [ -f "$HOME/.local/share/bin/swwwallcache.sh"  ];then
+			"$HOME/.local/share/bin/swwwallcache.sh" -t ""
+		fi
 		{ [ -n "$hydeTheme" ] && "${scrDir}/themeswitch.sh" -s "$hydeTheme"; } || "${scrDir}/swwwallcache.sh"
-
 	fi
 }
 
