@@ -94,9 +94,10 @@ if [[ -z $1 || -z $2 ]]; then
 fi
 
 dcolTheme="Wall-Dcol"
-[[ -f "${confDir}/hyde/wallbash/theme" ]] && dcolTheme="theme"
-dcolDir="${confDir}/hyde/wallbash/${dcolDest}"
-[ ! -d "${dcolDir}" ] && print_prompt "[ERROR]" "${dcolTheme} do not exist!" && exit 1
+dcolDir="${confDir}/hyde/wallbash/${dcolTheme}"
+[[ -d "${HYDE_DATA_HOME}/wallbash/theme" ]] && dcolTheme="theme"
+[[ -d "${HYDE_DATA_HOME}/wallbash/theme" ]] && dcolDir="${XDG_DATA_HOME}/hyde/wallbash/theme"
+[ ! -d "${dcolDir}" ] && print_prompt "[ERROR]" "${dcolDir} do not exist!" && exit 1
 
 # set parameters
 Fav_Theme="$1"
@@ -150,7 +151,7 @@ print_prompt "Patching" -g " --// ${Fav_Theme} //-- " "from " -b "${Theme_Dir}\n
 Fav_Theme_Dir="${Theme_Dir}/Configs/.config/hyde/themes/${Fav_Theme}"
 [ ! -d "${Fav_Theme_Dir}" ] && print_prompt -r "[ERROR] " "'${Fav_Theme_Dir}'" -y " Do not Exist" && exit 1
 
-config=$(find "${dcolDir}" -type f -name "*.dcol" | awk -v favTheme="${Fav_Theme}" -F '$dcolTheme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
+config=$(find "${dcolDir}" -type f -name "*.dcol" | awk -v favTheme="${Fav_Theme}" -F "${dcolTheme}/" '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
 restore_list=""
 
 while IFS= read -r fchk; do
@@ -297,7 +298,7 @@ trap 'rm "${Theme_Dir}/restore_cfg.lst"' EXIT
 print_prompt -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
 "${CloneDir}/Scripts/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
 
-if [ "${3}" == "--skipcaching" ]; then
+if [ "${3}" != "--skipcaching" ]; then
     if [ -f "$HOME/.local/lib/hyde/swwwallcache.sh" ]; then
         "$HOME/.local/lib/hyde/swwwallcache.sh" -t "${Fav_Theme}"
     elif [ -f "$HOME/.local/share/bin/swwwallcache.sh" ]; then
