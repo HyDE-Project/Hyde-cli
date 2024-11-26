@@ -5,7 +5,7 @@ show_restore_list() {
 "Please review the list..."
 $(barLine)
 O   Overwrite     ﬌ Move dots to Backup then populate dots from source directory (${CloneDir})
-                       Move means mving the whole directory including all files inside.
+                       Move means moving the whole directory including all files inside.
 S   Sync          ﬌ Copy dots to Backup > Copy to overwrite dots from source directory (${CloneDir})  
                       ﯧ Recommended to use.It will only overrwrite the CONFLICTING files if both files exist.
 P   Preserve      ﬌ Populates dots but preserves existing user sots
