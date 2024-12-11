@@ -135,4 +135,4 @@ export GIT
 
 export CloneDir=${newCloneDir}
 
-if ! main; then print_prompt -crit "[error] " "Hyde-istall Terminated"; fi
+if ! main; then print_prompt -crit "[error] " "Hyde-install Terminated"; fi
