@@ -4,7 +4,7 @@
 ![hyde_cli_banner](https://raw.githubusercontent.com/krhyme7/hyde-cli/master/Assets/hyde_cli_banner.png)
 
   <br>
-  <a href="https://hydeproject.pages.dev/guides/installation/"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
+  <a href="https://hydeproject.pages.dev/guides/cli/#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
   <a href="https://raw.githubusercontent.com/HyDE-Project/Hyde-cli/master/USAGE.md"><kbd> <br> Usage <br> </kbd></a>&ensp;&ensp;
   <a href="https://hydeproject.pages.dev/reference/faqs/"><kbd> <br> FAQ <br> </kbd></a>&ensp;&ensp;
   <a href="#support"><kbd> <br> Support <br> </kbd></a>&ensp;&ensp;
