@@ -28,7 +28,7 @@ done
 
 # Set default values if not provided
 CloneDir=${CloneDir:-${HOME}/Hyprdots}
-GIT=${GIT:-"https://github.com/prasanthrangan/hyprdots"}
+GIT=${GIT:-"https://github.com/HyDE-Project/HyDE"}
 
 
 #? One Time Set up on Terminal.

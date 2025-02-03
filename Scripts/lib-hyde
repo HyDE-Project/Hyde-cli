@@ -166,7 +166,7 @@ For advanced usage see options below
         -d|--dir ~/custom/Hyde/directory                      Clone Hyde in a Custom path then run installation.
                                                                 Default: '${cacheDir}/Hyde'
         -g|--git https://gitclone/link/                          Upstream repository link to be cloned
-                                                                Default: 'https://github.com/prasanthrangan/hyprdots'
+                                                                Default: 'https://github.com/HyDE-Project/HyDE'
 [ TIP] Looks like you already have a clone directory somewhere
       To reuse that clone directory run 'Hyde-install -d ${HOME}/custom/Hyde/directory --link'
       Then 'Hyde-cli' will remember this directory
